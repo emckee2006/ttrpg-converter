@@ -1,0 +1,15 @@
+[package]
+name = "ttrpg-gui"
+version = "0.1.0"
+edition = "2021"
+description = "Native GUI application using egui"
+authors = ["Your Name <your.email@example.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/emckee2006/ttrpg-converter"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
