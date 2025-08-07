@@ -1,0 +1,46 @@
+# Rust Formatting Configuration
+# Based on Rust best practices and team consistency standards
+
+# Edition and basic settings
+edition = "2021"
+max_width = 100
+tab_spaces = 4
+use_small_heuristics = "Max"
+
+# Import organization (following user rules for clean code organization)
+imports_granularity = "Crate"
+group_imports = "StdExternalCrate"
+reorder_imports = true
+reorder_modules = true
+
+# Code style preferences
+remove_nested_parens = true
+normalize_comments = true
+format_strings = false  # Preserve string formatting intent
+format_macro_matchers = true
+format_macro_bodies = true
+
+# Function and struct formatting
+fn_args_layout = "Tall"
+brace_style = "SameLineWhere"
+control_brace_style = "AlwaysSameLine"
+where_single_line = true
+
+# Documentation and comments
+normalize_doc_attributes = true
+wrap_comments = true
+comment_width = 80
+
+# String formatting
+format_code_in_doc_comments = true
+
+# Advanced formatting
+use_field_init_shorthand = true
+use_try_shorthand = true
+condense_wildcard_suffixes = true
+
+# Stable formatting options
+struct_lit_single_line = true
+fn_single_line = false
+chain_width = 60
+single_line_if_else_max_width = 50

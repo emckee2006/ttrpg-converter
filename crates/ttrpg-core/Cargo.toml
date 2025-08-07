@@ -13,3 +13,7 @@ serde_json = { workspace = true }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
+chrono = { version = "0.4", features = ["serde"] }
+url = "2.5"
+zip = "0.6"
+image = "0.25"

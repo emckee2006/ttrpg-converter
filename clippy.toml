@@ -1,0 +1,39 @@
+# Clippy configuration for TTRPGConverter
+# Updated to use current Clippy configuration format
+
+# === THRESHOLD SETTINGS ===
+# Control when lints trigger based on complexity/size
+
+cognitive-complexity-threshold = 30
+type-complexity-threshold = 250
+too-many-arguments-threshold = 8
+too-many-lines-threshold = 200
+large-error-threshold = 128
+vec-box-size-threshold = 4096
+trivial-copy-size-limit = 128
+
+# === BEHAVIOR SETTINGS ===
+# Control clippy behavior and what it allows
+
+allow-expect-in-tests = true
+allow-unwrap-in-tests = true
+allow-panic-in-tests = true
+allow-dbg-in-tests = true
+allow-print-in-tests = true
+avoid-breaking-exported-api = true
+check-private-items = true
+
+# === ALLOWED ITEMS ===
+# Items that are allowed despite triggering lints
+
+allowed-wildcard-imports = [
+    "ttrpg_core::prelude",
+    "std::collections"
+]
+
+allowed-prefixes = [
+    "to",
+    "from", 
+    "into",
+    "as"
+]
