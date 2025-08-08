@@ -58,7 +58,11 @@ pub trait Validator {
     /// - Data types don't match expected formats
     /// - Business logic constraints are violated
     /// - Cross-references are broken or inconsistent
-    fn validate(&self, context: &ValidationContext, rules: &ValidationRules) -> ConversionResult<ValidationReport>;
+    fn validate(
+        &self,
+        context: &ValidationContext,
+        rules: &ValidationRules,
+    ) -> ConversionResult<ValidationReport>;
 
     /// Validates only required fields (fast validation)
     ///
@@ -82,7 +86,11 @@ pub trait Validator {
     /// - Scene dimension requirements
     /// - Asset availability and accessibility
     /// - Permission and ownership rules
-    fn validate_business_logic(&self, context: &ValidationContext, rules: &ValidationRules) -> ConversionResult<()>;
+    fn validate_business_logic(
+        &self,
+        context: &ValidationContext,
+        rules: &ValidationRules,
+    ) -> ConversionResult<()>;
 }
 
 /// Validation context providing environmental information
@@ -93,22 +101,22 @@ pub trait Validator {
 pub struct ValidationContext {
     /// Target format being validated for
     pub target_format: Option<TargetFormat>,
-    
+
     /// Available asset references for validation
     pub available_assets: HashSet<String>,
-    
+
     /// Valid entity IDs that can be referenced
     pub valid_entity_ids: HashSet<String>,
-    
+
     /// System-specific configuration
     pub system_config: HashMap<String, String>,
-    
+
     /// Validation strictness level
     pub strictness: StrictnessLevel,
-    
+
     /// Whether to perform expensive validation checks
     pub deep_validation: bool,
-    
+
     /// Maximum allowed entity sizes
     pub size_limits: SizeLimits,
 }
@@ -118,13 +126,13 @@ pub struct ValidationContext {
 pub enum StrictnessLevel {
     /// Minimal validation - only critical errors
     Permissive,
-    
+
     /// Standard validation - common issues and warnings
     Standard,
-    
+
     /// Strict validation - all issues including minor inconsistencies
     Strict,
-    
+
     /// Pedantic validation - every possible issue
     Pedantic,
 }
@@ -140,13 +148,13 @@ impl Default for StrictnessLevel {
 pub struct SizeLimits {
     /// Maximum string length for names and descriptions
     pub max_string_length: usize,
-    
+
     /// Maximum number of entities per campaign
     pub max_entities_per_campaign: usize,
-    
+
     /// Maximum file size for assets (in bytes)
     pub max_asset_size: u64,
-    
+
     /// Maximum image dimensions
     pub max_image_width: u32,
     pub max_image_height: u32,
@@ -155,11 +163,11 @@ pub struct SizeLimits {
 impl Default for SizeLimits {
     fn default() -> Self {
         Self {
-            max_string_length: 65_536,           // 64KB strings
-            max_entities_per_campaign: 10_000,    // 10K entities
-            max_asset_size: 100_000_000,          // 100MB assets
-            max_image_width: 8192,                // 8K image width
-            max_image_height: 8192,               // 8K image height
+            max_string_length: 65_536,         // 64KB strings
+            max_entities_per_campaign: 10_000, // 10K entities
+            max_asset_size: 100_000_000,       // 100MB assets
+            max_image_width: 8192,             // 8K image width
+            max_image_height: 8192,            // 8K image height
         }
     }
 }
@@ -171,22 +179,22 @@ impl Default for SizeLimits {
 pub struct ValidationRules {
     /// Whether to validate required fields
     pub validate_required_fields: bool,
-    
+
     /// Whether to validate data types and formats
     pub validate_data_types: bool,
-    
+
     /// Whether to validate business logic
     pub validate_business_logic: bool,
-    
+
     /// Whether to validate cross-references
     pub validate_cross_references: bool,
-    
+
     /// Whether to validate asset availability
     pub validate_assets: bool,
-    
+
     /// Whether to validate permissions and ownership
     pub validate_permissions: bool,
-    
+
     /// Custom validation rules
     pub custom_rules: HashMap<String, String>,
 }
@@ -243,19 +251,19 @@ impl Default for ValidationRules {
 pub struct ValidationReport {
     /// Validation success status
     pub success: bool,
-    
+
     /// Total number of items validated
     pub total_validated: usize,
-    
+
     /// Number of validation errors found
     pub errors: Vec<ValidationError>,
-    
+
     /// Number of validation warnings found
     pub warnings: Vec<ValidationWarning>,
-    
+
     /// Validation performance statistics
     pub stats: ValidationStats,
-    
+
     /// Additional metadata
     pub metadata: HashMap<String, String>,
 }
@@ -319,22 +327,22 @@ impl ValidationReport {
 pub struct ValidationError {
     /// Error code for programmatic handling
     pub code: String,
-    
+
     /// Human-readable error message
     pub message: String,
-    
+
     /// Entity type that caused the error
     pub entity_type: String,
-    
+
     /// Entity ID if available
     pub entity_id: Option<String>,
-    
+
     /// Field path that caused the error
     pub field_path: Option<String>,
-    
+
     /// Expected value or format
     pub expected: Option<String>,
-    
+
     /// Actual value that caused the error
     pub actual: Option<String>,
 }
@@ -363,16 +371,16 @@ impl fmt::Display for ValidationError {
 pub struct ValidationWarning {
     /// Warning code for programmatic handling
     pub code: String,
-    
+
     /// Human-readable warning message
     pub message: String,
-    
+
     /// Entity type that caused the warning
     pub entity_type: String,
-    
+
     /// Entity ID if available
     pub entity_id: Option<String>,
-    
+
     /// Suggestion for fixing the warning
     pub suggestion: Option<String>,
 }
@@ -391,13 +399,13 @@ impl fmt::Display for ValidationWarning {
 pub struct ValidationStats {
     /// Time spent on validation (in milliseconds)
     pub validation_time_ms: u64,
-    
+
     /// Number of validation rules applied
     pub rules_applied: usize,
-    
+
     /// Number of fields validated
     pub fields_validated: usize,
-    
+
     /// Memory usage during validation (in bytes)
     pub memory_used: usize,
 }
@@ -431,7 +439,9 @@ pub mod utils {
         if value.len() > max_length {
             return Err(ValidationError {
                 code: "STRING_TOO_LONG".to_string(),
-                message: format!("Field '{field_name}' exceeds maximum length of {max_length} characters"),
+                message: format!(
+                    "Field '{field_name}' exceeds maximum length of {max_length} characters"
+                ),
                 entity_type: "String".to_string(),
                 entity_id: None,
                 field_path: Some(field_name.to_string()),
@@ -543,7 +553,9 @@ pub mod utils {
         if !valid_ids.contains(id) {
             return Err(ValidationError {
                 code: "INVALID_ID_REFERENCE".to_string(),
-                message: format!("Field '{field_name}' references non-existent {entity_type} with ID '{id}'"),
+                message: format!(
+                    "Field '{field_name}' references non-existent {entity_type} with ID '{id}'"
+                ),
                 entity_type: "IDReference".to_string(),
                 entity_id: None,
                 field_path: Some(field_name.to_string()),
@@ -612,7 +624,7 @@ mod tests {
         // Test required field validation
         let result = utils::validate_string("", "test_field", true, 100);
         assert!(result.is_err());
-        
+
         let result = utils::validate_string("valid", "test_field", true, 100);
         assert!(result.is_ok());
 

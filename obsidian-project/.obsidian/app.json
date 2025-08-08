@@ -21,6 +21,5 @@
   "showUnsupportedFiles": false,
   "newFileLocation": "current",
   "newFileFolderPath": "📝 Tasks",
-  "vimMode": false,
-  "theme": "obsidian"
+  "vimMode": false
 }

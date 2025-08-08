@@ -5,6 +5,16 @@
 
 Core conversion engine with Roll20 parser, entity processing pipeline, and Foundry output generation.
 
+### 🧪 **TESTING REQUIREMENTS** (Updated 2024-08-07)
+**Every M2 task must include comprehensive testing before being marked complete:**
+- ✅ **Unit Tests** - Individual function testing (>80% coverage)
+- ✅ **Integration Tests** - End-to-end conversion testing with real data
+- ✅ **Property Tests** - Using `proptest` for data transformation validation
+- ✅ **Benchmarks** - Performance measurement for parsing and conversion
+- ✅ **Documentation Tests** - All examples in docs must work
+
+See [TESTING_FRAMEWORK.md](./TESTING_FRAMEWORK.md) for detailed requirements.
+
 ---
 
 ## **T2.1: Roll20 JSON Parser Implementation**

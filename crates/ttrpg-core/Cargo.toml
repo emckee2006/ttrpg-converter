@@ -8,12 +8,31 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/emckee2006/ttrpg-converter"
 
 [dependencies]
-serde = { workspace = true }
-serde_json = { workspace = true }
-anyhow = { workspace = true }
-thiserror = { workspace = true }
-tracing = { workspace = true }
+# Core functionality
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
 chrono = { version = "0.4", features = ["serde"] }
-url = "2.5"
+uuid = { version = "1.0", features = ["v4", "serde"] }
+url = { version = "2.0", features = ["serde"] }
+
+# Async runtime and utilities
+tokio = { version = "1.0", features = ["full"] }
+futures = "0.3"
+
+# Logging infrastructure
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
+tracing-appender = "0.2"
 zip = "0.6"
 image = "0.25"
+
+[dev-dependencies]
+# Testing framework dependencies
+proptest = "1.4"                                    # Property-based testing
+criterion = { version = "0.5", features = ["html_reports"] }  # Benchmarking
+tokio-test = "0.4"                                   # Async testing utilities
+temp-env = "0.3"                                     # Environment variable testing
+tempfile = "3.8"                                     # Temporary file testing
+assert_fs = "1.0"                                    # File system testing utilities
+predicates = "3.0"                                   # Additional assertion predicates

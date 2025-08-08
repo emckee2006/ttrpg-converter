@@ -1,5 +1,5 @@
 //! Error handling for the TTRPGConverter
-//! 
+//!
 //! This module provides comprehensive error types following Rust best practices
 //! with thiserror for clean error handling across the entire application.
 
@@ -7,21 +7,21 @@ use std::path::PathBuf;
 use thiserror::Error;
 
 /// Main error type for the TTRPGConverter application
-/// 
+///
 /// This enum covers all possible error conditions that can occur during
 /// campaign conversion, following the error handling patterns outlined in
 /// our architecture decisions.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```rust
 /// use ttrpg_core::error::ConversionError;
-/// 
+///
 /// let error = ConversionError::FileNotFound {
 ///     path: "/path/to/missing/file.zip".into(),
 ///     context: "Roll20 campaign export".to_string(),
 /// };
-/// 
+///
 /// println!("Error: {}", error);
 /// ```
 #[derive(Error, Debug)]
@@ -54,11 +54,7 @@ pub enum ConversionError {
 
     /// Campaign data validation errors
     #[error("Validation failed for {entity_type}: {message}")]
-    ValidationError {
-        entity_type: String,
-        message: String,
-        field: Option<String>,
-    },
+    ValidationError { entity_type: String, message: String, field: Option<String> },
 
     /// Asset processing errors
     #[error("Asset processing failed: {asset_path}")]
@@ -79,19 +75,11 @@ pub enum ConversionError {
 
     /// Configuration errors
     #[error("Configuration error in {section}: {message}")]
-    ConfigError {
-        section: String,
-        message: String,
-        config_path: Option<PathBuf>,
-    },
+    ConfigError { section: String, message: String, config_path: Option<PathBuf> },
 
     /// Format conversion errors
     #[error("Format conversion failed: {from_format} -> {to_format}")]
-    ConversionFormatError {
-        from_format: String,
-        to_format: String,
-        reason: String,
-    },
+    ConversionFormatError { from_format: String, to_format: String, reason: String },
 
     /// ZIP archive handling errors
     #[error("ZIP archive error: {path}")]
@@ -113,7 +101,7 @@ pub enum ConversionError {
 }
 
 /// Asset-specific error types
-/// 
+///
 /// These errors are specific to asset processing operations like
 /// downloading, resizing, format conversion, etc.
 #[derive(Error, Debug)]
@@ -129,31 +117,19 @@ pub enum AssetError {
 
     /// Asset download errors
     #[error("Download failed for asset: {url}")]
-    DownloadError {
-        url: String,
-        status_code: Option<u16>,
-        reason: String,
-    },
+    DownloadError { url: String, status_code: Option<u16>, reason: String },
 
     /// Asset validation errors
     #[error("Asset validation failed: {asset_path}")]
-    ValidationError {
-        asset_path: String,
-        reason: String,
-        expected_type: Option<String>,
-    },
+    ValidationError { asset_path: String, reason: String, expected_type: Option<String> },
 
     /// File size limit errors
     #[error("Asset too large: {size_mb}MB (limit: {limit_mb}MB)")]
-    SizeLimitExceeded {
-        asset_path: String,
-        size_mb: f64,
-        limit_mb: f64,
-    },
+    SizeLimitExceeded { asset_path: String, size_mb: f64, limit_mb: f64 },
 }
 
 /// Result type alias for conversion operations
-/// 
+///
 /// This is used throughout the application for consistent error handling.
 /// All major functions return this type for uniform error propagation.
 pub type ConversionResult<T> = Result<T, ConversionError>;
@@ -164,11 +140,7 @@ pub type AssetResult<T> = Result<T, AssetError>;
 impl ConversionError {
     /// Create a file not found error with context
     pub fn file_not_found<P: Into<PathBuf>>(path: P, context: impl Into<String>) -> Self {
-        Self::FileNotFound {
-            path: path.into(),
-            source: None,
-            context: context.into(),
-        }
+        Self::FileNotFound { path: path.into(), source: None, context: context.into() }
     }
 
     /// Create a validation error
@@ -182,7 +154,7 @@ impl ConversionError {
 
     /// Create a validation error with specific field
     pub fn validation_field(
-        entity_type: impl Into<String>, 
+        entity_type: impl Into<String>,
         message: impl Into<String>,
         field: impl Into<String>,
     ) -> Self {
@@ -195,41 +167,29 @@ impl ConversionError {
 
     /// Add context to an I/O error
     pub fn from_io(source: std::io::Error, operation: impl Into<String>) -> Self {
-        Self::IoError {
-            source,
-            operation: operation.into(),
-            path: None,
-        }
+        Self::IoError { source, operation: operation.into(), path: None }
     }
 
     /// Add context and path to an I/O error
     pub fn from_io_with_path(
-        source: std::io::Error, 
+        source: std::io::Error,
         operation: impl Into<String>,
         path: impl Into<PathBuf>,
     ) -> Self {
-        Self::IoError {
-            source,
-            operation: operation.into(),
-            path: Some(path.into()),
-        }
+        Self::IoError { source, operation: operation.into(), path: Some(path.into()) }
     }
 }
 
 impl AssetError {
     /// Create a download error
     pub fn download_failed(url: impl Into<String>, reason: impl Into<String>) -> Self {
-        Self::DownloadError {
-            url: url.into(),
-            status_code: None,
-            reason: reason.into(),
-        }
+        Self::DownloadError { url: url.into(), status_code: None, reason: reason.into() }
     }
 
     /// Create a download error with HTTP status code
     pub fn download_failed_with_status(
-        url: impl Into<String>, 
-        status_code: u16, 
+        url: impl Into<String>,
+        status_code: u16,
         reason: impl Into<String>,
     ) -> Self {
         Self::DownloadError {
@@ -248,7 +208,7 @@ impl AssetError {
 pub trait ErrorExt<T> {
     /// Add context to an error
     fn with_context(self, context: &str) -> ConversionResult<T>;
-    
+
     /// Add context with file path
     fn with_file_context<P: Into<PathBuf>>(self, path: P) -> ConversionResult<T>;
 }
@@ -298,11 +258,9 @@ mod tests {
 
     #[test]
     fn test_error_extension() {
-        let result: Result<(), std::io::Error> = Err(std::io::Error::new(
-            std::io::ErrorKind::NotFound, 
-            "file not found"
-        ));
-        
+        let result: Result<(), std::io::Error> =
+            Err(std::io::Error::new(std::io::ErrorKind::NotFound, "file not found"));
+
         let converted = result.with_context("test operation");
         assert!(matches!(converted, Err(ConversionError::IoError { .. })));
     }
