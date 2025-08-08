@@ -19,6 +19,7 @@ use thiserror::Error;
 ///
 /// let error = ConversionError::FileNotFound {
 ///     path: "/path/to/missing/file.zip".into(),
+///     source: None,
 ///     context: "Roll20 campaign export".to_string(),
 /// };
 ///

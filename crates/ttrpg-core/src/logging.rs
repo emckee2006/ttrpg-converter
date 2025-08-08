@@ -276,6 +276,14 @@ impl LoggingService for RustLogger {
 }
 
 // ============================================================================
+// THREAD SAFETY
+// ============================================================================
+
+// Thread-safety: RustLogger is Send + Sync
+unsafe impl Send for RustLogger {}
+unsafe impl Sync for RustLogger {}
+
+// ============================================================================
 // COMPREHENSIVE UNIT TESTS
 // ============================================================================
 
@@ -284,7 +292,7 @@ mod logging_tests {
     use super::*;
     use std::sync::Arc;
     use tempfile::tempdir;
-    
+
     fn init_test_logger() -> RustLogger {
         // Always create a minimal logger for testing without attempting to set global subscriber
         // This avoids the "global default trace dispatcher has already been set" error
@@ -299,7 +307,7 @@ mod logging_tests {
             _guard: None,
         }
     }
-    
+
     /// Test logger configuration creation
     #[test]
     fn test_logger_config_creation() {
@@ -310,20 +318,20 @@ mod logging_tests {
             json: false,
             colored: false,
         };
-        
+
         assert_eq!(config.level, "info");
         assert!(config.console);
         assert!(config.file.is_none());
         assert!(!config.json);
         assert!(!config.colored);
     }
-    
+
     /// Test logger configuration with file output
-    #[test] 
+    #[test]
     fn test_file_config_creation() {
         let temp_dir = tempdir().unwrap();
         let log_file = temp_dir.path().join("test.log");
-        
+
         let config = LoggingConfig {
             level: "debug".to_string(),
             console: false,
@@ -331,20 +339,20 @@ mod logging_tests {
             json: false,
             colored: false,
         };
-        
+
         assert_eq!(config.level, "debug");
         assert!(!config.console);
         assert!(config.file.is_some());
         assert!(!config.json);
         assert!(!config.colored);
     }
-    
+
     /// Test logger configuration with all options enabled
     #[test]
     fn test_full_config_creation() {
         let temp_dir = tempdir().unwrap();
         let log_file = temp_dir.path().join("test.log");
-        
+
         let config = LoggingConfig {
             level: "warn".to_string(),
             console: true,
@@ -352,26 +360,26 @@ mod logging_tests {
             json: true,
             colored: true,
         };
-        
+
         assert_eq!(config.level, "warn");
         assert!(config.console);
         assert!(config.file.is_some());
         assert!(config.json);
         assert!(config.colored);
     }
-    
+
     /// Test logging service trait methods (no global subscriber required)
     #[test]
     fn test_logging_service_methods() {
         let logger = init_test_logger();
-        
+
         // Test basic logging methods (should not panic)
         logger.error("Test error message", None);
         logger.warn("Test warning message", Some("test_context"));
         logger.info("Test info message", None);
         logger.debug("Test debug message", Some("debug_context"));
     }
-    
+
     /// Test log_with_data method
     #[test]
     fn test_log_with_data() {
@@ -380,7 +388,7 @@ mod logging_tests {
             "test_key": "test_value",
             "number": 42
         });
-        
+
         // Test all log levels with structured data
         logger.log_with_data(LogLevel::Error, "Error with data", &test_data);
         logger.log_with_data(LogLevel::Warn, "Warning with data", &test_data);
@@ -388,23 +396,23 @@ mod logging_tests {
         logger.log_with_data(LogLevel::Debug, "Debug with data", &test_data);
         logger.log_with_data(LogLevel::Trace, "Trace with data", &test_data);
     }
-    
+
     /// Test set_level method
     #[test]
     fn test_set_level() {
         let mut logger = init_test_logger();
-        
+
         // Test setting different log levels (should not panic)
         logger.set_level(LogLevel::Debug);
         logger.set_level(LogLevel::Error);
         logger.set_level(LogLevel::Trace);
     }
-    
+
     /// Test is_enabled method for different log levels
     #[test]
     fn test_is_enabled() {
         let logger = init_test_logger();
-        
+
         // Test that the method returns boolean values without panicking
         let _error_enabled = logger.is_enabled(LogLevel::Error);
         let _warn_enabled = logger.is_enabled(LogLevel::Warn);
@@ -412,7 +420,7 @@ mod logging_tests {
         let _debug_enabled = logger.is_enabled(LogLevel::Debug);
         let _trace_enabled = logger.is_enabled(LogLevel::Trace);
     }
-    
+
     /// Test LogLevel enum ordering and comparison
     #[test]
     fn test_log_level_comparison() {
@@ -422,13 +430,13 @@ mod logging_tests {
         assert!(LogLevel::Warn < LogLevel::Info);
         assert!(LogLevel::Info < LogLevel::Debug);
         assert!(LogLevel::Debug < LogLevel::Trace);
-        
+
         assert!(LogLevel::Trace > LogLevel::Debug);
         assert!(LogLevel::Debug > LogLevel::Info);
         assert!(LogLevel::Info > LogLevel::Warn);
         assert!(LogLevel::Warn > LogLevel::Error);
     }
-    
+
     /// Test LogLevel string conversion
     #[test]
     fn test_log_level_string_conversion() {
@@ -438,15 +446,15 @@ mod logging_tests {
         assert_eq!(LogLevel::Debug.to_string(), "DEBUG");
         assert_eq!(LogLevel::Trace.to_string(), "TRACE");
     }
-    
+
     /// Test concurrent logging (basic thread safety)
     #[test]
     fn test_concurrent_logging() {
         use std::thread;
-        
+
         let logger = Arc::new(init_test_logger());
         let mut handles = vec![];
-        
+
         // Spawn multiple threads to test concurrent logging
         for i in 0..3 {
             let logger_clone = Arc::clone(&logger);
@@ -456,13 +464,13 @@ mod logging_tests {
             });
             handles.push(handle);
         }
-        
+
         // Wait for all threads to complete
         for handle in handles {
             handle.join().unwrap();
         }
     }
-    
+
     /// Test configuration validation patterns
     #[test]
     fn test_configuration_patterns() {
@@ -476,7 +484,7 @@ mod logging_tests {
         };
         assert!(console_config.console);
         assert!(console_config.file.is_none());
-        
+
         // Test file-only configuration
         let file_config = LoggingConfig {
             level: "debug".to_string(),
@@ -488,7 +496,7 @@ mod logging_tests {
         assert!(!file_config.console);
         assert!(file_config.file.is_some());
         assert!(file_config.json);
-        
+
         // Test mixed configuration
         let mixed_config = LoggingConfig {
             level: "warn".to_string(),
@@ -501,7 +509,7 @@ mod logging_tests {
         assert!(mixed_config.file.is_some());
         assert!(mixed_config.colored);
     }
-    
+
     /// Test configuration edge cases
     #[test]
     fn test_configuration_edge_cases() {
@@ -515,7 +523,7 @@ mod logging_tests {
         };
         assert!(!no_output_config.console);
         assert!(no_output_config.file.is_none());
-        
+
         // Test configuration with all features enabled
         let full_config = LoggingConfig {
             level: "trace".to_string(),
@@ -531,7 +539,3 @@ mod logging_tests {
         assert_eq!(full_config.level, "trace");
     }
 }
-
-// Thread-safety: RustLogger is Send + Sync
-unsafe impl Send for RustLogger {}
-unsafe impl Sync for RustLogger {}
