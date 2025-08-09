@@ -44,13 +44,13 @@ use tracing::{info, warn};
 pub struct DefaultServiceManager {
     /// Registered logging service
     logging_service: Arc<RwLock<Option<Arc<dyn LoggingService>>>>,
-    
+
     /// Registered validation service
     validation_service: Arc<RwLock<Option<Arc<dyn ValidationService>>>>,
-    
+
     /// Registered asset service
     asset_service: Arc<RwLock<Option<Arc<dyn AssetService>>>>,
-    
+
     /// Service state management
     initialized: Arc<Mutex<bool>>,
 }
@@ -62,7 +62,7 @@ impl DefaultServiceManager {
     /// and initialization before use.
     pub fn new() -> ConversionResult<Self> {
         info!("Creating new DefaultServiceManager");
-        
+
         Ok(Self {
             logging_service: Arc::new(RwLock::new(None)),
             validation_service: Arc::new(RwLock::new(None)),
@@ -89,7 +89,7 @@ impl DefaultServiceManager {
     /// Get a list of registered services
     pub fn get_registered_services(&self) -> Vec<String> {
         let mut services = Vec::new();
-        
+
         if self.logging_service.read().unwrap().is_some() {
             services.push("LoggingService".to_string());
         }
@@ -99,7 +99,7 @@ impl DefaultServiceManager {
         if self.asset_service.read().unwrap().is_some() {
             services.push("AssetService".to_string());
         }
-        
+
         services
     }
 }
@@ -119,7 +119,9 @@ impl ServiceManager for DefaultServiceManager {
             .read()
             .unwrap()
             .as_ref()
-            .expect("ValidationService not registered - call init_defaults() or register_validation()")
+            .expect(
+                "ValidationService not registered - call init_defaults() or register_validation()",
+            )
             .clone()
     }
 
@@ -149,7 +151,7 @@ impl ServiceManager for DefaultServiceManager {
 
     fn init_defaults(&mut self) -> ConversionResult<()> {
         info!("Initializing ServiceManager with default implementations");
-        
+
         // Check if already initialized
         if self.is_initialized() {
             warn!("ServiceManager already initialized, skipping");
@@ -160,26 +162,26 @@ impl ServiceManager for DefaultServiceManager {
         // Note: This would register concrete implementations from other crates
         // For now, we'll prepare the structure and implement the registration
         // when we have the concrete service implementations available
-        
+
         info!("ServiceManager initialization preparing - concrete services will be registered by consumers");
-        
+
         // Mark as initialized (consumers will register their implementations)
         *self.initialized.lock().unwrap() = true;
-        
+
         Ok(())
     }
 
     fn shutdown(&mut self) -> ConversionResult<()> {
         info!("Shutting down ServiceManager");
-        
+
         // Clear all service references
         *self.logging_service.write().unwrap() = None;
         *self.validation_service.write().unwrap() = None;
         *self.asset_service.write().unwrap() = None;
-        
+
         // Mark as not initialized
         *self.initialized.lock().unwrap() = false;
-        
+
         info!("ServiceManager shutdown complete");
         Ok(())
     }
@@ -201,12 +203,8 @@ mod tests {
 
     impl MockLoggingService {
         fn new() -> Self {
-            Self {
-                calls: Arc::new(AtomicBool::new(false)),
-            }
+            Self { calls: Arc::new(AtomicBool::new(false)) }
         }
-
-
     }
 
     impl LoggingService for MockLoggingService {
@@ -226,7 +224,12 @@ mod tests {
             self.calls.store(true, Ordering::Relaxed);
         }
 
-        fn log_with_data(&self, _level: crate::services::LogLevel, _message: &str, _data: &serde_json::Value) {
+        fn log_with_data(
+            &self,
+            _level: crate::services::LogLevel,
+            _message: &str,
+            _data: &serde_json::Value,
+        ) {
             self.calls.store(true, Ordering::Relaxed);
         }
 
@@ -251,7 +254,7 @@ mod tests {
     fn test_service_registration() {
         let mut manager = DefaultServiceManager::new().unwrap();
         let logging_service = Arc::new(MockLoggingService::new());
-        
+
         manager.register_logging(logging_service);
         assert_eq!(manager.get_registered_services(), vec!["LoggingService"]);
     }
@@ -259,14 +262,14 @@ mod tests {
     #[test]
     fn test_service_manager_initialization() {
         let mut manager = DefaultServiceManager::new().unwrap();
-        
+
         // Should not be initialized initially
         assert!(!manager.is_initialized());
-        
+
         // Initialize
         manager.init_defaults().unwrap();
         assert!(manager.is_initialized());
-        
+
         // Should not re-initialize
         manager.init_defaults().unwrap();
         assert!(manager.is_initialized());
@@ -276,13 +279,13 @@ mod tests {
     fn test_service_manager_shutdown() {
         let mut manager = DefaultServiceManager::new().unwrap();
         let logging_service = Arc::new(MockLoggingService::new());
-        
+
         manager.register_logging(logging_service);
         manager.init_defaults().unwrap();
-        
+
         assert!(manager.is_initialized());
         assert_eq!(manager.get_registered_services().len(), 1);
-        
+
         // Shutdown
         manager.shutdown().unwrap();
         assert!(!manager.is_initialized());
@@ -300,12 +303,12 @@ mod tests {
     fn test_registered_service_access() {
         let mut manager = DefaultServiceManager::new().unwrap();
         let logging_service = Arc::new(MockLoggingService::new());
-        
+
         manager.register_logging(logging_service);
-        
+
         let service = manager.logging();
         service.info("test", None);
-        
+
         // Access the mock through Arc to check if it was called
         // This is a bit tricky with the current design, but shows the service is accessible
     }
@@ -313,13 +316,13 @@ mod tests {
     #[test]
     fn test_concurrent_access() {
         use std::thread;
-        
+
         let mut manager = DefaultServiceManager::new().unwrap();
         let logging_service = Arc::new(MockLoggingService::new());
         manager.register_logging(logging_service);
-        
+
         let manager = Arc::new(manager);
-        
+
         let handles: Vec<_> = (0..10)
             .map(|_| {
                 let manager = Arc::clone(&manager);
@@ -329,7 +332,7 @@ mod tests {
                 })
             })
             .collect();
-        
+
         for handle in handles {
             handle.join().unwrap();
         }
