@@ -5,15 +5,13 @@ kanban-plugin: basic
 ---
 
 ## 🚀 Ready
-
-- [ ] **M2.1: Roll20 Parser Implementation** (8 pts) #M2 #ready<br>Complete Roll20 data parsing and entity extraction<br>📋 [[📋 Detailed Plans/M2_CORE_ENGINE_TASKS|M2 Implementation Details]]
 - [ ] **M2.2: Foundry VTT Writer** (6 pts) #M2 #ready<br>Generate Foundry VTT world/module files<br>📋 [[📋 Detailed Plans/M2_CORE_ENGINE_TASKS#T2.3: Foundry VTT Output Generation|T2.3 Details]]
 - [ ] **M2.3: Asset Processing Pipeline** (4 pts) #M2 #ready<br>Handle images, tokens, maps, and audio files<br>📋 [[📋 Detailed Plans/M2_CORE_ENGINE_TASKS#T2.2: Entity Conversion Pipeline|T2.2 Details]]
 - [ ] **M3.1: CLI Command Structure** (6 pts) #M3 #ready<br>Complete command-line interface implementation<br>📋 [[📋 Detailed Plans/M3_CLI_INTERFACE_TASKS|M3 Implementation Details]]
 
 ## 🔄 In Progress
 
-- [ ] **M1.5: Service Integration** (4 pts) #M1 #in-progress<br>🎯 **CURRENT MILESTONE** - Complete service coordination and dependency injection + integration testing<br>📋 **NEXT**: Service manager coordination, dependency injection patterns, comprehensive integration testing<br>📋 [[📋 Detailed Plans/M1_FOUNDATION_TASKS#T1.5: Service Integration|M1.5 Implementation Details]]
+- [ ] **M2.1: Roll20 Parser Implementation** (8 pts) #M2 #in-progress<br>🎯 **CURRENT MILESTONE** - Complete Roll20 data parsing and entity extraction<br>📋 **NEXT**: Implement Roll20 campaign file parsing, extract asset references, map data structures<br>📋 [[📋 Detailed Plans/M2_CORE_ENGINE_TASKS|M2 Implementation Details]]
 
 ## 🔍 Review
 
@@ -22,6 +20,7 @@ kanban-plugin: basic
 
 ## ✅ Completed
 
+- [x] **M1.5: Service Integration** (4 pts) #M1 #complete ✅ **2025-08-09**<br>🎉 **MILESTONE COMPLETE** - Service coordination with zero warnings clean build<br>✅ Thread-safe DefaultServiceManager with dependency injection patterns<br>✅ Comprehensive integration testing (6 integration tests + 13 unit tests)<br>✅ Service lifecycle management and concurrent access handling<br>✅ Perfect clean build - ZERO compilation warnings achieved
 - [x] **M1.4: RustAssetService** (6 pts) #M1 #complete ✅ **2025-08-08**<br>🎯 **MAJOR IMPLEMENTATION** - High-performance asset processing system<br>✅ Professional HTTP client with middleware pipeline and retry logic<br>✅ Async LRU memory caching with TTL support and automatic eviction<br>✅ Cryptographic security with SHA-256 content verification<br>✅ Clean compilation with comprehensive error handling
 - [x] **M1.3: RustValidator Service** (8 pts) #M1 #complete ✅ **2025-08-08**<br>🎉 **MAJOR MILESTONE** - 121 compilation errors → 0 errors resolved<br>✅ Complete ValidationResult/ValidationIssue/ValidationError structs<br>✅ All ValidationStats corrections and variable scope fixes<br>✅ Core validation functionality operational and ready for integration
 - [x] **M1.2: RustLogger Service** (6 pts) #M1 #complete ✅ **2025-08-08**<br>🧪 **COMPREHENSIVE TESTING COMPLETE** - 29 tests passing<br>✅ Unit Tests (15), Integration Tests (5), Concurrency Tests (3), Property Tests (6)<br>✅ Professional-grade test coverage, zero compilation errors/warnings<br>✅ Complete LoggingService implementation with structured logging
@@ -32,8 +31,6 @@ kanban-plugin: basic
 - [x] **Development Tools Installation** #tooling #complete ✅ 2024-08-06
 
 ## 📋 Backlog
-
-- [ ] **M1.5: Service Integration** (4 pts) #M1 #backlog<br>Complete service coordination and dependency injection + integration testing<br>📋 [[📋 Detailed Plans/M1_FOUNDATION_TASKS#T1.5: Service Integration|M1.5 Implementation Details]]
 - [ ] **M4.1: GUI Framework Selection** (2 pts) #M4 #backlog<br>Choose egui vs other framework options<br>📋 [[📋 Detailed Plans/M4_GUI_INTERFACE_TASKS|M4 Implementation Details]]
 - [ ] **M4.2: Basic GUI Implementation** (8 pts) #M4 #backlog<br>Core GUI with file selection and progress display<br>📋 [[📋 Detailed Plans/M4_GUI_INTERFACE_TASKS#T4.1: egui Application Foundation|T4.1 Details]]
 - [ ] **M4.3: GUI Testing & Polish** (4 pts) #M4 #backlog<br>User experience refinement and testing<br>📋 [[📋 Detailed Plans/M4_GUI_INTERFACE_TASKS#T4.3: GUI Testing & Polish|T4.3 Details]]

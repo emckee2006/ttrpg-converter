@@ -32,3 +32,7 @@ sha2 = "0.10"
 
 # Internal workspace dependencies
 ttrpg-core = { path = "../ttrpg-core" }
+
+[dev-dependencies]
+tokio-test = "0.4"
+tempfile = "3.0"

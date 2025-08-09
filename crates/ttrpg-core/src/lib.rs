@@ -28,6 +28,7 @@
 // Public modules
 pub mod error;
 pub mod logging;
+pub mod manager;
 pub mod services;
 pub mod types;
 pub mod validation;
@@ -35,6 +36,7 @@ pub mod validation;
 // Re-exports for convenience
 pub use error::{AssetError, AssetResult, ConversionError, ConversionResult, ErrorExt};
 pub use logging::{LoggingConfig, RustLogger};
+pub use manager::DefaultServiceManager;
 pub use services::{
     AssetService, IssueSeverity, LogLevel, LoggingService, ServiceManager, ValidationIssue,
     ValidationResult, ValidationService,
@@ -44,8 +46,8 @@ pub use types::{
     TargetFormat,
 };
 pub use validation::{
-    ProfessionalValidationService, ValidatedCampaign, ValidatedPage, ValidatedAsset,
-    ValidatedCharacter, ValidatedToken, ValidatedWall, ValidationStats,
+    ProfessionalValidationService, ValidatedAsset, ValidatedCampaign, ValidatedCharacter,
+    ValidatedPage, ValidatedToken, ValidatedWall, ValidationStats,
 };
 
 /// Common imports for this crate and dependent crates
@@ -80,8 +82,8 @@ pub mod prelude {
 
     // Professional validation system
     pub use crate::validation::{
-        ProfessionalValidationService, ValidatedCampaign, ValidatedPage, ValidatedAsset,
-        ValidatedCharacter, ValidatedToken, ValidatedWall, ValidationStats,
+        ProfessionalValidationService, ValidatedAsset, ValidatedCampaign, ValidatedCharacter,
+        ValidatedPage, ValidatedToken, ValidatedWall, ValidationStats,
     };
 
     // External dependencies commonly used
