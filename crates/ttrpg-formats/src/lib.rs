@@ -1,20 +1,21 @@
 //! File format parsers and converters
+//!
+//! This crate provides parsers and converters for various TTRPG file formats,
+//! including Roll20 campaigns, D&D Beyond exports, and other popular platforms.
+
+pub mod roll20;
 
 pub mod prelude {
     //! Common imports for this crate
-}
-
-/// Placeholder for initial development
-pub fn placeholder() -> String {
-    "This is the ttrpg-formats crate".to_string()
+    pub use crate::roll20::*;
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
-    fn test_placeholder() {
-        assert!(!placeholder().is_empty());
+    fn test_roll20_module_available() {
+        // Test that the roll20 module is accessible
+        let parser = crate::roll20::Roll20Parser::new();
+        assert!(parser.validation_service.is_none());
     }
 }
