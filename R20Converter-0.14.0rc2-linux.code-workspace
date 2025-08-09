@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../R20Converter-0.14.0rc2-linux"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"powershell.cwd": "R20Converter-0.14.0rc2-linux"
+	}
+}

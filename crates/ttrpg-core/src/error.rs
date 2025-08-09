@@ -133,7 +133,7 @@ pub enum AssetError {
 ///
 /// This is used throughout the application for consistent error handling.
 /// All major functions return this type for uniform error propagation.
-pub type ConversionResult<T> = Result<T, ConversionError>;
+pub type ConversionResult<T> = Result<T, Box<ConversionError>>;
 
 /// Result type alias for asset operations
 pub type AssetResult<T> = Result<T, AssetError>;
@@ -216,21 +216,23 @@ pub trait ErrorExt<T> {
 
 impl<T> ErrorExt<T> for Result<T, std::io::Error> {
     fn with_context(self, context: &str) -> ConversionResult<T> {
-        self.map_err(|e| ConversionError::from_io(e, context))
+        self.map_err(|e| Box::new(ConversionError::from_io(e, context)))
     }
 
     fn with_file_context<P: Into<PathBuf>>(self, path: P) -> ConversionResult<T> {
         let path = path.into();
-        self.map_err(|e| ConversionError::from_io_with_path(e, "file operation", path))
+        self.map_err(|e| Box::new(ConversionError::from_io_with_path(e, "file operation", path)))
     }
 }
 
 impl<T> ErrorExt<T> for Result<T, serde_json::Error> {
     fn with_context(self, context: &str) -> ConversionResult<T> {
-        self.map_err(|e| ConversionError::JsonError {
-            source: e,
-            context: context.to_string(),
-            line: None,
+        self.map_err(|e| {
+            Box::new(ConversionError::JsonError {
+                source: e,
+                context: context.to_string(),
+                line: None,
+            })
         })
     }
 
@@ -263,6 +265,8 @@ mod tests {
             Err(std::io::Error::new(std::io::ErrorKind::NotFound, "file not found"));
 
         let converted = result.with_context("test operation");
-        assert!(matches!(converted, Err(ConversionError::IoError { .. })));
+        assert!(
+            matches!(converted, Err(ref boxed) if matches!(**boxed, ConversionError::IoError { .. }))
+        );
     }
 }

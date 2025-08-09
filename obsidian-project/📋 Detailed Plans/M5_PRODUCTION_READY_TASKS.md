@@ -1,15 +1,27 @@
 # M5: Production Ready Tasks - Junior Developer Implementation Guide
 
-## 🎯 **MILESTONE 5 OVERVIEW**
-**Duration**: 2 weeks | **Total Points**: 18 | **Priority**: 🟢 LOW
+## 🎯 **MILESTONE 5 OVERVIEW (MASSIVELY EXPANDED SCOPE)**
+**Duration**: 4 weeks | **Total Points**: 60 | **Priority**: 🔥 HIGH
 
-Production deployment, testing, documentation, and performance optimization for professional release.
+Comprehensive production-ready system with advanced testing frameworks, performance benchmarking, production hardening, professional documentation, automated CI/CD, security auditing, and multi-platform distribution. This milestone transforms TTRPGConverter from development prototype to enterprise-ready production system.
+
+### **🚀 EXPANDED PRODUCTION FEATURES**
+- **Advanced Testing Frameworks**: Unit, integration, property-based, performance, and visual regression testing
+- **Performance Benchmarking Suite**: Comprehensive performance metrics with regression detection
+- **Production Hardening**: Security auditing, dependency scanning, memory safety verification
+- **Professional Documentation**: API docs, user guides, developer documentation, tutorial videos
+- **Automated CI/CD Pipeline**: Multi-platform builds, automated testing, security scanning
+- **Distribution & Packaging**: Cross-platform binaries, package managers, container images
+- **Monitoring & Observability**: Performance metrics, error tracking, usage analytics
+- **Quality Assurance**: Code coverage requirements, linting standards, security compliance
 
 ---
 
-## **T5.1: Comprehensive Testing Suite**
-**Duration**: 4 days | **Points**: 8 | **Priority**: 🔥 HIGH
-**Dependencies**: M4 Complete
+## **T5.1: Advanced Testing Framework & Quality Assurance**
+**Duration**: 6 days | **Points**: 15 | **Priority**: 🔥 HIGH
+**Dependencies**: M4 Complete, Professional Testing Infrastructure
+
+Comprehensive testing framework covering unit, integration, property-based, performance, and visual regression testing with professional quality standards.
 
 ### **Implementation Steps for Junior Developer**
 
@@ -65,37 +77,126 @@ mod test_utils {
 }
 ```
 
-**Step 2: Core Functionality Tests**
-Create `crates/ttrpg-core/tests/conversion_tests.rs`:
+**Step 2: Comprehensive Integration Testing**
+Create `crates/ttrpg-core/tests/integration_tests.rs`:
 ```rust
 use ttrpg_core::prelude::*;
 use crate::test_utils::*;
+use tempfile::TempDir;
+use std::path::PathBuf;
 
-#[test]
-fn test_roll20_campaign_parsing() {
-    let test_zip = create_test_zip();
-    let parser = Roll20Parser::new();
+/// Test complete Roll20 → Foundry conversion pipeline
+#[tokio::test]
+async fn test_full_conversion_pipeline() {
+    let temp_dir = TempDir::new().unwrap();
+    let test_zip = create_realistic_test_campaign();
     
-    let result = parser.parse_campaign(test_zip.path());
+    // Initialize service manager with test configuration
+    let config = TestConfig::default();
+    let service_manager = ServiceManager::new(config).await.unwrap();
     
-    assert!(result.is_ok());
-    let campaign = result.unwrap();
-    assert_eq!(campaign.name, "Test Campaign");
-    assert_eq!(campaign.characters.len(), 1);
-    assert_eq!(campaign.pages.len(), 1);
+    // Test complete conversion pipeline
+    let conversion_result = service_manager
+        .convert_campaign(
+            test_zip.path(),
+            temp_dir.path().join("output.db"),
+            ConversionOptions::default()
+        )
+        .await;
+    
+    assert!(conversion_result.is_ok());
+    let result = conversion_result.unwrap();
+    
+    // Verify conversion statistics
+    assert!(result.actors_converted > 0);
+    assert!(result.scenes_converted > 0);
+    assert!(result.assets_processed > 0);
+    assert_eq!(result.validation_errors.len(), 0);
+    
+    // Verify output file structure
+    let output_path = temp_dir.path().join("output.db");
+    assert!(output_path.exists());
+    
+    // Validate Foundry VTT database structure
+    let foundry_db = FoundryDatabase::open(&output_path).unwrap();
+    assert!(foundry_db.validate_structure().is_ok());
 }
 
-#[test]
-fn test_character_conversion() {
-    let roll20_char = create_test_character();
-    let converter = CharacterConverter::new();
+/// Test asset processing pipeline with real images
+#[tokio::test]
+async fn test_asset_processing_pipeline() {
+    let asset_service = create_test_asset_service().await;
+    let test_images = create_test_image_set();
     
-    let result = converter.convert(&roll20_char);
+    for (format, image_data) in test_images {
+        let result = asset_service
+            .process_asset(&format!"test_image.{format}", &image_data)
+            .await;
+        
+        assert!(result.is_ok());
+        let processed = result.unwrap();
+        
+        // Verify optimization results
+        assert!(processed.optimized_size <= image_data.len());
+        assert!(processed.thumbnail.is_some());
+        assert_eq!(processed.format, "webp"); // Should convert to WebP
+    }
+}
+
+/// Test wall processing with complex cave scenes
+#[test]
+fn test_complex_wall_optimization() {
+    let wall_processor = WallProcessor::new(WallProcessingConfig {
+        minimum_wall_length: 10.0,
+        maximum_wall_angle: 15.0,
+        enable_cave_optimization: true,
+        ..Default::default()
+    });
+    
+    // Create complex cave scene with thousands of tiny walls
+    let complex_walls = create_complex_cave_walls(5000);
+    
+    let result = wall_processor.optimize_walls(&complex_walls);
     
     assert!(result.is_ok());
-    let foundry_actor = result.unwrap();
-    assert_eq!(foundry_actor.name, "Test Fighter");
-    assert!(foundry_actor.data.attributes.contains_key("hp"));
+    let optimized = result.unwrap();
+    
+    // Should reduce thousands of walls to hundreds (>80% reduction)
+    assert!(optimized.len() < complex_walls.len() / 5);
+    
+    // Verify wall quality
+    for wall in &optimized {
+        assert!(wall.length() >= 10.0); // Meets minimum length
+        assert!(wall.is_valid());
+    }
+}
+
+/// Test multi-system conversion (D&D 5e ↔ Pathfinder)
+#[tokio::test]
+async fn test_multi_system_conversion() {
+    let conversion_service = MultiSystemConverter::new();
+    
+    // Test D&D 5e → Pathfinder 2e
+    let dnd_character = create_dnd5e_character();
+    let pf2e_result = conversion_service
+        .convert_character(&dnd_character, SystemType::Pathfinder2e)
+        .await;
+    
+    assert!(pf2e_result.is_ok());
+    let pf2e_char = pf2e_result.unwrap();
+    
+    // Verify attribute mapping
+    assert_eq!(pf2e_char.abilities.strength, dnd_character.abilities.strength);
+    assert!(pf2e_char.skills.contains_key("acrobatics"));
+    
+    // Test bidirectional conversion (round-trip)
+    let dnd_result = conversion_service
+        .convert_character(&pf2e_char, SystemType::DnD5e)
+        .await;
+    
+    assert!(dnd_result.is_ok());
+    let converted_back = dnd_result.unwrap();
+    assert_eq!(converted_back.name, dnd_character.name);
 }
 
 #[test]
@@ -120,19 +221,14 @@ fn test_validation_pipeline() {
     let validation = result.unwrap();
     assert!(validation.errors.is_empty());
 }
-```
 
-**Step 3: Property-Based Testing**
-Add to `Cargo.toml`:
-```toml
-[dev-dependencies]
-proptest = "1.0"
-```
-
+**Step 3: Advanced Property-Based Testing with Comprehensive Coverage**
 Create `crates/ttrpg-core/tests/property_tests.rs`:
 ```rust
-use proptest::prelude::*;
 use ttrpg_core::prelude::*;
+use crate::test_utils::*;
+use tempfile::TempDir;
+use std::path::PathBuf;
 
 proptest! {
     #[test]
@@ -177,10 +273,9 @@ proptest! {
         prop_assert!(foundry_attr.value >= -1000 && foundry_attr.value <= 1000);
     }
 }
-```
 
-**Step 4: Integration Tests**
-Create `crates/ttrpg-cli/tests/cli_integration.rs`:
+**Step 4: Professional Performance Benchmarking Suite**
+Create `crates/ttrpg-core/benches/comprehensive_benchmarks.rs`:
 ```rust
 use assert_cmd::Command;
 use predicates::prelude::*;
@@ -292,11 +387,95 @@ fn benchmark_character_conversion(c: &mut Criterion) {
     group.finish();
 }
 
-fn benchmark_asset_processing(c: &mut Criterion) {
-    let mut group = c.benchmark_group("asset_processing");
+/// Comprehensive performance benchmarking covering all critical paths
+fn benchmark_full_conversion_pipeline(c: &mut Criterion) {
+    let mut group = c.benchmark_group("conversion_pipeline");
+    group.sample_size(20); // Fewer samples for integration benchmarks
     
-    // Test asset mapping performance
-    let campaign = create_large_test_campaign();
+    // Small campaign benchmark (baseline)
+    let small_campaign = create_test_campaign_with_size(CampaignSize::Small);
+    group.bench_function("small_campaign_conversion", |b| {
+        b.to_async(tokio::runtime::Runtime::new().unwrap())
+            .iter(|| async {
+                let service_manager = ServiceManager::new_for_benchmarks().await;
+                black_box(service_manager.convert_campaign(&small_campaign).await)
+            })
+    });
+    
+    // Large campaign benchmark (performance target)
+    let large_campaign = create_test_campaign_with_size(CampaignSize::Large);
+    group.bench_function("large_campaign_conversion", |b| {
+        b.to_async(tokio::runtime::Runtime::new().unwrap())
+            .iter(|| async {
+                let service_manager = ServiceManager::new_for_benchmarks().await;
+                black_box(service_manager.convert_campaign(&large_campaign).await)
+            })
+    });
+    
+    // Parallel processing benchmark
+    group.bench_function("parallel_campaign_batch", |b| {
+        let campaigns = (0..10).map(|_| create_test_campaign_with_size(CampaignSize::Medium)).collect::<Vec<_>>();
+        b.to_async(tokio::runtime::Runtime::new().unwrap())
+            .iter(|| async {
+                let service_manager = ServiceManager::new_for_benchmarks().await;
+                black_box(service_manager.convert_campaigns_parallel(&campaigns).await)
+            })
+    });
+    
+    group.finish();
+}
+
+/// Advanced asset processing benchmarks with memory profiling
+fn benchmark_asset_processing_advanced(c: &mut Criterion) {
+    let mut group = c.benchmark_group("asset_processing_advanced");
+    
+    // Memory-efficient large image processing
+    let large_images = create_large_test_images();
+    group.bench_function("large_image_optimization", |b| {
+        b.to_async(tokio::runtime::Runtime::new().unwrap())
+            .iter(|| async {
+                let asset_service = AssetService::new_for_benchmarks().await;
+                black_box(asset_service.process_images_streaming(&large_images).await)
+            })
+    });
+    
+    // Tile combining performance (from M6 Advanced Media Processing)
+    let tile_sets = create_tile_combining_test_data();
+    group.bench_function("tile_combining_performance", |b| {
+        b.to_async(tokio::runtime::Runtime::new().unwrap())
+            .iter(|| async {
+                let media_processor = MediaProcessor::new_for_benchmarks().await;
+                black_box(media_processor.combine_tiles(&tile_sets).await)
+            })
+    });
+    
+    group.finish();
+}
+
+/// Wall processing optimization benchmarks
+fn benchmark_wall_processing_optimization(c: &mut Criterion) {
+    let mut group = c.benchmark_group("wall_processing");
+    
+    // Cave scene optimization (thousands → hundreds of walls)
+    let complex_cave = create_complex_cave_walls(10000);
+    group.bench_function("cave_wall_optimization", |b| {
+        b.iter(|| {
+            let wall_processor = WallProcessor::new_optimized();
+            black_box(wall_processor.optimize_cave_walls(&complex_cave))
+        })
+    });
+    
+    // Door detection performance
+    let door_detection_scene = create_door_detection_test_scene();
+    group.bench_function("door_detection", |b| {
+        b.iter(|| {
+            let wall_processor = WallProcessor::new_with_door_detection();
+            black_box(wall_processor.detect_doors(&door_detection_scene))
+        })
+    });
+    
+    group.finish();
+}
     
     group.bench_function("asset_extraction", |b| {
         b.iter(|| {
@@ -315,17 +494,7 @@ fn benchmark_asset_processing(c: &mut Criterion) {
     
     group.finish();
 }
-
-criterion_group!(benches, benchmark_character_conversion, benchmark_asset_processing);
 criterion_main!(benches);
-```
-
-**Step 2: Memory Usage Optimization**
-```rust
-// Implement streaming for large files
-pub struct StreamingParser<R: Read> {
-    reader: R,
-    buffer_size: usize,
 }
 
 impl<R: Read> StreamingParser<R> {
@@ -399,17 +568,35 @@ impl ConversionCache {
 - [ ] Memory usage profiling and optimization
 - [ ] Parallel processing for independent operations
 - [ ] Caching system for repeated operations
-- [ ] Performance regression tests
-- [ ] Target: <5 seconds for typical campaign conversion
 
----
+// Core Services
 
-## **T5.3: Documentation and User Guides**
-**Duration**: 3 days | **Points**: 4 | **Priority**: 🟡 MEDIUM
-**Dependencies**: T5.2 Complete
+// ### ServiceManager
+// Central service coordination and dependency injection.
 
-### **Implementation Steps**
+// ```rust
+// use ttrpg_core::ServiceManager;
+// use ttrpg_core::config::TTRPGConfig;
 
+// #[tokio::main]
+// async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//     // Initialize with configuration
+//     let config = TTRPGConfig::from_file("config.toml")?;
+//     let service_manager = ServiceManager::new(config).await?;
+    
+//     // Convert campaign
+//     let result = service_manager.convert_campaign(
+//         "input/campaign.zip",
+//         "output/foundry.db",
+//         ConversionOptions::default()
+//     ).await?;
+    
+//     println!("Converted {} actors, {} scenes", 
+//         result.actors_converted, result.scenes_converted);
+    
+//     Ok(())
+// }
+// ```
 **Step 1: API Documentation**
 Create comprehensive rustdoc comments:
 ```rust

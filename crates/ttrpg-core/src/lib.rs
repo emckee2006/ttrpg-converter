@@ -43,7 +43,10 @@ pub use types::{
     Actor, Campaign, EntityPermissions, Item, JournalEntry, PermissionLevel, Scene, SourceFormat,
     TargetFormat,
 };
-pub use validation::{ValidationContext, ValidationRules, Validator};
+pub use validation::{
+    ProfessionalValidationService, ValidatedCampaign, ValidatedPage, ValidatedAsset,
+    ValidatedCharacter, ValidatedToken, ValidatedWall, ValidationStats,
+};
 
 /// Common imports for this crate and dependent crates
 ///
@@ -75,10 +78,10 @@ pub mod prelude {
     // Service abstractions
     pub use crate::services::{AssetService, LoggingService, ServiceManager, ValidationService};
 
-    // Validation
+    // Professional validation system
     pub use crate::validation::{
-        ValidationContext, ValidationError, ValidationReport, ValidationRules, ValidationWarning,
-        Validator,
+        ProfessionalValidationService, ValidatedCampaign, ValidatedPage, ValidatedAsset,
+        ValidatedCharacter, ValidatedToken, ValidatedWall, ValidationStats,
     };
 
     // External dependencies commonly used

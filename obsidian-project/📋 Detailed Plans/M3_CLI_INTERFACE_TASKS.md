@@ -1,9 +1,28 @@
 # M3: CLI Interface Tasks - Junior Developer Implementation Guide
 
-## 🎯 **MILESTONE 3 OVERVIEW**
-**Duration**: 2 weeks | **Total Points**: 20 | **Priority**: 🔥 HIGH
+## 🎯 **MILESTONE 3 OVERVIEW** (MASSIVELY EXPANDED SCOPE)
+**Duration**: 3 weeks | **Total Points**: 40 | **Priority**: 🔥 HIGH
 
-Complete command-line interface with modern UX, progress tracking, and comprehensive functionality.
+Advanced command-line interface with 30+ sophisticated options, interactive mode, batch processing, and modern UX from previous R20Converter analysis.
+
+### 🚨 **EXPANDED SCOPE BASED ON PREVIOUS R20CONVERTER ANALYSIS**
+Major scope expansion includes 30+ advanced CLI options that were completely missing:
+- **Campaign Customization**: Title, description, password protection, interactive setup
+- **Advanced Wall Processing**: Minimum length, angle optimization, cleanup scenes, boundary walls
+- **Door Detection**: Auto-doors, color-based detection, secret door support
+- **Asset Handling**: Original URLs, images as drawings, path optimization, size limits
+- **Map Features**: Fog control, token bar configuration, grid settings
+- **Module Export**: Export as modules, disable specific features, compendium management
+- **Data Integration**: FVTT data path, NPC source integration, overwrite protection
+- **Batch Operations**: Interactive mode, archived campaign handling, chat conversion control
+
+### 📐 **PROFESSIONAL CLI FRAMEWORKS**
+Eliminate reinvented wheels with professional libraries:
+- `clap` (v4) - Modern command-line argument parsing with derive macros
+- `dialoguer` - Interactive prompts and confirmation dialogs
+- `indicatif` - Professional progress bars with ETA and throughput
+- `console` - Terminal styling and cross-platform compatibility
+- `figment` - Configuration management with TOML/environment variable support
 
 ---
 
@@ -98,6 +117,122 @@ pub enum TargetFormat {
     FoundryV10,
     FoundryV11, 
     FoundryV12,
+}
+```
+
+**Step 3: Advanced CLI Options Structure (30+ Options from Previous R20Converter)**
+Expand the Convert command with comprehensive options:
+```rust
+#[derive(Subcommand, Debug)]
+pub enum Commands {
+    Convert {
+        // Basic I/O options
+        #[arg(short, long)]
+        input: PathBuf,
+        #[arg(short, long)]
+        output: PathBuf,
+        #[arg(short, long, value_enum)]
+        source: SourceFormat,
+        #[arg(short, long, value_enum)]
+        target: TargetFormat,
+        
+        // Campaign Customization Options
+        #[arg(long, help = "Custom campaign title")]
+        campaign_title: Option<String>,
+        #[arg(long, help = "Campaign description")]
+        description: Option<String>,
+        #[arg(long, help = "Set campaign password")]
+        password: Option<String>,
+        #[arg(long, help = "Interactive setup mode")]
+        interactive: bool,
+        
+        // Wall Processing Options (from M2 Advanced Wall Processing)
+        #[arg(long, help = "Walls restrict movement")]
+        restrict_movement: bool,
+        #[arg(long, help = "Add walls around map boundaries")]
+        add_walls_around_map: bool,
+        #[arg(long, help = "Clean up scenes (optimize cave walls)")]
+        cleanup_scenes: bool,
+        #[arg(long, default_value = "35", help = "Minimum wall length in pixels")]
+        minimum_wall_length: f64,
+        #[arg(long, default_value = "30", help = "Maximum wall angle for merging (degrees)")]
+        maximum_wall_angle: f64,
+        
+        // Door Detection Options
+        #[arg(long, help = "Auto-detect doors from wall colors")]
+        auto_doors: bool,
+        #[arg(long, default_value = "#ff0000", help = "Door color (hex)")]
+        door_color: String,
+        #[arg(long, default_value = "#00ff00", help = "Secret door color (hex)")]
+        secret_door_color: String,
+        
+        // Asset Handling Options
+        #[arg(long, help = "Use original image URLs (no local download)")]
+        use_original_image_urls: bool,
+        #[arg(long, help = "Convert all images to drawings")]
+        images_as_drawings: bool,
+        #[arg(long, help = "Treat all backgrounds as tiles")]
+        all_backgrounds_as_tiles: bool,
+        #[arg(long, default_value = "260", help = "Maximum asset path length")]
+        max_path: usize,
+        #[arg(long, default_value = "50", help = "Maximum asset size in MB")]
+        max_asset_size: u64,
+        
+        // Map Features
+        #[arg(long, help = "Enable fog of war")]
+        enable_fog: bool,
+        #[arg(long, help = "Disable fog of war")]
+        disable_fog: bool,
+        #[arg(long, help = "Force HP display on token bar 1")]
+        force_hp_for_token_bar1: bool,
+        #[arg(long, help = "Force HP display on token bar 2")]
+        force_hp_for_token_bar2: bool,
+        #[arg(long, help = "Grid size in pixels")]
+        grid_size: Option<f64>,
+        #[arg(long, help = "Grid units per square")]
+        grid_units: Option<f64>,
+        
+        // Module Export Options
+        #[arg(long, help = "Export as Foundry module instead of world")]
+        export_as_module: bool,
+        #[arg(long, help = "Disable module actors")]
+        disable_module_actors: bool,
+        #[arg(long, help = "Disable module items")]
+        disable_module_items: bool,
+        #[arg(long, help = "Disable module scenes")]
+        disable_module_scenes: bool,
+        #[arg(long, help = "Disable module journals")]
+        disable_module_journals: bool,
+        
+        // Data Integration Options
+        #[arg(long, help = "FoundryVTT data path for integration")]
+        fvtt_data_path: Option<PathBuf>,
+        #[arg(long, help = "NPC data source (compendium path)")]
+        npc_source: Option<PathBuf>,
+        #[arg(long, help = "Don't overwrite existing compendium data")]
+        no_compendium_overwrite: bool,
+        
+        // Batch Processing Options
+        #[arg(long, help = "Don't convert archived campaigns")]
+        disable_archived: bool,
+        #[arg(long, help = "Don't convert chat messages")]
+        dont_convert_chat: bool,
+        #[arg(long, help = "Process multiple campaigns in directory")]
+        batch_mode: bool,
+        
+        // Advanced Options
+        #[arg(long, help = "Generate debug page with conversion statistics")]
+        debug_page: bool,
+        #[arg(long, help = "Parallel processing threads (default: CPU cores)")]
+        threads: Option<usize>,
+        #[arg(long, help = "Verbose progress reporting")]
+        verbose_progress: bool,
+        
+        // Legacy compatibility
+        #[arg(long, help = "Skip asset processing entirely")]
+        no_assets: bool,
+        #[arg(long, help = "Force overwrite existing output")]
+        force: bool,
     JsonExport,
 }
 ```
@@ -129,17 +264,6 @@ fn run_command(cli: &Cli) -> ConversionResult<()> {
 - [ ] Complete CLI argument parsing with clap derive API
 - [ ] All subcommands: convert, validate, info, config
 - [ ] Proper help text and examples
-- [ ] Verbosity control (-v, -vv, -vvv, --quiet)
-- [ ] Input validation and error messages
-
----
-
-## **T3.2: Convert Command Implementation**
-**Duration**: 3 days | **Points**: 8 | **Priority**: 🔥 HIGH
-**Dependencies**: T3.1 + M2 Complete
-
-### **Implementation Steps**
-
 **Step 1: Create Command Module Structure**
 ```bash
 mkdir src\commands
@@ -158,18 +282,6 @@ pub fn run_convert(
     source: &SourceFormat,
     target: &TargetFormat,
     no_assets: bool,
-    force: bool,
-) -> ConversionResult<()> {
-    // Step 1: Validate inputs
-    validate_convert_inputs(input, output, force)?;
-    
-    // Step 2: Create progress tracking
-    let pb = create_progress_bar("Converting campaign...");
-    
-    // Step 3: Parse source file
-    pb.set_message("Parsing source file...");
-    let campaign = parse_source_file(input, source)?;
-    pb.inc(25);
     
     // Step 4: Convert entities  
     pb.set_message("Converting entities...");
@@ -476,19 +588,9 @@ fn validate_config(config: &TTRPGConfig) -> ConversionResult<()> {
             config_path: None,
         }),
     }
-    
-    Ok(())
-}
-```
-
-**Acceptance Criteria**:
-- [ ] TOML configuration file generation
-- [ ] Config validation with helpful error messages
-- [ ] Default values for all settings
-- [ ] Interactive config creation
 - [ ] Environment variable support
 - [ ] Config file discovery (current dir, home dir, etc.)
 
 ---
 
-This completes M3 with the same comprehensive detail level as your original Kanban planning!
+{{ ... }}

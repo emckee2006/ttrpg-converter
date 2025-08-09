@@ -172,8 +172,17 @@
   },
   "active": "9504aafa5a64d976",
   "lastOpenFiles": [
-    "📊 Dashboards/Development Dashboard.md",
+    "📋 Detailed Plans/M1_FOUNDATION_TASKS.md",
     "📋 TTRPGConverter Pure Rust Kanban Board.md",
+    "📊 Dashboards/COMPREHENSIVE_PLANNING_INDEX.md",
+    "📊 Dashboards/Development Dashboard.md",
+    "📋 Detailed Plans/M10_ADVANCED_OUTPUT_FORMATS.md",
+    "📋 Detailed Plans/M9_UNIVERSAL_PLATFORM_INTEGRATION.md",
+    "📋 Detailed Plans/M8_PERFORMANCE_OPTIMIZATION.md",
+    "📋 Detailed Plans/M7_MULTI_SYSTEM_CONVERSION.md",
+    "📋 Detailed Plans/M6_ADVANCED_MEDIA_PROCESSING.md",
+    "📊 Dashboards/DETAILED_TASK_BREAKDOWN.md",
+    "📐 Architecture/ARCHITECTURAL_DECISIONS.md",
     "../M2_CORE_ENGINE_TASKS.md",
     "../M3_CLI_INTERFACE_TASKS.md"
   ]

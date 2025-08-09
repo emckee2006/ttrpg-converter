@@ -8,8 +8,27 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/emckee2006/ttrpg-converter"
 
 [dependencies]
+# Core dependencies
 serde = { workspace = true }
 serde_json = { workspace = true }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
+
+# Enhanced HTTP client with professional middleware and caching
+reqwest = { workspace = true }
+tokio = { workspace = true }
+reqwest-middleware = "0.2"              # Professional HTTP middleware pipeline
+http-cache-reqwest = { version = "0.13", features = ["manager-moka"] }  # Professional HTTP caching
+reqwest-retry = "0.4"                   # Automatic retry logic with exponential backoff
+reqwest-tracing = "0.4"                 # Integrated tracing support
+
+# Professional async memory caching (replacing HashMap with LRU + TTL)
+moka = { version = "0.12", features = ["future"] }  # Async LRU cache with TTL support
+url = "2.0"  # URL parsing and validation for HTTP client
+
+# Cryptographic security (CRITICAL: eliminates DefaultHasher vulnerability)
+sha2 = "0.10"
+
+# Internal workspace dependencies
+ttrpg-core = { path = "../ttrpg-core" }
