@@ -236,7 +236,7 @@ impl Roll20Parser {
         let roll20_campaign: Roll20Campaign = serde_json::from_str(&content).map_err(|e| {
             ConversionError::validation(
                 "Roll20Campaign",
-                format!("Invalid Roll20 JSON format: {}", e),
+                format!("Invalid Roll20 JSON format: {e}"),
             )
         })?;
 
@@ -317,7 +317,7 @@ impl Roll20Parser {
             let total_entities =
                 campaign.actors.len() + campaign.scenes.len() + campaign.items.len();
             logger.info(
-                &format!("Successfully converted Roll20 campaign with {} entities", total_entities),
+                &format!("Successfully converted Roll20 campaign with {total_entities} entities"),
                 Some("roll20_parser"),
             );
         }

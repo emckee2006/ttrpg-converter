@@ -18,6 +18,7 @@ url = { version = "2.0", features = ["serde"] }
 
 # Professional validation framework (replacing 1,406 lines of custom validation)
 validator = { version = "0.18", features = ["derive"] }
+regex = "1.10"       # Regular expressions for Roll20 asset URL validation
 
 # Professional configuration management with hierarchical TOML + env support
 figment = { version = "0.10", features = ["toml", "env"] }

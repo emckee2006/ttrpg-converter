@@ -1,23 +1,30 @@
-//! Professional validation system using `validator` derive macros
+//! Professional validation system with Roll20 conversion support
 //!
-//! This module replaces 1,406 lines of custom validation logic with professional,
-//! battle-tested validation patterns using the `validator` crate.
+//! This module provides comprehensive validation for TTRPG data conversion, including
+//! specialized validation for Roll20-to-ttrpg-core conversions with enhanced error
+//! reporting and relationship validation.
 //!
-//! # Key Improvements
+//! # Key Features
 //!
-//! - **80% Code Reduction**: From 1,406 lines to ~200 lines using derive macros
-//! - **Professional Standards**: Battle-tested validation patterns from validator crate
-//! - **Better Error Messages**: Automatic generation of comprehensive error descriptions
-//! - **Developer Experience**: Simple derive macros vs complex manual validation logic
-//! - **Maintainability**: Industry-standard patterns, easier for junior developers
+//! - **Professional Standards**: Battle-tested validation patterns using `validator` crate
+//! - **Roll20 Conversion Support**: Specialized validation for Roll20 data integrity
+//! - **Enhanced Error Reporting**: Detailed context and suggestions for conversion issues
+//! - **Relationship Validation**: Complex entity relationship validation
+//! - **Performance Optimized**: Efficient validation for large campaign files
+//!
+//! # Modules
+//!
+//! - [`roll20_validation`] - Enhanced validation engine for Roll20 conversions
+//! - Base validation structs and services for general TTRPG data
 //!
 //! # Usage
 //!
 //! ```rust,no_run
-//! use ttrpg_core::validation::ValidatedCampaign;
+//! use ttrpg_core::validation::{ValidatedCampaign, roll20_validation::Roll20ValidationEngine};
 //! use validator::Validate;
 //!
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! // Basic validation
 //! let campaign = ValidatedCampaign {
 //!     name: "Test Campaign".to_string(),
 //!     description: Some("A test campaign".to_string()),
@@ -29,9 +36,15 @@
 //!     characters: vec![],
 //! };
 //! campaign.validate()?;
+//!
+//! // Enhanced Roll20 validation
+//! let mut engine = Roll20ValidationEngine::new();
+//! // ... validation context setup ...
 //! # Ok(())
 //! # }
 //! ```
+
+pub mod roll20_validation;
 
 use crate::error::ConversionResult;
 

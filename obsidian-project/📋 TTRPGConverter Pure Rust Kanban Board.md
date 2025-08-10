@@ -11,7 +11,7 @@ kanban-plugin: basic
 
 ## 🔄 In Progress
 
-- [ ] **M2.1: Roll20 Parser Implementation** (8 pts) #M2 #in-progress<br>🎯 **CURRENT MILESTONE** - Complete Roll20 data parsing and entity extraction<br>📋 **NEXT**: Implement Roll20 campaign file parsing, extract asset references, map data structures<br>📋 [[📋 Detailed Plans/M2_CORE_ENGINE_TASKS|M2 Implementation Details]]
+- [ ] **M2.2: Data Validation Engine** (6 pts) #M2 #in-progress<br>🎯 **CURRENT MILESTONE** - Enhanced validation system for converted TTRPG data<br>📋 **NEXT**: Implement comprehensive validation rules, error reporting, and data integrity checks
 
 ## 🔍 Review
 
@@ -20,6 +20,7 @@ kanban-plugin: basic
 
 ## ✅ Completed
 
+- [x] **M2.1: Roll20 Parser Implementation** (8 pts) #M2 #complete ✅ **2025-08-09**<br>🎉 **MAJOR MILESTONE COMPLETE** - Core Engine Phase milestone achieved<br>✅ Comprehensive Roll20 JSON parser with full data structure mapping<br>✅ Complete type conversions: Character→Actor, Page→Scene, Handout→Item<br>✅ Service integration with builder pattern (Validation, Asset, Logging)<br>✅ 73 tests passing (64 unit + 9 doctests) - production-ready implementation<br>✅ Roll20-to-ttrpg-core conversion pipeline fully functional
 - [x] **M1.5: Service Integration** (4 pts) #M1 #complete ✅ **2025-08-09**<br>🎉 **MILESTONE COMPLETE** - Service coordination with zero warnings clean build<br>✅ Thread-safe DefaultServiceManager with dependency injection patterns<br>✅ Comprehensive integration testing (6 integration tests + 13 unit tests)<br>✅ Service lifecycle management and concurrent access handling<br>✅ Perfect clean build - ZERO compilation warnings achieved
 - [x] **M1.4: RustAssetService** (6 pts) #M1 #complete ✅ **2025-08-08**<br>🎯 **MAJOR IMPLEMENTATION** - High-performance asset processing system<br>✅ Professional HTTP client with middleware pipeline and retry logic<br>✅ Async LRU memory caching with TTL support and automatic eviction<br>✅ Cryptographic security with SHA-256 content verification<br>✅ Clean compilation with comprehensive error handling
 - [x] **M1.3: RustValidator Service** (8 pts) #M1 #complete ✅ **2025-08-08**<br>🎉 **MAJOR MILESTONE** - 121 compilation errors → 0 errors resolved<br>✅ Complete ValidationResult/ValidationIssue/ValidationError structs<br>✅ All ValidationStats corrections and variable scope fixes<br>✅ Core validation functionality operational and ready for integration
