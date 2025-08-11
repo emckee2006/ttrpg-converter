@@ -25,12 +25,17 @@
 
 pub mod http_client;
 pub mod memory_cache;
+pub mod roll20_processor;
 pub mod service;
 
 pub mod prelude {
     //! Common imports for this crate
     pub use crate::http_client::{EnhancedHttpClient, HttpClientConfig};
     pub use crate::memory_cache::{CacheConfig, CacheManager, MemoryCache};
+    pub use crate::roll20_processor::{
+        AssetDownloadProgress, ProgressCallback, Roll20AssetCategory, Roll20AssetInfo,
+        Roll20AssetProcessor, Roll20ProcessorConfig, Roll20ProcessingStats,
+    };
     pub use crate::service::{AssetType, RustAssetService};
 }
 

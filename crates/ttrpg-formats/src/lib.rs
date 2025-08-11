@@ -4,6 +4,7 @@
 //! including Roll20 campaigns, D&D Beyond exports, and other popular platforms.
 
 pub mod roll20;
+pub mod roll20_asset_integration;
 
 pub mod prelude {
     //! Common imports for this crate

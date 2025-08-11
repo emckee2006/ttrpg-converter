@@ -252,11 +252,11 @@ impl Roll20Parser {
         }
 
         // Convert to standardized format
-        self.convert_to_campaign(roll20_campaign).await
+        self.convert_to_campaign(roll20_campaign)
     }
 
     /// Convert Roll20 campaign data to standardized Campaign format
-    async fn convert_to_campaign(
+    pub fn convert_to_campaign(
         &self,
         roll20_campaign: Roll20Campaign,
     ) -> ConversionResult<Campaign> {
