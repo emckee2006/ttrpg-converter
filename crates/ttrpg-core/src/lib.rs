@@ -29,6 +29,7 @@
 pub mod error;
 pub mod logging;
 pub mod manager;
+pub mod plugins;
 pub mod services;
 pub mod types;
 pub mod validation;
@@ -37,6 +38,11 @@ pub mod validation;
 pub use error::{AssetError, AssetResult, ConversionError, ConversionResult, ErrorExt};
 pub use logging::{LoggingConfig, RustLogger};
 pub use manager::DefaultServiceManager;
+pub use plugins::{
+    AssetInfo, CampaignMetadata, GameSystem, InputPlugin, OutputBundle, OutputConfig, OutputFormat,
+    OutputPlugin, PluginInfo, PluginManager, ProcessedAsset, SourceFormat as PluginSourceFormat,
+    UniversalCampaign,
+};
 pub use services::{
     AssetService, IssueSeverity, LogLevel, LoggingService, ServiceManager, ValidationIssue,
     ValidationResult, ValidationService,

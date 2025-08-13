@@ -443,6 +443,9 @@ fn test_concurrent_service_access() {
         handle.join().expect("Thread panicked");
     }
 
+    // Give a moment for all atomic operations to complete
+    std::thread::sleep(std::time::Duration::from_millis(10));
+
     // Verify all operations completed successfully
     assert!(logging_service.get_total_calls() >= 10);
     assert!(validation_service.get_validation_count() >= 10);

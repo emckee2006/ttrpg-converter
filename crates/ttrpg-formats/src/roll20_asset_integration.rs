@@ -3,24 +3,24 @@
 //! This module provides integration between Roll20Parser, Roll20AssetProcessor, and ValidationEngine
 //! to create a complete end-to-end asset processing pipeline for Roll20 campaigns.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use tracing::{debug, info, instrument};
 
 use ttrpg_assets::prelude::{
-    AssetDownloadProgress, ProgressCallback, Roll20AssetInfo, Roll20AssetProcessor, 
-    Roll20ProcessorConfig,
+    ProgressCallback, Roll20AssetInfo, Roll20AssetProcessor, Roll20ProcessorConfig,
 };
 use ttrpg_core::{
     error::{AssetResult, ConversionResult},
-    services::{AssetInfo, LoggingService, ServiceManager, ValidationService},
-    types::Campaign,
+    services::{AssetInfo, ExportResult, ExportService, LoggingService, ServiceManager},
+    types::{Campaign, TargetFormat},
 };
 
+use crate::export_service::RustExportService;
 use crate::roll20::{Roll20Campaign, Roll20Parser};
 
 /// Integrated Roll20 asset processing pipeline
-/// 
+///
 /// Combines Roll20Parser, Roll20AssetProcessor, and ValidationEngine to provide
 /// complete campaign conversion with asset processing and validation.
 pub struct Roll20AssetPipeline {
@@ -70,25 +70,19 @@ impl Roll20AssetPipeline {
 
         // Get services from service manager
         let validation_service = service_manager.validation();
-        let asset_service = service_manager.assets();
         let logging_service = Some(service_manager.logging());
 
-        // Create Roll20 parser with services
+        // Create Roll20 parser (only needs validation and logging - no asset service needed)
         let parser = Roll20Parser::new()
             .with_validation(validation_service)
-            .with_assets(asset_service)
             .with_logging(logging_service.clone().unwrap());
 
-        // Create Roll20 asset processor
+        // Create Roll20 asset processor (this creates the RustAssetService internally)
         let asset_processor = Arc::new(
-            Roll20AssetProcessor::with_defaults(cache_dir, logging_service.clone()).await?
+            Roll20AssetProcessor::with_defaults(cache_dir, logging_service.clone()).await?,
         );
 
-        Ok(Self {
-            parser,
-            asset_processor,
-            logger: logging_service,
-        })
+        Ok(Self { parser, asset_processor, logger: logging_service })
     }
 
     /// Create pipeline with default configuration
@@ -122,7 +116,7 @@ impl Roll20AssetPipeline {
         // Step 1: Parse the campaign file
         debug!("Step 1: Parsing Roll20 campaign file");
         let campaign = self.parser.parse_campaign_file(campaign_file).await?;
-        
+
         if let Some(logger) = &self.logger {
             logger.log_with_data(
                 ttrpg_core::services::LogLevel::Info,
@@ -138,23 +132,31 @@ impl Roll20AssetPipeline {
         // Step 2: Discover assets from original Roll20 data
         debug!("Step 2: Discovering assets from Roll20 campaign data");
         let campaign_json = self.load_campaign_json(campaign_file)?;
-        let discovered_assets = self.asset_processor.discover_assets(&campaign_json).await
-            .map_err(|e| ttrpg_core::error::ConversionError::from_io(
-                std::io::Error::new(std::io::ErrorKind::Other, format!("Asset discovery failed: {}", e)),
-                "asset discovery"
-            ))?;
-        
+        let discovered_assets = self
+            .asset_processor
+            .discover_assets(&campaign_json)
+            .await
+            .map_err(|e| {
+                ttrpg_core::error::ConversionError::from_io(
+                    std::io::Error::other(format!("Asset discovery failed: {e}")),
+                    "asset discovery",
+                )
+            })?;
+
         info!("Discovered {} assets for processing", discovered_assets.len());
 
         // Step 3: Process assets with progress tracking
         debug!("Step 3: Processing assets with bulk download");
-        let asset_results = self.asset_processor.process_assets_bulk(
-            discovered_assets.clone(),
-            progress_callback,
-        ).await.map_err(|e| ttrpg_core::error::ConversionError::from_io(
-            std::io::Error::new(std::io::ErrorKind::Other, format!("Asset processing failed: {}", e)),
-            "asset processing"
-        ))?;
+        let asset_results = self
+            .asset_processor
+            .process_assets_bulk(discovered_assets.clone(), progress_callback)
+            .await
+            .map_err(|e| {
+                ttrpg_core::error::ConversionError::from_io(
+                    std::io::Error::other(format!("Asset processing failed: {e}")),
+                    "asset processing",
+                )
+            })?;
 
         // Step 4: Categorize results
         debug!("Step 4: Categorizing asset processing results");
@@ -173,11 +175,13 @@ impl Roll20AssetPipeline {
         }
 
         let processing_time = start_time.elapsed().as_millis() as u64;
-        
-        info!("Campaign asset processing complete: {}/{} assets successful in {}ms",
-              processed_assets.len(), 
-              processed_assets.len() + failed_assets.len(),
-              processing_time);
+
+        info!(
+            "Campaign asset processing complete: {}/{} assets successful in {}ms",
+            processed_assets.len(),
+            processed_assets.len() + failed_assets.len(),
+            processing_time
+        );
 
         // Log results
         if let Some(logger) = &self.logger {
@@ -217,23 +221,35 @@ impl Roll20AssetPipeline {
         let campaign = self.parser.convert_to_campaign(roll20_campaign.clone())?;
 
         // Convert Roll20Campaign to JSON for asset discovery
-        let campaign_json = serde_json::to_value(&roll20_campaign)
-            .map_err(|e| ttrpg_core::error::ConversionError::validation("JSON serialization", format!("JSON serialization failed: {}", e)))?;
+        let campaign_json = serde_json::to_value(&roll20_campaign).map_err(|e| {
+            ttrpg_core::error::ConversionError::validation(
+                "JSON serialization",
+                format!("JSON serialization failed: {e}"),
+            )
+        })?;
 
         // Discover and process assets
-        let discovered_assets = self.asset_processor.discover_assets(&campaign_json).await
-            .map_err(|e| ttrpg_core::error::ConversionError::from_io(
-                std::io::Error::new(std::io::ErrorKind::Other, format!("Asset discovery failed: {}", e)),
-                "asset discovery"
-            ))?;
+        let discovered_assets = self
+            .asset_processor
+            .discover_assets(&campaign_json)
+            .await
+            .map_err(|e| {
+                ttrpg_core::error::ConversionError::from_io(
+                    std::io::Error::other(format!("Asset discovery failed: {e}")),
+                    "asset discovery",
+                )
+            })?;
 
-        let asset_results = self.asset_processor.process_assets_bulk(
-            discovered_assets.clone(),
-            progress_callback,
-        ).await.map_err(|e| ttrpg_core::error::ConversionError::from_io(
-            std::io::Error::new(std::io::ErrorKind::Other, format!("Asset processing failed: {}", e)),
-            "asset processing"
-        ))?;
+        let asset_results = self
+            .asset_processor
+            .process_assets_bulk(discovered_assets.clone(), progress_callback)
+            .await
+            .map_err(|e| {
+                ttrpg_core::error::ConversionError::from_io(
+                    std::io::Error::other(format!("Asset processing failed: {e}")),
+                    "asset processing",
+                )
+            })?;
 
         // Categorize results
         let mut processed_assets = Vec::new();
@@ -247,7 +263,7 @@ impl Roll20AssetPipeline {
         }
 
         let processing_time = start_time.elapsed().as_millis() as u64;
-        
+
         // Calculate total before moving vectors
         let total_discovered = processed_assets.len() + failed_assets.len();
 
@@ -267,14 +283,132 @@ impl Roll20AssetPipeline {
 
     // Private helper methods
 
-    fn load_campaign_json(&self, campaign_file: &std::path::Path) -> ConversionResult<serde_json::Value> {
+    fn load_campaign_json(
+        &self,
+        campaign_file: &std::path::Path,
+    ) -> ConversionResult<serde_json::Value> {
         let content = std::fs::read_to_string(campaign_file)
             .map_err(|e| ttrpg_core::error::ConversionError::from_io(e, "file reading"))?;
-        
-        let json: serde_json::Value = serde_json::from_str(&content)
-            .map_err(|e| ttrpg_core::error::ConversionError::validation("JSON parsing", format!("Invalid JSON: {}", e)))?;
+
+        let json: serde_json::Value = serde_json::from_str(&content).map_err(|e| {
+            ttrpg_core::error::ConversionError::validation(
+                "JSON parsing",
+                format!("Invalid JSON: {e}"),
+            )
+        })?;
 
         Ok(json)
+    }
+
+    /// Complete end-to-end workflow: Roll20 JSON → Parse → Validate → Process Assets → Export
+    pub async fn process_and_export_campaign(
+        &self,
+        roll20_file_path: &Path,
+        target_format: TargetFormat,
+        output_path: &Path,
+        progress_callback: Option<ProgressCallback>,
+    ) -> ConversionResult<CampaignExportResults> {
+        let start_time = std::time::Instant::now();
+
+        if let Some(logger) = &self.logger {
+            logger
+                .info("Starting complete Roll20 campaign conversion and export", Some("pipeline"));
+        }
+
+        // Step 1: Process campaign with assets
+        let asset_results = self
+            .process_campaign_with_assets(roll20_file_path, progress_callback)
+            .await?;
+
+        // Step 2: Create export service
+        let export_service = if let Some(logger) = &self.logger {
+            RustExportService::with_logging(logger.clone())
+        } else {
+            RustExportService::new()
+        };
+
+        // Step 3: Export campaign to target format
+        let export_result = export_service
+            .export_campaign(&asset_results.campaign, target_format, output_path)
+            .await?;
+
+        let total_time = start_time.elapsed().as_millis() as u64;
+
+        if let Some(logger) = &self.logger {
+            logger.log_with_data(
+                ttrpg_core::services::LogLevel::Info,
+                "Complete campaign conversion and export finished",
+                &serde_json::json!({
+                    "total_time_ms": total_time,
+                    "asset_processing_time_ms": asset_results.processing_time_ms,
+                    "export_time_ms": export_result.stats.processing_time_ms,
+                    "assets_processed": asset_results.processed_assets.len(),
+                    "assets_failed": asset_results.failed_assets.len(),
+                    "target_format": target_format,
+                    "success": export_result.success
+                }),
+            );
+        }
+
+        Ok(CampaignExportResults {
+            asset_results,
+            export_result,
+            total_processing_time_ms: total_time,
+        })
+    }
+
+    /// Export an already processed campaign to multiple formats
+    pub async fn export_campaign_to_formats(
+        &self,
+        campaign: &Campaign,
+        exports: &[(TargetFormat, PathBuf)],
+    ) -> ConversionResult<Vec<ExportResult>> {
+        let export_service = if let Some(logger) = &self.logger {
+            RustExportService::with_logging(logger.clone())
+        } else {
+            RustExportService::new()
+        };
+
+        let mut results = Vec::new();
+
+        for (target_format, output_path) in exports {
+            if let Some(logger) = &self.logger {
+                logger.info(&format!("Exporting campaign to {target_format}"), Some("export"));
+            }
+
+            match export_service
+                .export_campaign(campaign, *target_format, output_path)
+                .await
+            {
+                Ok(result) => results.push(result),
+                Err(error) => {
+                    if let Some(logger) = &self.logger {
+                        logger.error(
+                            &format!("Failed to export to {target_format}: {error}"),
+                            Some("export"),
+                        );
+                    }
+                    return Err(error);
+                }
+            }
+        }
+
+        Ok(results)
+    }
+
+    /// Preview export without actually writing files
+    pub fn preview_export(
+        &self,
+        campaign: &Campaign,
+        target_format: TargetFormat,
+    ) -> ConversionResult<ttrpg_core::services::ExportPreview> {
+        let export_service = if let Some(logger) = &self.logger {
+            RustExportService::with_logging(logger.clone())
+        } else {
+            RustExportService::new()
+        };
+
+        export_service.preview_export(campaign, target_format)
     }
 }
 
@@ -282,11 +416,42 @@ impl std::fmt::Display for CampaignAssetResults {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "Campaign: {} actors, {} scenes, {} items | Assets: {}/{} successful ({} failed) | Time: {}ms",
                self.campaign.actors.len(),
-               self.campaign.scenes.len(), 
+               self.campaign.scenes.len(),
                self.campaign.items.len(),
                self.processed_assets.len(),
                self.total_discovered,
                self.failed_assets.len(),
                self.processing_time_ms)
+    }
+}
+
+/// Results from complete campaign processing and export
+#[derive(Debug)]
+pub struct CampaignExportResults {
+    /// Asset processing results
+    pub asset_results: CampaignAssetResults,
+
+    /// Export operation results  
+    pub export_result: ExportResult,
+
+    /// Total processing time for entire pipeline
+    pub total_processing_time_ms: u64,
+}
+
+impl std::fmt::Display for CampaignExportResults {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Complete Pipeline: {} | Export: {} → {} ({} bytes) | Total Time: {}ms",
+            self.asset_results,
+            self.export_result.target_format,
+            if self.export_result.success {
+                "SUCCESS"
+            } else {
+                "FAILED"
+            },
+            self.export_result.stats.output_size_bytes,
+            self.total_processing_time_ms
+        )
     }
 }

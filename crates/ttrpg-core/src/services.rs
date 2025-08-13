@@ -5,7 +5,7 @@
 //! in our architectural decisions.
 
 use crate::error::{AssetResult, ConversionResult};
-use crate::types::{AssetReference, Campaign};
+use crate::types::{AssetReference, Campaign, TargetFormat};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -118,6 +118,51 @@ pub trait AssetService: Send + Sync {
     fn get_stats(&self) -> AssetStats;
 }
 
+/// Export service abstraction
+///
+/// Handles campaign export to various target formats with template system support.
+/// Can export to JSON, YAML, Foundry VTT formats, and other target platforms.
+#[async_trait::async_trait]
+pub trait ExportService: Send + Sync {
+    /// Export a campaign to the specified target format
+    async fn export_campaign(
+        &self,
+        campaign: &Campaign,
+        target_format: TargetFormat,
+        output_path: &Path,
+    ) -> ConversionResult<ExportResult>;
+
+    /// Export with custom template and options
+    async fn export_with_template(
+        &self,
+        campaign: &Campaign,
+        template_path: &Path,
+        target_format: TargetFormat,
+        output_path: &Path,
+        options: &ExportOptions,
+    ) -> ConversionResult<ExportResult>;
+
+    /// Validate export format compatibility
+    fn validate_export_format(
+        &self,
+        campaign: &Campaign,
+        target_format: TargetFormat,
+    ) -> ConversionResult<ValidationResult>;
+
+    /// Get available export templates for a format
+    fn get_available_templates(&self, target_format: TargetFormat) -> Vec<String>;
+
+    /// Preview export (dry run without writing files)
+    fn preview_export(
+        &self,
+        campaign: &Campaign,
+        target_format: TargetFormat,
+    ) -> ConversionResult<ExportPreview>;
+
+    /// Get export processing statistics
+    fn get_export_stats(&self) -> ExportStats;
+}
+
 /// Service manager for coordinating all services
 ///
 /// Provides centralized service management with dependency injection.
@@ -133,6 +178,9 @@ pub trait ServiceManager: Send + Sync {
     /// Get asset service  
     fn assets(&self) -> Arc<dyn AssetService>;
 
+    /// Get export service
+    fn exports(&self) -> Arc<dyn ExportService>;
+
     /// Register a logging service implementation
     fn register_logging(&mut self, service: Arc<dyn LoggingService>);
 
@@ -141,6 +189,9 @@ pub trait ServiceManager: Send + Sync {
 
     /// Register an asset service implementation
     fn register_assets(&mut self, service: Arc<dyn AssetService>);
+
+    /// Register an export service implementation
+    fn register_exports(&mut self, service: Arc<dyn ExportService>);
 
     /// Initialize all services with default implementations
     fn init_defaults(&mut self) -> ConversionResult<()>;
@@ -262,6 +313,136 @@ pub struct AssetStats {
 
     /// Total processing time (milliseconds)
     pub processing_time_ms: u64,
+}
+
+/// Export operation result
+#[derive(Debug, Clone)]
+pub struct ExportResult {
+    /// Export was successful
+    pub success: bool,
+
+    /// Target format used
+    pub target_format: TargetFormat,
+
+    /// Output file path
+    pub output_path: PathBuf,
+
+    /// Files created during export
+    pub created_files: Vec<PathBuf>,
+
+    /// Export statistics
+    pub stats: ExportStats,
+
+    /// Any warnings generated during export
+    pub warnings: Vec<String>,
+
+    /// Error message if export failed
+    pub error_message: Option<String>,
+}
+
+/// Export configuration options
+#[derive(Debug, Clone, Default)]
+pub struct ExportOptions {
+    /// Include asset files in export
+    pub include_assets: bool,
+
+    /// Compress output files
+    pub compress_output: bool,
+
+    /// Pretty-print JSON output
+    pub pretty_json: bool,
+
+    /// Custom template variables
+    pub template_vars: std::collections::HashMap<String, String>,
+
+    /// Asset resolution strategy
+    pub asset_resolution: AssetResolution,
+
+    /// Include campaign metadata
+    pub include_metadata: bool,
+
+    /// Validation level for export
+    pub validation_level: ValidationLevel,
+}
+
+/// Asset resolution strategies
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AssetResolution {
+    /// Copy assets to export directory
+    Copy,
+    /// Create symbolic links to assets
+    SymLink,
+    /// Reference assets by URL/path
+    Reference,
+    /// Embed assets as base64 data
+    Embed,
+}
+
+/// Export validation levels
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ValidationLevel {
+    /// No validation
+    None,
+    /// Basic structure validation
+    Basic,
+    /// Full validation with compatibility checks
+    Full,
+}
+
+/// Export preview information (dry run)
+#[derive(Debug, Clone)]
+pub struct ExportPreview {
+    /// Target format
+    pub target_format: TargetFormat,
+
+    /// Estimated output size
+    pub estimated_size_bytes: u64,
+
+    /// Files that would be created
+    pub files_to_create: Vec<PathBuf>,
+
+    /// Assets that would be processed
+    pub assets_to_process: usize,
+
+    /// Potential compatibility warnings
+    pub compatibility_warnings: Vec<String>,
+
+    /// Template information if applicable
+    pub template_info: Option<String>,
+}
+
+/// Export processing statistics
+#[derive(Debug, Clone, Default)]
+pub struct ExportStats {
+    /// Total entities exported
+    pub entities_exported: usize,
+
+    /// Assets processed
+    pub assets_processed: usize,
+
+    /// Export processing time (milliseconds)
+    pub processing_time_ms: u64,
+
+    /// Output file size (bytes)
+    pub output_size_bytes: u64,
+
+    /// Template rendering time (milliseconds)
+    pub template_render_time_ms: u64,
+
+    /// Validation time (milliseconds)
+    pub validation_time_ms: u64,
+}
+
+impl Default for AssetResolution {
+    fn default() -> Self {
+        Self::Reference
+    }
+}
+
+impl Default for ValidationLevel {
+    fn default() -> Self {
+        Self::Basic
+    }
 }
 
 impl ValidationResult {

@@ -57,6 +57,16 @@ pub enum ConversionError {
     #[error("Validation failed for {entity_type}: {message}")]
     ValidationError { entity_type: String, message: String, field: Option<String> },
 
+    /// Plugin system errors
+    #[error("Unsupported input format: {0}")]
+    UnsupportedInputFormat(PathBuf),
+
+    #[error("Unsupported output format: {0}")]
+    UnsupportedOutputFormat(super::plugins::OutputFormat),
+
+    #[error("Invalid configuration: {0}")]
+    InvalidConfiguration(String),
+
     /// Asset processing errors
     #[error("Asset processing failed: {asset_path}")]
     AssetError {
@@ -178,6 +188,15 @@ impl ConversionError {
         path: impl Into<PathBuf>,
     ) -> Self {
         Self::IoError { source, operation: operation.into(), path: Some(path.into()) }
+    }
+
+    /// Create a JSON parsing error with context
+    pub fn from_json(
+        source: serde_json::Error,
+        context: impl Into<String>,
+        line: Option<usize>,
+    ) -> Self {
+        Self::JsonError { source, context: context.into(), line }
     }
 }
 

@@ -3,11 +3,13 @@
 //! This crate provides parsers and converters for various TTRPG file formats,
 //! including Roll20 campaigns, D&D Beyond exports, and other popular platforms.
 
+pub mod export_service;
 pub mod roll20;
 pub mod roll20_asset_integration;
 
 pub mod prelude {
     //! Common imports for this crate
+    pub use crate::export_service::*;
     pub use crate::roll20::*;
 }
 

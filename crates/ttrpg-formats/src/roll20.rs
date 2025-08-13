@@ -32,20 +32,25 @@ pub struct Roll20Parser {
 /// Roll20 campaign data structure
 ///
 /// Represents the raw structure of a Roll20 campaign export
+/// Uses flexible schema to handle real Roll20 export variations
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Roll20Campaign {
-    /// Campaign metadata
-    pub campaign: Roll20CampaignMeta,
+    /// Campaign metadata (may be embedded or separate)
+    #[serde(flatten)]
+    pub campaign_data: serde_json::Value,
     /// Character data
-    pub characters: Vec<Roll20Character>,
-    /// Page/map data
-    pub pages: Vec<Roll20Page>,
+    pub characters: Option<Vec<Roll20Character>>,
+    /// Page/map data  
+    pub pages: Option<Vec<Roll20Page>>,
     /// Handouts and notes
-    pub handouts: Vec<Roll20Handout>,
+    pub handouts: Option<Vec<Roll20Handout>>,
     /// Journal entries
-    pub journal: Vec<Roll20JournalEntry>,
+    pub journal: Option<Vec<Roll20JournalEntry>>,
     /// Assets and media files
-    pub assets: Vec<Roll20Asset>,
+    pub assets: Option<Vec<Roll20Asset>>,
+    /// Catch any additional fields Roll20 may include
+    #[serde(flatten)]
+    pub extra_fields: serde_json::Value,
 }
 
 /// Roll20 campaign metadata
@@ -63,54 +68,81 @@ pub struct Roll20CampaignMeta {
     pub modified: Option<String>,
 }
 
-/// Roll20 character data
+/// Roll20 character data  
+/// Uses flexible schema to handle real Roll20 export variations
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Roll20Character {
     /// Character ID
-    pub id: String,
+    pub id: Option<String>,
     /// Character name
-    pub name: String,
-    /// Character attributes (stats, skills, etc.)
-    pub attributes: HashMap<String, Roll20Attribute>,
+    pub name: Option<String>,
+    /// Character attributes (stats, skills, etc.) - FIXED: Array not HashMap
+    pub attributes: Option<Vec<Roll20Attribute>>,
     /// Character abilities (spells, attacks, etc.)
-    pub abilities: Vec<Roll20Ability>,
+    pub abilities: Option<Vec<Roll20Ability>>,
     /// Character bio and notes
     pub bio: Option<String>,
-    /// Character avatar/token image
+    /// Character avatar/token image  
     pub avatar: Option<String>,
+    /// Character sheet name (e.g., "ogl5e", "pathfinderofficial")
+    pub charactersheetname: Option<String>,
+    /// Archived status
+    pub archived: Option<bool>,
+    /// Controlled by player IDs
+    pub controlledby: Option<Vec<String>>,
+    /// In player journals
+    pub inplayerjournals: Option<Vec<String>>,
+    /// Tags
+    pub tags: Option<String>,
+    /// Catch any additional character fields Roll20 may include
+    #[serde(flatten)]
+    pub extra_fields: serde_json::Value,
 }
 
 /// Roll20 attribute data
+/// Matches the exact structure from real Roll20 exports
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Roll20Attribute {
     /// Attribute name
-    pub name: String,
+    pub name: Option<String>,
     /// Current value
-    pub current: serde_json::Value,
-    /// Maximum value (optional)
+    pub current: Option<serde_json::Value>,
+    /// Maximum value (can be empty string or actual value)
     pub max: Option<serde_json::Value>,
+    /// Attribute ID
+    pub id: Option<String>,
+    /// Catch any additional attribute fields
+    #[serde(flatten)]
+    pub extra_fields: serde_json::Value,
 }
 
-/// Roll20 ability data (macros, spells, attacks)
+/// Roll20 ability data (macros, spells, attacks)  
+/// Uses flexible schema to handle real Roll20 export variations
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Roll20Ability {
     /// Ability name
-    pub name: String,
+    pub name: Option<String>,
     /// Ability description
     pub description: Option<String>,
     /// Macro action
     pub action: Option<String>,
     /// Ability type
     pub ability_type: Option<String>,
+    /// Ability ID
+    pub id: Option<String>,
+    /// Catch any additional ability fields
+    #[serde(flatten)]
+    pub extra_fields: serde_json::Value,
 }
 
 /// Roll20 page/map data
+/// Uses flexible schema to handle real Roll20 export variations
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Roll20Page {
     /// Page ID
-    pub id: String,
+    pub id: Option<String>,
     /// Page name
-    pub name: String,
+    pub name: Option<String>,
     /// Background image
     pub background_url: Option<String>,
     /// Page dimensions
@@ -119,7 +151,10 @@ pub struct Roll20Page {
     /// Grid settings
     pub grid_size: Option<f64>,
     /// Tokens on this page
-    pub tokens: Vec<Roll20Token>,
+    pub tokens: Option<Vec<Roll20Token>>,
+    /// Catch any additional page fields
+    #[serde(flatten)]
+    pub extra_fields: serde_json::Value,
 }
 
 /// Roll20 token data
@@ -244,8 +279,8 @@ impl Roll20Parser {
             logger.info(
                 &format!(
                     "Successfully parsed Roll20 JSON with {} characters, {} pages",
-                    roll20_campaign.characters.len(),
-                    roll20_campaign.pages.len()
+                    roll20_campaign.characters.as_ref().map_or(0, |c| c.len()),
+                    roll20_campaign.pages.as_ref().map_or(0, |p| p.len())
                 ),
                 Some("roll20_parser"),
             );
@@ -268,33 +303,50 @@ impl Roll20Parser {
         }
 
         // Create base campaign
-        let mut campaign =
-            Campaign::new(roll20_campaign.campaign.name.clone(), SourceFormat::Roll20);
+        // Extract campaign name from flexible data structure
+        let campaign_name = roll20_campaign
+            .campaign_data
+            .get("name")
+            .and_then(|v| v.as_str())
+            .unwrap_or("Untitled Campaign")
+            .to_string();
 
-        // Set metadata
-        if let Some(description) = roll20_campaign.campaign.description {
+        let mut campaign = Campaign::new(campaign_name, SourceFormat::Roll20);
+
+        // Set description if available
+        if let Some(description) = roll20_campaign
+            .campaign_data
+            .get("description")
+            .and_then(|v| v.as_str())
+        {
             campaign
                 .metadata
                 .custom_properties
                 .insert("description".to_string(), description.into());
         }
 
-        // Convert characters to actors
-        for roll20_char in roll20_campaign.characters {
-            let actor = self.convert_character_to_actor(roll20_char)?;
-            campaign.actors.push(actor);
+        // Convert characters
+        if let Some(characters) = roll20_campaign.characters {
+            for roll20_char in characters {
+                let actor = self.convert_character_to_actor(roll20_char)?;
+                campaign.actors.push(actor);
+            }
         }
 
-        // Convert maps/pages to scenes
-        for roll20_page in roll20_campaign.pages {
-            let scene = self.convert_page_to_scene(roll20_page)?;
-            campaign.scenes.push(scene);
+        // Convert pages to scenes
+        if let Some(pages) = roll20_campaign.pages {
+            for roll20_page in pages {
+                let scene = self.convert_page_to_scene(roll20_page)?;
+                campaign.scenes.push(scene);
+            }
         }
 
-        // Convert handouts to items/notes
-        for roll20_handout in roll20_campaign.handouts {
-            let item = self.convert_handout_to_item(roll20_handout)?;
-            campaign.items.push(item);
+        // Convert handouts to items
+        if let Some(handouts) = roll20_campaign.handouts {
+            for roll20_handout in handouts {
+                let item = self.convert_handout_to_item(roll20_handout)?;
+                campaign.items.push(item);
+            }
         }
 
         // Validate the converted campaign if validation service is available
@@ -328,8 +380,14 @@ impl Roll20Parser {
     /// Convert Roll20 character to standardized Actor format
     fn convert_character_to_actor(&self, roll20_char: Roll20Character) -> ConversionResult<Actor> {
         let mut actor = Actor {
-            id: roll20_char.id.clone(),
-            name: roll20_char.name.clone(),
+            id: roll20_char
+                .id
+                .clone()
+                .unwrap_or_else(|| "unknown".to_string()),
+            name: roll20_char
+                .name
+                .clone()
+                .unwrap_or_else(|| "Unnamed Character".to_string()),
             actor_type: ActorType::Npc, // Default to NPC, could be determined from data
             images: ActorImages {
                 avatar: roll20_char.avatar.clone(),
@@ -346,72 +404,76 @@ impl Roll20Parser {
             source_data: HashMap::new(),
         };
 
-        // Convert attributes
-        for (attr_name, attr_value) in roll20_char.attributes {
-            // Convert Roll20 attribute format to our standardized format
-            let value = match attr_value.current {
-                serde_json::Value::Number(n) => AttributeValue::Number(n.as_f64().unwrap_or(0.0)),
-                serde_json::Value::String(s) => {
-                    if let Ok(num) = s.parse::<f64>() {
-                        AttributeValue::Number(num)
-                    } else {
-                        AttributeValue::Text(s)
-                    }
+        // Process attributes
+        if let Some(attributes) = roll20_char.attributes {
+            for attr in attributes {
+                if let Some(attr_name) = attr.name {
+                    let attr_value = attr
+                        .current
+                        .map(|v| v.to_string())
+                        .unwrap_or_else(|| "0".to_string());
+                    actor
+                        .attributes
+                        .insert(attr_name, AttributeValue::Text(attr_value));
                 }
-                serde_json::Value::Bool(b) => AttributeValue::Boolean(b),
-                _ => AttributeValue::Text("".to_string()),
-            };
-            actor.attributes.insert(attr_name, value);
+            }
         }
 
-        // Convert abilities to spells/features
-        for ability in roll20_char.abilities {
-            if let Some(_action) = ability.action {
-                // Create a spell from the ability
-                let spell = Spell {
-                    id: format!("ability_{}", ability.name.replace(' ', "_").to_lowercase()),
-                    name: ability.name.clone(),
-                    level: 1, // Default level, could be parsed from description
-                    school: "Unknown".to_string(),
-                    casting_time: "1 action".to_string(),
-                    range: "Self".to_string(),
-                    components: SpellComponents::default(),
-                    duration: "Instantaneous".to_string(),
-                    description: ability.description.unwrap_or_default(),
-                    at_higher_levels: None,
-                };
-                actor.spells.push(spell);
-            } else {
-                // Create a feature from the ability
-                let feature = Feature {
-                    id: format!("feature_{}", ability.name.replace(' ', "_").to_lowercase()),
-                    name: ability.name,
-                    feature_type: FeatureType::Other("Roll20 Ability".to_string()),
-                    description: ability.description.unwrap_or_default(),
-                    usage: None,
-                };
-                actor.features.push(feature);
+        // Process abilities (convert to spells or features based on content)
+        if let Some(abilities) = roll20_char.abilities {
+            for ability in abilities {
+                if let Some(_action) = ability.action {
+                    // Create a spell from the ability
+                    let ability_name = ability
+                        .name
+                        .unwrap_or_else(|| "Unnamed Ability".to_string());
+                    let spell = Spell {
+                        id: format!("ability_{}", ability_name.replace(' ', "_").to_lowercase()),
+                        name: ability_name,
+                        level: 1, // Default level, could be parsed from description
+                        school: "Unknown".to_string(),
+                        casting_time: "1 action".to_string(),
+                        range: "Self".to_string(),
+                        components: SpellComponents::default(),
+                        duration: "Instantaneous".to_string(),
+                        description: ability.description.unwrap_or_default(),
+                        at_higher_levels: None,
+                    };
+                    actor.spells.push(spell);
+                } else {
+                    // Create a feature from the ability
+                    let ability_name = ability
+                        .name
+                        .unwrap_or_else(|| "Unnamed Feature".to_string());
+                    let feature = Feature {
+                        id: format!("feature_{}", ability_name.replace(' ', "_").to_lowercase()),
+                        name: ability_name,
+                        feature_type: FeatureType::Other("Roll20 Ability".to_string()),
+                        description: ability.description.unwrap_or_default(),
+                        usage: None,
+                    };
+                    actor.features.push(feature);
+                }
             }
         }
 
         // Store Roll20-specific data
-        actor
-            .source_data
-            .insert("roll20_id".to_string(), serde_json::Value::String(roll20_char.id));
+        actor.source_data.insert(
+            "roll20_id".to_string(),
+            serde_json::Value::String(roll20_char.id.unwrap_or_else(|| "unknown".to_string())),
+        );
 
         Ok(actor)
     }
 
     /// Convert Roll20 page to standardized Scene format
     fn convert_page_to_scene(&self, roll20_page: Roll20Page) -> ConversionResult<Scene> {
-        // Remove this line as we create scene directly below
-
-        // Dimensions are handled in the Scene struct creation below
-
         // Create scene with proper structure
         let scene = Scene {
-            id: roll20_page.id.clone(),
-            name: roll20_page.name.clone(),
+            id: roll20_page.id.unwrap_or_else(|| "unknown".to_string()),
+            name: roll20_page
+                .name
+                .unwrap_or_else(|| "Unnamed Scene".to_string()),
             background_image: roll20_page.background_url,
             dimensions: SceneDimensions {
                 width: roll20_page.width.unwrap_or(1400.0) as u32,
@@ -496,26 +558,36 @@ mod tests {
         attributes.insert(
             "strength".to_string(),
             Roll20Attribute {
-                name: "strength".to_string(),
-                current: serde_json::Value::Number(serde_json::Number::from(16)),
+                id: Some("attr_strength".to_string()),
+                name: Some("strength".to_string()),
+                current: Some(serde_json::Value::Number(serde_json::Number::from(16))),
                 max: Some(serde_json::Value::Number(serde_json::Number::from(20))),
+                extra_fields: serde_json::Value::Object(serde_json::Map::new()),
             },
         );
 
         let abilities = vec![Roll20Ability {
-            name: "Sword Attack".to_string(),
+            id: Some("ability_sword".to_string()),
+            name: Some("Sword Attack".to_string()),
             description: Some("A basic sword attack".to_string()),
             action: Some("1d20+5".to_string()),
             ability_type: Some("attack".to_string()),
+            extra_fields: serde_json::Value::Object(serde_json::Map::new()),
         }];
 
         let roll20_char = Roll20Character {
-            id: "char1".to_string(),
-            name: "Test Character".to_string(),
-            attributes,
-            abilities,
+            id: Some("char1".to_string()),
+            name: Some("Test Character".to_string()),
+            attributes: Some(attributes.into_values().collect()),
+            abilities: Some(abilities),
             bio: Some("A test character".to_string()),
             avatar: None,
+            archived: None,
+            charactersheetname: None,
+            controlledby: None,
+            inplayerjournals: None,
+            tags: None,
+            extra_fields: serde_json::Value::Object(serde_json::Map::new()),
         };
 
         let result = parser.convert_character_to_actor(roll20_char);
@@ -532,13 +604,14 @@ mod tests {
         let parser = Roll20Parser::new();
 
         let roll20_page = Roll20Page {
-            id: "page1".to_string(),
-            name: "Test Map".to_string(),
+            id: Some("page1".to_string()),
+            name: Some("Test Map".to_string()),
             background_url: Some("https://example.com/map.jpg".to_string()),
             width: Some(1920.0),
             height: Some(1080.0),
             grid_size: Some(70.0),
-            tokens: vec![],
+            tokens: Some(vec![]),
+            extra_fields: serde_json::Value::Object(serde_json::Map::new()),
         };
 
         let result = parser.convert_page_to_scene(roll20_page);
@@ -558,27 +631,37 @@ mod tests {
         attributes.insert(
             "strength".to_string(),
             Roll20Attribute {
-                name: "strength".to_string(),
-                current: serde_json::Value::Number(serde_json::Number::from(18)),
+                id: Some("attr_str".to_string()),
+                name: Some("strength".to_string()),
+                current: Some(serde_json::Value::Number(serde_json::Number::from(18))),
                 max: Some(serde_json::Value::Number(serde_json::Number::from(20))),
+                extra_fields: serde_json::Value::Object(serde_json::Map::new()),
             },
         );
         attributes.insert(
             "dexterity".to_string(),
             Roll20Attribute {
-                name: "dexterity".to_string(),
-                current: serde_json::Value::String("14".to_string()),
+                id: Some("attr_dex".to_string()),
+                name: Some("dexterity".to_string()),
+                current: Some(serde_json::Value::String("14".to_string())),
                 max: None,
+                extra_fields: serde_json::Value::Object(serde_json::Map::new()),
             },
         );
 
         let roll20_char = Roll20Character {
-            id: "char123".to_string(),
-            name: "Test Warrior".to_string(),
-            attributes,
-            abilities: vec![],
+            id: Some("char123".to_string()),
+            name: Some("Test Warrior".to_string()),
+            attributes: Some(attributes.into_values().collect()),
+            abilities: Some(vec![]),
             bio: Some("A brave warrior".to_string()),
             avatar: Some("warrior.png".to_string()),
+            archived: Some(false),
+            charactersheetname: Some("".to_string()),
+            controlledby: Some(vec![]),
+            inplayerjournals: Some(vec![]),
+            tags: Some("".to_string()),
+            extra_fields: serde_json::Value::Object(serde_json::Map::new()),
         };
 
         let result = parser.convert_character_to_actor(roll20_char);
@@ -605,26 +688,37 @@ mod tests {
 
         let abilities = vec![
             Roll20Ability {
-                name: "Fireball".to_string(),
+                id: Some("ability_fireball".to_string()),
+                name: Some("Fireball".to_string()),
                 description: Some("A blazing ball of fire".to_string()),
                 action: Some("/r 8d6".to_string()),
                 ability_type: Some("spell".to_string()),
+                extra_fields: serde_json::Value::Object(serde_json::Map::new()),
             },
             Roll20Ability {
-                name: "Rage".to_string(),
+                id: Some("ability_rage".to_string()),
+                name: Some("Rage".to_string()),
                 description: Some("Barbarian rage ability".to_string()),
                 action: None, // No action = feature
                 ability_type: Some("feature".to_string()),
+                extra_fields: serde_json::Value::Object(serde_json::Map::new()),
             },
         ];
 
         let roll20_char = Roll20Character {
-            id: "barb_wiz".to_string(),
-            name: "Barbarian Wizard".to_string(),
-            attributes: HashMap::new(),
-            abilities,
+            id: Some("barb_wiz".to_string()),
+            name: Some("Barbarian Wizard".to_string()),
+            attributes: Some(vec![]),
+            abilities: Some(abilities),
             bio: None,
             avatar: None,
+            archived: None,
+            charactersheetname: None,
+            controlledby: None,
+            inplayerjournals: None,
+
+            tags: None,
+            extra_fields: serde_json::Value::Object(serde_json::Map::new()),
         };
 
         let result = parser.convert_character_to_actor(roll20_char);
@@ -642,13 +736,14 @@ mod tests {
         let parser = Roll20Parser::new();
 
         let roll20_page = Roll20Page {
-            id: "minimal_page".to_string(),
-            name: "Minimal Scene".to_string(),
+            id: Some("minimal_page".to_string()),
+            name: Some("Minimal Scene".to_string()),
             background_url: None,
             width: None,
             height: None,
             grid_size: None,
-            tokens: vec![],
+            tokens: Some(vec![]),
+            extra_fields: serde_json::Value::Object(serde_json::Map::new()),
         };
 
         let result = parser.convert_page_to_scene(roll20_page);

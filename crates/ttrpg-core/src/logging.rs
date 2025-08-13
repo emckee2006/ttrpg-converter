@@ -125,7 +125,7 @@ impl RustLogger {
                         .boxed()
                 };
 
-                registry.with(console_layer).with(file_layer).init();
+                let _ = registry.with(console_layer).with(file_layer).try_init();
             }
 
             (true, None) => {
@@ -141,7 +141,7 @@ impl RustLogger {
                     layer.boxed()
                 };
 
-                registry.with(console_layer).init();
+                let _ = registry.with(console_layer).try_init();
             }
 
             (false, Some(file_path)) => {
@@ -181,12 +181,12 @@ impl RustLogger {
                         .boxed()
                 };
 
-                registry.with(file_layer).init();
+                let _ = registry.with(file_layer).try_init();
             }
 
             (false, None) => {
                 // No logging configured - just initialize with basic registry
-                registry.init();
+                let _ = registry.try_init();
             }
         }
 

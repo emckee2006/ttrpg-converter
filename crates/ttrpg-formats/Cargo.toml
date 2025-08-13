@@ -15,3 +15,6 @@ serde_json = { workspace = true }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
+tokio = { workspace = true }
+chrono = { workspace = true }
+async-trait = "0.1"  # Enable async methods in trait objects

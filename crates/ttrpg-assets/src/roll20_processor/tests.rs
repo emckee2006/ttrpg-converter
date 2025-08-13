@@ -3,7 +3,10 @@
 use super::*;
 use crate::service::RustAssetService;
 use serde_json::json;
-use std::sync::{atomic::{AtomicUsize, Ordering}, Arc};
+use std::sync::{
+    atomic::{AtomicUsize, Ordering},
+    Arc,
+};
 use tempfile::TempDir;
 
 /// Mock progress callback for testing
@@ -14,10 +17,7 @@ struct MockProgressCallback {
 
 impl MockProgressCallback {
     fn new() -> Self {
-        Self {
-            call_count: AtomicUsize::new(0),
-            last_progress: Arc::new(Mutex::new(None)),
-        }
+        Self { call_count: AtomicUsize::new(0), last_progress: Arc::new(Mutex::new(None)) }
     }
 
     fn get_call_count(&self) -> usize {
@@ -57,7 +57,7 @@ fn create_test_campaign_data() -> serde_json::Value {
                 "size": 2048
             },
             {
-                "id": "asset_2", 
+                "id": "asset_2",
                 "name": "dungeon_background.jpg",
                 "url": "https://example.com/assets/dungeon_background.jpg",
                 "asset_type": "background",
@@ -65,7 +65,7 @@ fn create_test_campaign_data() -> serde_json::Value {
             },
             {
                 "id": "asset_3",
-                "name": "combat_music.mp3", 
+                "name": "combat_music.mp3",
                 "url": "https://example.com/assets/combat_music.mp3",
                 "asset_type": "audio",
                 "size": 4096000
@@ -95,7 +95,7 @@ async fn test_roll20_processor_creation() -> Result<(), Box<dyn std::error::Erro
 
     // Test processor creation with defaults
     let processor = Roll20AssetProcessor::with_defaults(cache_dir.clone(), None).await?;
-    
+
     // Verify processor was created successfully
     let stats = processor.get_processing_stats().await;
     assert_eq!(stats.assets_discovered, 0);
@@ -110,7 +110,7 @@ async fn test_roll20_processor_with_custom_config() -> Result<(), Box<dyn std::e
     let cache_dir = temp_dir.path().to_path_buf();
 
     let base_service = Arc::new(RustAssetService::new(cache_dir, None).await?);
-    
+
     let config = Roll20ProcessorConfig {
         max_concurrent_downloads: 4,
         download_timeout_secs: 15,
@@ -141,26 +141,29 @@ async fn test_asset_discovery_from_campaign_data() -> Result<(), Box<dyn std::er
     assert_eq!(discovered_assets.len(), 3);
 
     // Verify asset details
-    let token_asset = discovered_assets.iter()
+    let token_asset = discovered_assets
+        .iter()
         .find(|a| a.name == "hero_token.png")
         .expect("Token asset should be discovered");
-    
+
     assert_eq!(token_asset.category, Roll20AssetCategory::TokenImage);
     assert_eq!(token_asset.asset_type, AssetType::Image);
     assert_eq!(token_asset.size_bytes, Some(2048));
     assert_eq!(token_asset.priority, 2); // Token priority
 
-    let background_asset = discovered_assets.iter()
+    let background_asset = discovered_assets
+        .iter()
         .find(|a| a.name == "dungeon_background.jpg")
         .expect("Background asset should be discovered");
-    
+
     assert_eq!(background_asset.category, Roll20AssetCategory::SceneBackground);
     assert_eq!(background_asset.asset_type, AssetType::Image);
 
-    let audio_asset = discovered_assets.iter()
+    let audio_asset = discovered_assets
+        .iter()
         .find(|a| a.name == "combat_music.mp3")
         .expect("Audio asset should be discovered");
-    
+
     assert_eq!(audio_asset.category, Roll20AssetCategory::AudioFile);
     assert_eq!(audio_asset.asset_type, AssetType::Audio);
 
@@ -187,14 +190,19 @@ async fn test_asset_categorization() -> Result<(), Box<dyn std::error::Error>> {
         ("other", "https://example.com/unknown.file", Roll20AssetCategory::Other),
         // Test URL-based categorization fallbacks
         ("unknown", "https://example.com/some_token_image.png", Roll20AssetCategory::TokenImage),
-        ("unknown", "https://example.com/character_portrait.jpg", Roll20AssetCategory::CharacterAvatar),
+        (
+            "unknown",
+            "https://example.com/character_portrait.jpg",
+            Roll20AssetCategory::CharacterAvatar,
+        ),
     ];
 
     for (asset_type, url, expected_category) in test_cases {
         let category = processor.categorize_roll20_asset(asset_type, url);
-        assert_eq!(category, expected_category, 
-                   "Asset type '{}' with URL '{}' should be categorized as {:?}", 
-                   asset_type, url, expected_category);
+        assert_eq!(
+            category, expected_category,
+            "Asset type '{asset_type}' with URL '{url}' should be categorized as {expected_category:?}"
+        );
     }
 
     Ok(())
@@ -218,9 +226,10 @@ async fn test_asset_type_determination() -> Result<(), Box<dyn std::error::Error
 
     for (url, asset_type, expected_type) in test_cases {
         let determined_type = processor.determine_base_asset_type(url, asset_type);
-        assert_eq!(determined_type, expected_type,
-                   "URL '{}' with type '{}' should be determined as {:?}",
-                   url, asset_type, expected_type);
+        assert_eq!(
+            determined_type, expected_type,
+            "URL '{url}' with type '{asset_type}' should be determined as {expected_type:?}"
+        );
     }
 
     Ok(())
@@ -244,8 +253,10 @@ async fn test_asset_priority_determination() -> Result<(), Box<dyn std::error::E
 
     for (category, expected_priority) in expected_priorities {
         let priority = processor.determine_asset_priority(category);
-        assert_eq!(priority, expected_priority,
-                   "Category {:?} should have priority {}", category, expected_priority);
+        assert_eq!(
+            priority, expected_priority,
+            "Category {category:?} should have priority {expected_priority}"
+        );
     }
 
     Ok(())
@@ -279,20 +290,20 @@ async fn test_progress_callback_functionality() -> Result<(), Box<dyn std::error
     let progress_callback = mock_callback.clone().create_callback();
 
     // Create test assets
-    let assets = vec![
-        Roll20AssetInfo {
-            id: "test_1".to_string(),
-            name: "test1.png".to_string(),
-            url: "https://httpbin.org/status/404".to_string(), // This will fail
-            category: Roll20AssetCategory::TokenImage,
-            asset_type: AssetType::Image,
-            size_bytes: Some(1024),
-            entity_references: vec![],
-            priority: 1,
-        },
-    ];
+    let assets = vec![Roll20AssetInfo {
+        id: "test_1".to_string(),
+        name: "test1.png".to_string(),
+        url: "https://httpbin.org/status/404".to_string(), // This will fail
+        category: Roll20AssetCategory::TokenImage,
+        asset_type: AssetType::Image,
+        size_bytes: Some(1024),
+        entity_references: vec![],
+        priority: 1,
+    }];
 
-    let _results = processor.process_assets_bulk(assets, Some(progress_callback)).await?;
+    let _results = processor
+        .process_assets_bulk(assets, Some(progress_callback))
+        .await?;
 
     // Give callback time to execute
     tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
@@ -333,7 +344,7 @@ async fn test_asset_discovery_with_missing_fields() -> Result<(), Box<dyn std::e
     });
 
     let result = processor.discover_assets(&campaign_data).await;
-    
+
     // Should return error due to missing URL in first asset
     assert!(result.is_err());
 
@@ -352,7 +363,7 @@ async fn test_roll20_asset_category_display() {
     ];
 
     for (category, expected_display) in test_cases {
-        assert_eq!(format!("{}", category), expected_display);
+        assert_eq!(format!("{category}"), expected_display);
     }
 }
 

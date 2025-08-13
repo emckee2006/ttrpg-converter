@@ -1,7 +1,12 @@
-//! Command-line interface
+//! Command-line interface for TTRPG Converter
+//!
+//! This crate provides command-line tools for testing and using the TTRPG conversion system.
+
+pub mod commands;
 
 pub mod prelude {
     //! Common imports for this crate
+    pub use crate::commands::test_roll20::*;
 }
 
 /// Placeholder for initial development

@@ -127,6 +127,7 @@ pub struct Roll20AssetProcessor {
     /// Asset processing statistics
     stats: Arc<Mutex<Roll20ProcessingStats>>,
     /// Logger for detailed operation tracking
+    #[allow(dead_code)]
     logger: Option<Arc<dyn LoggingService>>,
 }
 
@@ -165,8 +166,10 @@ impl Roll20AssetProcessor {
         config: Roll20ProcessorConfig,
         logger: Option<Arc<dyn LoggingService>>,
     ) -> Self {
-        info!("Creating Roll20AssetProcessor with config: max_concurrent={}, optimize_images={}", 
-              config.max_concurrent_downloads, config.optimize_images);
+        info!(
+            "Creating Roll20AssetProcessor with config: max_concurrent={}, optimize_images={}",
+            config.max_concurrent_downloads, config.optimize_images
+        );
 
         Self {
             base_service,
@@ -208,9 +211,12 @@ impl Roll20AssetProcessor {
         // Extract assets from Roll20 assets array
         if let Some(assets_array) = campaign_data.get("assets").and_then(|a| a.as_array()) {
             debug!("Found {} assets in Roll20 assets array", assets_array.len());
-            
+
             for asset_value in assets_array {
-                if let Some(asset_info) = self.extract_asset_from_json(asset_value, &mut entity_asset_map).await? {
+                if let Some(asset_info) = self
+                    .extract_asset_from_json(asset_value, &mut entity_asset_map)
+                    .await?
+                {
                     discovered_assets.push(asset_info);
                 }
             }
@@ -219,7 +225,7 @@ impl Roll20AssetProcessor {
         // Extract character avatar assets
         if let Some(characters) = campaign_data.get("characters").and_then(|c| c.as_array()) {
             debug!("Scanning {} characters for avatar assets", characters.len());
-            
+
             for character in characters {
                 if let Some(avatar_assets) = self.extract_character_assets(character).await? {
                     discovered_assets.extend(avatar_assets);
@@ -230,7 +236,7 @@ impl Roll20AssetProcessor {
         // Extract page/scene background assets
         if let Some(pages) = campaign_data.get("pages").and_then(|p| p.as_array()) {
             debug!("Scanning {} pages for background assets", pages.len());
-            
+
             for page in pages {
                 if let Some(page_assets) = self.extract_page_assets(page).await? {
                     discovered_assets.extend(page_assets);
@@ -278,7 +284,7 @@ impl Roll20AssetProcessor {
 
         // Create semaphore for concurrent download limiting
         let semaphore = Arc::new(tokio::sync::Semaphore::new(self.config.max_concurrent_downloads));
-        
+
         // Spawn download tasks
         let mut tasks = Vec::new();
         for (index, asset) in sorted_assets.into_iter().enumerate() {
@@ -292,7 +298,7 @@ impl Roll20AssetProcessor {
                 let result = Self::download_and_process_asset(base_service, asset, config).await;
                 let _ = tx.send((index, result)).await;
             });
-            
+
             tasks.push(task);
         }
 
@@ -315,7 +321,7 @@ impl Roll20AssetProcessor {
             // Update progress if callback provided
             if let Some(callback) = &progress_callback {
                 let progress = AssetDownloadProgress {
-                    current_asset: format!("Asset {}/{}", completed, total_assets),
+                    current_asset: format!("Asset {completed}/{total_assets}"),
                     completed,
                     total: total_assets,
                     current_progress: 1.0,
@@ -333,8 +339,11 @@ impl Roll20AssetProcessor {
             stats.bulk_operations += 1;
         }
 
-        info!("Bulk asset processing complete: {}/{} successful", 
-              results.iter().filter(|r| r.is_ok()).count(), total_assets);
+        info!(
+            "Bulk asset processing complete: {}/{} successful",
+            results.iter().filter(|r| r.is_ok()).count(),
+            total_assets
+        );
 
         Ok(results)
     }
@@ -351,33 +360,36 @@ impl Roll20AssetProcessor {
         asset_json: &serde_json::Value,
         _entity_map: &mut HashMap<String, Vec<String>>,
     ) -> AssetResult<Option<Roll20AssetInfo>> {
-        let id = asset_json.get("id")
+        let id = asset_json
+            .get("id")
             .and_then(|v| v.as_str())
             .unwrap_or("unknown")
             .to_string();
 
-        let name = asset_json.get("name")
+        let name = asset_json
+            .get("name")
             .and_then(|v| v.as_str())
             .unwrap_or("unknown")
             .to_string();
 
-        let url = asset_json.get("url")
+        let url = asset_json
+            .get("url")
             .and_then(|v| v.as_str())
             .ok_or_else(|| AssetError::ValidationError {
-                asset_path: format!("asset_{}", id),
+                asset_path: format!("asset_{id}"),
                 reason: "Missing URL field in Roll20 asset".to_string(),
                 expected_type: Some("URL string".to_string()),
             })?;
 
-        let asset_type_str = asset_json.get("asset_type")
+        let asset_type_str = asset_json
+            .get("asset_type")
             .and_then(|v| v.as_str())
             .unwrap_or("other");
 
         let category = self.categorize_roll20_asset(asset_type_str, url);
         let asset_type = self.determine_base_asset_type(url, asset_type_str);
 
-        let size_bytes = asset_json.get("size")
-            .and_then(|v| v.as_u64());
+        let size_bytes = asset_json.get("size").and_then(|v| v.as_u64());
 
         Ok(Some(Roll20AssetInfo {
             id,
@@ -391,12 +403,18 @@ impl Roll20AssetProcessor {
         }))
     }
 
-    async fn extract_character_assets(&self, _character: &serde_json::Value) -> AssetResult<Option<Vec<Roll20AssetInfo>>> {
+    async fn extract_character_assets(
+        &self,
+        _character: &serde_json::Value,
+    ) -> AssetResult<Option<Vec<Roll20AssetInfo>>> {
         // TODO: Implement character asset extraction (avatars, etc.)
         Ok(None)
     }
 
-    async fn extract_page_assets(&self, _page: &serde_json::Value) -> AssetResult<Option<Vec<Roll20AssetInfo>>> {
+    async fn extract_page_assets(
+        &self,
+        _page: &serde_json::Value,
+    ) -> AssetResult<Option<Vec<Roll20AssetInfo>>> {
         // TODO: Implement page asset extraction (backgrounds, tokens, etc.)
         Ok(None)
     }
@@ -428,14 +446,26 @@ impl Roll20AssetProcessor {
         let url_lower = url.to_lowercase();
         let type_lower = asset_type.to_lowercase();
 
-        if url_lower.ends_with(".png") || url_lower.ends_with(".jpg") || url_lower.ends_with(".jpeg") 
-            || url_lower.ends_with(".webp") || url_lower.ends_with(".gif") || type_lower.contains("image") {
+        if url_lower.ends_with(".png")
+            || url_lower.ends_with(".jpg")
+            || url_lower.ends_with(".jpeg")
+            || url_lower.ends_with(".webp")
+            || url_lower.ends_with(".gif")
+            || type_lower.contains("image")
+        {
             AssetType::Image
-        } else if url_lower.ends_with(".mp3") || url_lower.ends_with(".ogg") || url_lower.ends_with(".wav")
-            || type_lower.contains("audio") || type_lower.contains("music") {
+        } else if url_lower.ends_with(".mp3")
+            || url_lower.ends_with(".ogg")
+            || url_lower.ends_with(".wav")
+            || type_lower.contains("audio")
+            || type_lower.contains("music")
+        {
             AssetType::Audio
-        } else if url_lower.ends_with(".pdf") || url_lower.ends_with(".txt") || url_lower.ends_with(".doc")
-            || type_lower.contains("document") {
+        } else if url_lower.ends_with(".pdf")
+            || url_lower.ends_with(".txt")
+            || url_lower.ends_with(".doc")
+            || type_lower.contains("document")
+        {
             AssetType::Document
         } else {
             AssetType::Other
@@ -462,12 +492,12 @@ impl Roll20AssetProcessor {
 
         // Download using base service
         let cached_path = base_service.download_asset(&asset.url, false).await?;
-        
+
         // Get asset information
         let asset_info = base_service.get_asset_info(&cached_path)?;
-        
+
         // TODO: Implement asset optimization based on config
-        
+
         Ok(asset_info)
     }
 }

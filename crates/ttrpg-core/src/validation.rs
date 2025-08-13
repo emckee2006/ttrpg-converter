@@ -380,6 +380,107 @@ impl ProfessionalValidationService {
     }
 }
 
+// Import ValidationService trait and types
+use crate::services::{
+    ValidationResult as ServicesValidationResult, ValidationService,
+    ValidationStats as ServicesValidationStats,
+};
+use crate::types::Campaign;
+
+/// Implementation of ValidationService trait for ProfessionalValidationService
+impl ValidationService for ProfessionalValidationService {
+    fn validate_campaign(
+        &self,
+        _campaign: &Campaign,
+    ) -> ConversionResult<ServicesValidationResult> {
+        // TODO: Implement actual campaign validation in Phase 2
+        Ok(ServicesValidationResult {
+            is_valid: true,
+            errors: vec![],
+            warnings: vec![],
+            stats: ServicesValidationStats::default(),
+        })
+    }
+
+    fn validate_required_fields(
+        &self,
+        _entity_type: &str,
+        _data: &serde_json::Value,
+    ) -> ConversionResult<ServicesValidationResult> {
+        // TODO: Implement required fields validation
+        Ok(ServicesValidationResult {
+            is_valid: true,
+            errors: vec![],
+            warnings: vec![],
+            stats: ServicesValidationStats::default(),
+        })
+    }
+
+    fn validate_data_types(
+        &self,
+        _entity_type: &str,
+        _data: &serde_json::Value,
+    ) -> ConversionResult<ServicesValidationResult> {
+        // TODO: Implement data type validation
+        Ok(ServicesValidationResult {
+            is_valid: true,
+            errors: vec![],
+            warnings: vec![],
+            stats: ServicesValidationStats::default(),
+        })
+    }
+
+    fn validate_entity_data(
+        &self,
+        _entity_type: &str,
+        _data: &serde_json::Value,
+    ) -> ConversionResult<ServicesValidationResult> {
+        // TODO: Implement entity-specific validation
+        Ok(ServicesValidationResult {
+            is_valid: true,
+            errors: vec![],
+            warnings: vec![],
+            stats: ServicesValidationStats::default(),
+        })
+    }
+
+    fn validate_file_path(&self, _path: &str) -> ConversionResult<ServicesValidationResult> {
+        // TODO: Implement file path validation
+        Ok(ServicesValidationResult {
+            is_valid: true,
+            errors: vec![],
+            warnings: vec![],
+            stats: ServicesValidationStats::default(),
+        })
+    }
+
+    fn validate_json_data(
+        &self,
+        _data: &serde_json::Value,
+    ) -> ConversionResult<ServicesValidationResult> {
+        // TODO: Implement JSON structure validation
+        Ok(ServicesValidationResult {
+            is_valid: true,
+            errors: vec![],
+            warnings: vec![],
+            stats: ServicesValidationStats::default(),
+        })
+    }
+
+    fn get_validation_stats(&self) -> ServicesValidationStats {
+        // Convert our internal stats to services stats format
+        ServicesValidationStats {
+            entities_validated: self.stats.total_validations as usize,
+            ..ServicesValidationStats::default()
+        }
+    }
+
+    fn clear_cache(&self) {
+        // TODO: Implement validation cache clearing
+        // For now, this is a no-op since we don't have caching yet
+    }
+}
+
 impl Default for ProfessionalValidationService {
     fn default() -> Self {
         Self::new().expect("Failed to create ProfessionalValidationService")

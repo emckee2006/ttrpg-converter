@@ -34,7 +34,7 @@ pub mod prelude {
     pub use crate::memory_cache::{CacheConfig, CacheManager, MemoryCache};
     pub use crate::roll20_processor::{
         AssetDownloadProgress, ProgressCallback, Roll20AssetCategory, Roll20AssetInfo,
-        Roll20AssetProcessor, Roll20ProcessorConfig, Roll20ProcessingStats,
+        Roll20AssetProcessor, Roll20ProcessingStats, Roll20ProcessorConfig,
     };
     pub use crate::service::{AssetType, RustAssetService};
 }

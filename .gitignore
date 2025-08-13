@@ -20,6 +20,12 @@ dist/
 build/
 out/
 
+# Test files and generated content
+*.zip
+output/
+test_campaign*/
+WotBS*.zip
+
 # Reference materials (keep organized)
 reference/target/
 reference/**/target/
