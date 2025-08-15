@@ -5,13 +5,19 @@ kanban-plugin: basic
 ---
 
 ## 🚀 Ready
-- [ ] **M2.2: Foundry VTT Writer** (6 pts) #M2 #ready<br>Generate Foundry VTT world/module files<br>📋 [[📋 Detailed Plans/M2_CORE_ENGINE_TASKS#T2.3: Foundry VTT Output Generation|T2.3 Details]]
-- [ ] **M2.3: Asset Processing Pipeline** (4 pts) #M2 #ready<br>Handle images, tokens, maps, and audio files<br>📋 [[📋 Detailed Plans/M2_CORE_ENGINE_TASKS#T2.2: Entity Conversion Pipeline|T2.2 Details]]
-- [ ] **M3.1: CLI Command Structure** (6 pts) #M3 #ready<br>Complete command-line interface implementation<br>📋 [[📋 Detailed Plans/M3_CLI_INTERFACE_TASKS|M3 Implementation Details]]
+
+**STREAMLINED 6-MILESTONE STRUCTURE**
+
+- [ ] **M2: Processing Plugin Architecture Foundation** (18 pts) #M2 #ready #critical<br>🎯 **CORE PLUGIN FOUNDATION** - ValidationPlugin + 5 Asset Plugins with shared execution contexts<br>⚡ Focused foundation: AssetRetrievalPlugin, AssetResolutionPlugin, AssetConversionPlugin, SceneProcessingPlugin, ReferenceTrackingPlugin<br>📋 **Duration**: 2 weeks | **Dependencies**: M1 Complete
+- [ ] **M3: CLI Interface** (20 pts) #M3 #ready<br>🖥️ **PROFESSIONAL CLI** - Plugin discovery, interactive pipeline builder, template management<br>⚡ Libraries: `clap`, `dialoguer`, `indicatif`, `console` for beautiful UX<br>📋 **Duration**: 2 weeks | **Dependencies**: M2 Complete
+- [ ] **M4: Visual Pipeline Builder** (40 pts) #M4 #ready<br>🎨 **DRAG-AND-DROP DAG EDITOR** - Professional visual pipeline builder using `egui_graphs`<br>⚡ Visual plugin configuration, template gallery, live execution visualization<br>📋 **Duration**: 4 weeks | **Dependencies**: M3 Complete
+- [ ] **M5: Advanced Processing** (25 pts) #M5 #ready<br>🧠 **ADVANCED TTRPG FEATURES** - Computer vision scene analysis, multi-system conversion, ML classification<br>⚡ OpenCV, rule engines, performance optimization<br>📋 **Duration**: 3 weeks | **Dependencies**: M4 Complete
+- [ ] **M6: Platform Integration** (35 pts) #M6 #ready<br>🌐 **UNIVERSAL PLATFORM SUPPORT** - OAuth, cloud storage, multi-VTT, mobile platform APIs<br>⚡ Roll20, Foundry, Fantasy Grounds, D&D Beyond, cloud sync<br>📋 **Duration**: 4 weeks | **Dependencies**: M5 Complete
+- [ ] **M7: Output + Production** (35 pts) #M7 #ready<br>📦 **PRODUCTION DEPLOYMENT** - Advanced PDF generation, Docker containerization, CI/CD, comprehensive testing<br>⚡ Professional output formats, monitoring, end-to-end testing<br>📋 **Duration**: 4 weeks | **Dependencies**: M6 Complete
 
 ## 🔄 In Progress
 
-- [ ] **M2.2: Data Validation Engine** (6 pts) #M2 #in-progress<br>🎯 **CURRENT MILESTONE** - Enhanced validation system for converted TTRPG data<br>📋 **NEXT**: Implement comprehensive validation rules, error reporting, and data integrity checks
+- [ ] **Legacy Service Migration Completion** (8 pts) #M2 #in-progress<br>🎯 **CURRENT FOCUS** - Complete service-to-plugin migration to finish plugin foundation<br>📋 **NEXT**: Eliminate remaining 30 integration test legacy service errors<br>⚡ **STRATEGIC**: Required before M2.0 Plugin Orchestration Foundation
 
 ## 🔍 Review
 
@@ -32,14 +38,21 @@ kanban-plugin: basic
 - [x] **Development Tools Installation** #tooling #complete ✅ 2024-08-06
 
 ## 📋 Backlog
-- [ ] **M4.1: GUI Framework Selection** (2 pts) #M4 #backlog<br>Choose egui vs other framework options<br>📋 [[📋 Detailed Plans/M4_GUI_INTERFACE_TASKS|M4 Implementation Details]]
-- [ ] **M4.2: Basic GUI Implementation** (8 pts) #M4 #backlog<br>Core GUI with file selection and progress display<br>📋 [[📋 Detailed Plans/M4_GUI_INTERFACE_TASKS#T4.1: egui Application Foundation|T4.1 Details]]
-- [ ] **M4.3: GUI Testing & Polish** (4 pts) #M4 #backlog<br>User experience refinement and testing<br>📋 [[📋 Detailed Plans/M4_GUI_INTERFACE_TASKS#T4.3: GUI Testing & Polish|T4.3 Details]]
+
+**All milestones moved to Ready - streamlined 6-milestone structure eliminates backlog**
+
+- ✅ M2-M7 milestone documents created with detailed implementation plans
+- ✅ Dependencies and sequencing optimized for development flow
+- ✅ Story points balanced across milestones (18-40 pts each)
+- ✅ Old redundant milestone structure archived
 
 ## ❌ Blocked
 
-- [ ] **M3.2: Convert Command Implementation** (8 pts) #M3 #blocked<br>🚫 Blocked by: M2 conversion pipeline completion
-- [ ] **M4.4: GUI Convert Tab** (8 pts) #M4 #blocked<br>🚫 Blocked by: M3 CLI foundation
+**No blocked items - streamlined milestone structure eliminates blockers**
+
+- ✅ Processing Plugin Architecture provides foundation for all advanced features
+- ✅ Linear dependency chain: M1→M2→M3→M4→M5→M6→M7
+- ✅ Each milestone builds incrementally on the previous foundation
 
 ---
 
@@ -92,38 +105,47 @@ tempfile = "3.8"
 - **T1.2 RustLogger Service** (6pts)
 - **T1.3 RustValidator Service** (8pts)
 
-### **M2: Conversion Pipeline** 
+### **M2: Processing Plugin Foundation** 
 **Progress**: 📋 Ready for Development  
-**Timeline**: 3 weeks | **Depends on**: M1 Complete
+**Timeline**: 2 weeks | **Depends on**: M1 Complete
 **Total Points**: 18
 
 ### **M3: CLI Interface**
-**Progress**: 📋 Detailed Planning Complete
+**Progress**: 📋 Ready for Development
 **Timeline**: 2 weeks | **Depends on**: M2 Complete  
 **Total Points**: 20
 
-### **M4: GUI Interface**
-**Progress**: 📋 Architecture Defined
-**Timeline**: 3 weeks | **Depends on**: M3 Complete
+### **M4: Visual Pipeline Builder**
+**Progress**: 📋 Ready for Development
+**Timeline**: 4 weeks | **Depends on**: M3 Complete
+**Total Points**: 40
+
+### **M5: Advanced Processing**
+**Progress**: 📋 Ready for Development
+**Timeline**: 3 weeks | **Depends on**: M4 Complete
 **Total Points**: 25
 
-### **M5: Production Ready**
-**Progress**: 📋 Comprehensive Plan Created
-**Timeline**: 2 weeks | **Depends on**: M4 Complete
-**Total Points**: 18
+### **M6: Platform Integration**
+**Progress**: 📋 Ready for Development
+**Timeline**: 4 weeks | **Depends on**: M5 Complete
+**Total Points**: 35
+
+### **M7: Output + Production**
+**Progress**: 📋 Ready for Development
+**Timeline**: 4 weeks | **Depends on**: M6 Complete
+**Total Points**: 35
 
 ---
 
 ## 📈 PROJECT METRICS
 
-**Total Story Points**: 73  
-**Completed**: 6 (8%)  
-**In Progress**: 6 (8%)  
-**Remaining**: 61 (84%)  
+**Total Story Points**: 193  
+**Completed**: 20 (10%) - M1 Foundation Complete  
+**Ready for Development**: 173 (90%) - All 6 milestones planned  
 
-**Estimated Timeline**: 6-7 weeks  
-**Current Velocity**: 6 pts/week  
-**Project Health**: 🟢 Excellent  
+**Estimated Timeline**: 19 weeks total (15 weeks remaining)  
+**Target Velocity**: 9-10 pts/week  
+**Project Health**: 🟢 Excellent - Streamlined Architecture Complete  
 
 ---
 

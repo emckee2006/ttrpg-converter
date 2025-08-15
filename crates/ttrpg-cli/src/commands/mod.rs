@@ -1,5 +1,3 @@
 //! CLI command modules
-
-pub mod test_roll20;
-
-pub use test_roll20::*;
+//!
+//! Pure interface commands - business logic has been migrated to appropriate plugin crates

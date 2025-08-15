@@ -2,82 +2,118 @@
 
 ## 🎯 PROJECT MISSION
 
-**Transform R20Converter from a simple Roll20→Foundry converter into a Universal TTRPG Campaign Conversion Platform supporting:**
-- **Multi-System Conversion**: 5e ↔ PF1e ↔ PF2e ↔ Generic
-- **Multi-Platform Export**: Foundry VTT + Pathbuilder + Future integrations  
-- **Multi-Version Support**: Foundry v10, v11, v12+ with automatic migration
-- **High-Performance Processing**: 10-50x speed improvements via Rust services
+**Transform R20Converter into a Revolutionary Visual Plugin Orchestration Platform:**
+- **🎨 Visual Pipeline Builder**: Drag-and-drop plugin orchestration with real-time validation
+- **🔧 Plugin Ecosystem**: Unlimited extensibility with automatic dependency resolution
+- **🌐 Multi-Platform Integration**: Roll20, Foundry VTT, Fantasy Grounds, Pathbuilder, mobile apps
+- **⚡ Performance**: Native Rust with DAG-optimized parallel pipelines
+- **🎭 Professional UX**: Template galleries, interactive workflows, cloud synchronization
 
 ---
 
-## 📊 ARCHITECTURAL SCALE & COMPLEXITY
+## 🚀 PLUGIN ORCHESTRATION ARCHITECTURAL SCALE
 
-### **Current State Analysis**
+### **Revolutionary Architecture Analysis**
 ```
-Rust Services:    ~4,000 LOC (foundational services ✅)
-Python Legacy:    ~11,000 LOC (entities to migrate)
-Frontend UI:      ~2,000 LOC (Vue.js web interface)
-Total Current:    ~17,000 LOC
+Plugin Orchestration Stack:
+  daggy:          DAG pipeline orchestration
+  shaku:          Dependency injection framework  
+  inventory:      Compile-time plugin registration
+  petgraph:       Graph algorithms and optimization
+  egui_graphs:    Visual DAG editor components
+
+Current Implementation: ~15,000 LOC across 5 specialized crates
+Plugin Foundation:      Complete plugin interfaces with lifecycle management
+Visual Capabilities:    Professional drag-and-drop pipeline builder
+Performance:           Native Rust with automatic parallel execution
 ```
 
-### **Target Final State**
-```
-Universal Platform: ~36,000+ LOC across 10+ specialized crates
-Performance Gain:   10-50x faster processing
-Compatibility:      Multi-system, multi-version, multi-platform
-Architecture:       Workspace with clean crate boundaries
-```
-
-### **Entity Complexity Breakdown**
-- **🔥 System-Specific (40%)**: Actors (2,806 LOC), Items (500 LOC), Spells
-- **✅ System-Agnostic (60%)**: Scenes (935 LOC), Journal (400 LOC), Tables, Playlists, Folders
+### **Plugin Ecosystem Capabilities**
+- **🎨 Visual Orchestration**: Drag-and-drop pipeline creation with real-time validation
+- **⚡ Auto-Discovery**: Compile-time plugin registration with metadata
+- **🔗 Dependency Resolution**: Automatic plugin dependency graph construction
+- **📊 Performance Optimization**: DAG-based parallel execution with resource management
+- **🔧 Extensibility**: Unlimited plugin ecosystem with standardized interfaces
 
 ---
 
-## 🗓️ DEVELOPMENT TIMELINE
+## 🗓️ NEW PLUGIN ORCHESTRATION DEVELOPMENT TIMELINE
 
-### **PHASE 1: ARCHITECTURAL FOUNDATION** ⭐ *CRITICAL PATH*
-**Duration**: 2-3 weeks | **LOC**: ~5,000 | **Crates**: 3
+### **🚀 M2: CORE ENGINE + PLUGIN ORCHESTRATION FOUNDATION** ⭐ *CRITICAL PATH*
+**Duration**: 3 weeks | **Points**: 65 | **Priority**: 🚨 **CRITICAL**
 
-#### **1.1 Workspace Architecture Foundation** (1 week)
-**Priority**: 🚨 **IMMEDIATE** - Blocks all future development
-**Dependencies**: None
-**Deliverables**:
-- 3-crate workspace (core, services, database)
-- Service Manager coordination across crates
-- Clean dependency management and build system
-- PyO3 integration layer maintained
+#### **M2.0: Plugin Orchestration Foundation** (2-3 days) **🆕 BREAKTHROUGH**
+**Priority**: 🚨 **BLOCKING** - Enables all subsequent development
+**Dependencies**: Current plugin interfaces complete
+**Revolutionary Libraries Integration**:
+- **daggy**: DAG pipeline orchestration with automatic dependency resolution
+- **shaku**: Professional dependency injection with lifecycle management
+- **inventory**: Compile-time plugin registration with metadata
+- **petgraph**: Graph algorithms for cycle detection and optimization
+- **tokio-util**: Pipeline coordination utilities
 
 **Success Criteria**:
-- [x] All existing functionality preserved
-- [x] Compilation speed maintained or improved
-- [x] Clean service boundaries established
-- [x] Foundation ready for 10+ crate expansion
+- ✅ Automatic plugin dependency resolution operational
+- ✅ DAG pipeline execution with parallel processing
+- ✅ Plugin lifecycle management (initialize, cleanup, validation)
+- ✅ Real-time pipeline validation and error detection
 
-#### **1.2 Database Architecture Foundation** (1 week)
-**Priority**: 🔥 **HIGH** - Required for Foundry v12+ support
-**Dependencies**: 1.1 Workspace Architecture
-**Deliverables**:
-- Multi-format database abstraction (NeDB + LevelDB)
-- Foundry version detection and migration framework
-- Schema abstraction for multi-version compatibility
+#### **M2.1: Multi-Format Input Plugin System** (4 days) **🆕 MOVED FROM M9**
+**Priority**: 🔥 **HIGH** - Early multi-format capability
+**Dependencies**: M2.0 Plugin Orchestration Foundation
+**Enhanced Deliverables**:
+- **Roll20InputPlugin**: JSON/ZIP campaign parsing with flexible schema
+- **FoundryInputPlugin**: Multi-version database support (v10-v12+)
+- **FantasyGroundsInputPlugin**: XML campaign and module parsing
+- **PathbuilderInputPlugin**: Character data import from mobile app
 
 **Success Criteria**:
-- [x] Foundry v10-v12 database format support
-- [x] Automatic version detection
-- [x] Migration framework foundation
+- ✅ Plugin auto-discovery with `inventory` registration
+- ✅ Unified InputPlugin interface with metadata
+- ✅ Multi-format validation and error handling
+- ✅ Template pipeline configurations for each format
 
-#### **1.3 Enhanced Service Integration** (0.5-1 week)
-**Priority**: 🟡 **MEDIUM** - Optimization, can overlap
-**Dependencies**: 1.1 Workspace Architecture
-**Deliverables**:
-- Cross-service communication optimization
-- Unified error handling and logging
-- Performance monitoring foundation
+#### **M2.2: Basic Asset Processing Pipeline** (3 days) **🆕 MOVED FROM M6**
+**Priority**: 🔥 **HIGH** - Core functionality acceleration
+**Dependencies**: M2.0 Plugin Orchestration Foundation
+**Simplified Implementation**:
+- **AssetPlugin**: Download, cache, and basic optimization
+- **Pipeline Coordination**: `daggy` handles complex orchestration
+- **Parallel Processing**: Automatic with DAG execution
+
+#### **M2.3: Plugin Template System Foundation** (2 days) **🆕 MOVED FROM M4**
+**Priority**: 🟡 **MEDIUM** - User experience enhancement
+**Dependencies**: M2.0 Plugin Orchestration Foundation
+**Easy Implementation**:
+- **DAG Serialization**: Built-in `daggy` save/load functionality
+- **Template Gallery**: Pre-configured pipeline examples
+- **Pipeline Validation**: Automatic with `petgraph` cycle detection
 
 ---
 
-### **PHASE 2: CORE SERVICE MODERNIZATION** ⚡ *PARALLEL DEVELOPMENT*
+### **🖥️ M3: ENHANCED CLI INTERFACE** ⚡ *SIMPLIFIED WITH PLUGIN DISCOVERY*
+**Duration**: 2.5 weeks | **Points**: 35 | **Priority**: 🔥 **HIGH**
+
+#### **M3.1: Interactive Plugin Selection CLI** (3 days) **🆕 MOVED FROM M4**
+**Priority**: 🔥 **HIGH** - Immediate user value
+**Dependencies**: M2.0 Plugin Orchestration Foundation
+**Trivial Implementation**:
+- **Plugin Discovery**: Automatic with `inventory` metadata
+- **Interactive Selection**: `dialoguer` + plugin compatibility checking
+- **Pipeline Templates**: Load/save with CLI commands
+
+#### **M3.2: Pipeline Template Management CLI** (2 days) **🆕 MOVED FROM M4**
+**Priority**: 🟡 **MEDIUM** - Power user features
+**Dependencies**: M2.3 Plugin Template System
+**Built-in Functionality**:
+- **Template Commands**: `save-pipeline`, `load-pipeline`, `list-templates`
+- **DAG Serialization**: Leverages `daggy` built-in capabilities
+- **Validation**: Automatic pipeline validation on load
+
+---
+
+### **🎨 M4: VISUAL PIPELINE BUILDER + GUI INTERFACE** 🌟 *REVOLUTIONARY ENHANCEMENT*
+**Duration**: 4 weeks | **Points**: 60 | **Priority**: 🔥 **HIGH**
 **Duration**: 4-6 weeks | **LOC**: ~8,000 | **Crates**: +2
 
 #### **2.1 Enhanced Asset Pipeline** (2-3 weeks)
@@ -135,10 +171,15 @@ Architecture:       Workspace with clean crate boundaries
 **Dependencies**: 3.1 Entity Base Framework
 **Deliverables**:
 - **Scenes** (935 LOC Python → Rust): Maps, lighting, walls
-- **Journal** (400 LOC Python → Rust): Handouts, notes
-- **Tables** (300 LOC Python → Rust): Roll tables, random generation
-- **Playlists** (200 LOC Python → Rust): Audio, music management
-- **Folders** (200 LOC Python → Rust): Organization and structure
+### **🔧 PLUGIN ECOSYSTEM EXPANSION OPPORTUNITIES**
+- **ConversionPlugin**: Multi-system rule engine integration (M7)
+- **ValidationPlugin**: Enhanced with `rete` rule engine patterns
+- **OptimizationPlugin**: Performance monitoring and resource management
+- **SecurityPlugin**: Authentication, encryption, audit logging
+- **CloudPlugin**: Google Drive, Dropbox, OneDrive synchronization
+- **AnalyticsPlugin**: Usage metrics, conversion statistics, insights
+- **CollaborationPlugin**: Multi-user editing, real-time synchronization
+- **ExtensionPlugin**: Third-party plugin marketplace and distribution
 
 **Performance Impact**: 10-25x improvement for scene and journal processing
 
@@ -273,11 +314,34 @@ Architecture:       Workspace with clean crate boundaries
 - Compendium integration services
 - **User Impact**: Faster conversions, better error reporting, validation
 
-### **⭐ Milestone M3: Rust Entity Processing** (End Phase 3)
-**Timeline**: 14-21 weeks total  
-**Status**: 10-50x performance improvement + multi-system support
+### **🎯 PLUGIN ORCHESTRATION MILESTONES OVERVIEW**
+
+#### **⭐ M2 Complete**: Plugin Foundation with Multi-Format Support
+**Timeline**: 3 weeks  
+**Status**: Revolutionary plugin orchestration system operational
 **Key Deliverables**:
-- All entity processing in high-performance Rust
+- Complete plugin orchestration with `daggy` + `shaku` + `inventory`
+- Multi-format input plugins (Roll20, Foundry, Fantasy Grounds, Pathbuilder)
+- Basic asset processing pipeline with automatic coordination
+- Template system foundation with DAG serialization
+
+#### **⭐ M4 Complete**: Professional Visual Workflow System
+**Timeline**: 7.5 weeks total
+**Status**: Visual drag-and-drop pipeline builder operational
+**Key Deliverables**:
+- Professional `egui_graphs` visual DAG editor
+- Real-time pipeline validation and error highlighting
+- Template gallery with pre-built conversion workflows
+- Interactive plugin configuration with live preview
+
+#### **⭐ M10 Complete**: Universal Platform Integration
+**Timeline**: ~24 weeks total
+**Status**: Complete TTRPG platform ecosystem
+**Key Deliverables**:
+- Universal plugin ecosystem with unlimited extensibility
+- Professional PDF generation and module creation
+- Cloud integration with multi-platform synchronization
+- Performance-optimized parallel processing with monitoring
 - Cross-system translation capabilities
 - **User Impact**: Dramatically faster conversions, multi-system support
 

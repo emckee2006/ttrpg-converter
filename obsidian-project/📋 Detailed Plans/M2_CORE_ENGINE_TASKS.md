@@ -1,53 +1,492 @@
-# M2: Core Engine Tasks - Junior Developer Implementation Guide
+# M2: Processing Plugin Architecture Foundation - Junior Developer Implementation Guide
 
-## 🎯 **MILESTONE 2 OVERVIEW** (MASSIVELY EXPANDED SCOPE)
-**Duration**: 4 weeks | **Total Points**: 55 | **Priority**: 🔥 HIGH
+## 🎯 **MILESTONE 2 OVERVIEW**
+**Duration**: 2 weeks | **Total Points**: 18 | **Priority**: 🚨 **CRITICAL**
 
-Advanced core conversion engine with Roll20 parser, sophisticated wall processing, intelligent asset processing, and optimized Foundry output generation.
+Focused Processing Plugin Architecture foundation - the core plugin system that enables all advanced functionality in later milestones.
 
-### 🚨 **EXPANDED SCOPE BASED ON PREVIOUS R20CONVERTER ANALYSIS**
-Major scope expansion includes previously missing critical features:
-- **Advanced Wall Processing**: Minimum wall length filtering, angle optimization, auto-door detection
-- **Intelligent Asset Processing**: Asset reference extraction, optimization, background vs tile classification
-- **Sophisticated Map Processing**: Wall cleanup for cave maps, boundary wall addition
-- **Professional Parsing**: Enhanced error handling, malformed data recovery, performance optimization
+### 🔧 **PROCESSING PLUGIN FOUNDATION**
+Streamlined core plugin architecture:
+- **AssetProcessingCoordinator**: Central orchestration using `daggy` for pipeline management
+- **Plugin Discovery**: `inventory` compile-time registration for automatic plugin detection  
+- **Shared Execution Contexts**: Thread pools and HTTP clients shared across plugins
+- **5 Core Asset Plugins**: Retrieval, Resolution, Conversion, Scene Processing, Reference Tracking
+- **ValidationPlugin**: Parallel validation using `jsonschema` and `validator`
 
-### 📐 **PROFESSIONAL GEOMETRY PROCESSING**
-Eliminate reinvented wheels with professional libraries:
-- `geo` - Computational geometry operations
-- `rstar` - R-tree spatial indexing for wall optimization
-- `lyon` - 2D graphics tessellation for complex shapes
+### 🎯 **SCOPE FOCUS**
+M2 establishes the foundation only - advanced features delivered in later milestones:
+- **M3**: CLI interface with plugin discovery
+- **M4**: Visual pipeline builder with `egui_graphs`  
+- **M5**: Advanced processing and multi-system conversion
+- **M6**: Platform integration and cloud sync
+- **M7**: Advanced output formats and production deployment
 
-### 🧪 **TESTING REQUIREMENTS** (Updated 2024-08-07)
-**Every M2 task must include comprehensive testing before being marked complete:**
-- ✅ **Unit Tests** - Individual function testing (>80% coverage)
-- ✅ **Integration Tests** - End-to-end conversion testing with real data
-- ✅ **Property Tests** - Using `proptest` for data transformation validation
-- ✅ **Benchmarks** - Performance measurement for parsing and conversion
-- ✅ **Documentation Tests** - All examples in docs must work
+### 🧪 **PLUGIN ORCHESTRATION TESTING REQUIREMENTS** (Updated 2025-08-13)
+**Every M2 task must include comprehensive plugin ecosystem testing:**
+- ✅ **Plugin Discovery Tests** - Verify `inventory` auto-registration works
+- ✅ **DAG Construction Tests** - Validate pipeline building and dependency resolution
+- ✅ **Orchestration Tests** - End-to-end pipeline execution with real plugins
+- ✅ **Parallel Execution Tests** - Verify `daggy` parallel processing capabilities
+- ✅ **Dependency Injection Tests** - Test `shaku` container functionality
+- ✅ **Graph Validation Tests** - Cycle detection and optimization with `petgraph`
+- ✅ **Property Tests** - Using `proptest` for pipeline invariant validation
+- ✅ **Performance Tests** - Benchmarks for orchestration overhead
 
-See [TESTING_FRAMEWORK.md](./TESTING_FRAMEWORK.md) for detailed requirements.
+**Plugin Test Dependencies**:
+```toml
+[dev-dependencies]
+# Existing testing framework...
+proptest = "1.4"
+criterion = { version = "0.5", features = ["html_reports"] }
+tokio-test = "0.4"
+
+# 🧪 PLUGIN TESTING ADDITIONS
+test-log = "0.2"         # Test logging integration
+inventory = "0.3"        # Plugin discovery testing
+mockall = "0.11"         # Plugin mocking framework
+```
 
 ---
 
-## **T2.1: Roll20 JSON Parser Implementation**
-**Duration**: 4 days | **Points**: 10 | **Priority**: 🔥 HIGH  
-**Dependencies**: M1 Complete
+## **T2.0: Processing Plugin Architecture Foundation** 🆕 **CRITICAL FOUNDATION TASK**
+**Duration**: 4 days | **Points**: 18 | **Priority**: 🚨 **BLOCKING**  
+**Dependencies**: M1 Complete (Services foundation)
+
+### **Processing Plugin Implementation (ValidationPlugin + 5 Asset Plugins)**
+
+**Step 1: Add Processing Plugin Dependencies to Workspace**
+```bash
+cd workspace_root
+```
+
+Update workspace `Cargo.toml` with verified dependencies:
+```toml
+# Processing Plugin Dependencies - VERIFIED VERSIONS
+jsonschema = "0.17.0"            # Validation plugin - JSON schema validation
+blake3 = "1.8.2"                 # Performance upgrade - 10x faster than sha2
+dashmap = "6.1.0"                # Concurrent collections for shared state
+imageproc = "0.25.0"             # Asset processing - image operations
+geo = "0.28.0"                   # Asset processing - geometric algorithms
+```
+
+**Step 2: Create Shared Execution Contexts**
+Create `ttrpg-processing-plugins/src/shared/mod.rs`:
+```rust
+use std::sync::Arc;
+use tokio::sync::Semaphore;
+use dashmap::DashMap;
+use jsonschema::JSONSchema;
+
+/// Shared execution context for asset processing plugins
+pub struct AssetExecutionContext {
+    /// Single tokio runtime with controlled thread pool
+    pub runtime: Arc<tokio::runtime::Runtime>,
+    /// Limit concurrent operations (e.g., max 50 concurrent downloads)
+    pub semaphore: Arc<Semaphore>,
+    /// Shared HTTP client with connection pooling
+    pub http_client: Arc<reqwest::Client>,
+    /// CPU-bound work pool (for image processing, hashing)
+    pub cpu_pool: Arc<rayon::ThreadPool>,
+}
+
+/// Shared execution context for validation plugin
+pub struct ValidationExecutionContext {
+    /// Shared CPU pool for validation work
+    pub cpu_pool: Arc<rayon::ThreadPool>,
+    /// Schema cache (thread-safe)
+    pub schema_cache: Arc<DashMap<String, JSONSchema>>,
+    /// Rule engine (thread-safe)
+    pub rule_engine: Arc<RuleEngine>,
+}
+```
+
+**Step 3: Implement ValidationPlugin using jsonschema + validator**
+Create `ttrpg-processing-plugins/src/validation/plugin.rs`:
+```rust
+use jsonschema::JSONSchema;
+use validator::Validate;
+use dashmap::DashMap;
+use std::sync::Arc;
+use inventory;
+
+/// Simplified ValidationPlugin using library-driven validation
+pub struct ValidationPlugin {
+    context: Arc<ValidationExecutionContext>,
+    schemas: DashMap<String, JSONSchema>,
+}
+
+impl ValidationPlugin {
+    pub async fn validate_campaign(&self, campaign: &Campaign) -> Result<ValidationReport> {
+        let entities = campaign.all_entities();
+        
+        // Parallel validation using shared CPU pool
+        tokio::task::spawn_blocking(move || {
+            self.context.cpu_pool.install(|| {
+                entities.par_iter()
+                    .map(|entity| self.validate_entity(entity))
+                    .collect()
+            })
+        }).await?
+    }
+}
+
+// Inventory registration
+inventory::submit! {
+    StaticPluginInfo {
+        name: "ValidationPlugin",
+        version: "1.0.0",
+        description: "JSON Schema + Rust validator validation",
+        plugin_type: PluginType::Processing,
+    }
+}
+```
+
+**Step 4: Create 5 Focused Asset Plugins**
+
+**AssetRetrievalPlugin** - HTTP downloads, ZIP extraction, caching:
+```rust
+pub struct AssetRetrievalPlugin {
+    context: Arc<AssetExecutionContext>,
+}
+
+impl AssetRetrievalPlugin {
+    pub async fn download_asset(&self, url: &str) -> Result<Vec<u8>> {
+        let _permit = self.context.semaphore.acquire().await?;
+        let response = self.context.http_client.get(url).send().await?;
+        Ok(response.bytes().await?.to_vec())
+    }
+}
+```
+
+**AssetResolutionPlugin** - Deduplication, unique naming, content hashing:
+```rust
+pub struct AssetResolutionPlugin {
+    context: Arc<AssetExecutionContext>,
+}
+
+impl AssetResolutionPlugin {
+    pub async fn resolve_duplicates(&self, assets: Vec<Asset>) -> Result<Vec<Asset>> {
+        tokio::task::spawn_blocking(move || {
+            self.context.cpu_pool.install(|| {
+                // Use blake3 for 10x faster hashing
+                assets.par_iter()
+                    .map(|asset| self.deduplicate_asset(asset))
+                    .collect()
+            })
+        }).await?
+    }
+}
+```
+
+**AssetConversionPlugin** - Format conversion, image optimization:
+```rust
+pub struct AssetConversionPlugin {
+    context: Arc<AssetExecutionContext>,
+}
+
+impl AssetConversionPlugin {
+    pub async fn convert_formats(&self, assets: Vec<Asset>) -> Result<Vec<Asset>> {
+        tokio::task::spawn_blocking(move || {
+            self.context.cpu_pool.install(|| {
+                // Use imageproc for specialized operations
+                assets.par_iter()
+                    .map(|asset| self.convert_asset(asset))
+                    .collect()
+            })
+        }).await?
+    }
+}
+```
+
+**SceneProcessingPlugin** - Wall extraction, tile combining, grid processing:
+```rust
+pub struct SceneProcessingPlugin {
+    context: Arc<AssetExecutionContext>,
+}
+
+impl SceneProcessingPlugin {
+    pub async fn process_scene_assets(&self, assets: Vec<Asset>) -> Result<Vec<Asset>> {
+        tokio::task::spawn_blocking(move || {
+            self.context.cpu_pool.install(|| {
+                // Use geo crate for wall extraction algorithms
+                assets.par_iter()
+                    .map(|asset| self.process_scene_asset(asset))
+                    .collect()
+            })
+        }).await?
+    }
+}
+```
+
+**ReferenceTrackingPlugin** - Cross-entity reference updates:
+```rust
+pub struct ReferenceTrackingPlugin {
+    context: Arc<AssetExecutionContext>,
+    reference_map: DashMap<AssetId, Vec<EntityRef>>,
+}
+
+impl ReferenceTrackingPlugin {
+    pub async fn update_all_references(&self, campaign: &mut Campaign, assets: Vec<Asset>) -> Result<()> {
+        // Update cross-entity references with campaign coordination
+        self.coordinate_reference_updates(campaign, assets).await
+    }
+}
+```
+
+**Step 5: Create AssetProcessingCoordinator**
+Create `ttrpg-processing-plugins/src/asset/coordinator.rs`:
+```rust
+pub struct AssetProcessingCoordinator {
+    retrieval: Box<dyn AssetRetrievalPlugin>,
+    resolution: Box<dyn AssetResolutionPlugin>, 
+    conversion: Box<dyn AssetConversionPlugin>,
+    scene: Box<dyn SceneProcessingPlugin>,
+    tracking: Box<dyn ReferenceTrackingPlugin>,
+}
+
+impl AssetProcessingCoordinator {
+    pub async fn process_campaign(&self, campaign: &mut Campaign) -> Result<()> {
+        // Pipeline: retrieve → resolve → convert → process → update
+        let assets = self.retrieval.retrieve_all(campaign.asset_refs()).await?;
+        let resolved = self.resolution.resolve_duplicates(assets).await?;
+        let converted = self.conversion.convert_formats(resolved).await?;
+        let processed = self.scene.process_scene_assets(converted).await?;
+        self.tracking.update_all_references(campaign, processed).await?;
+        Ok(())
+    }
+}
+```
+
+**Step 6: Plugin Discovery Integration**
+Update `ttrpg-processing-plugins/src/lib.rs`:
+```rust
+// Export all plugins for inventory registration
+pub use validation::plugin::ValidationPlugin;
+pub use asset::retrieval::AssetRetrievalPlugin;
+pub use asset::resolution::AssetResolutionPlugin;
+pub use asset::conversion::AssetConversionPlugin;
+pub use asset::scene::SceneProcessingPlugin;
+pub use asset::reference::ReferenceTrackingPlugin;
+pub use asset::coordinator::AssetProcessingCoordinator;
+
+// All plugins auto-registered via inventory macros
+```
+
+**Step 7: CLI Integration Testing**
+```bash
+cd crates/ttrpg-cli
+cargo run -- list-plugins  # Should discover all 6 processing plugins
+cargo test -- test_plugin_discovery  # Verify inventory registration
+```
+
+---
+
+## **T2.1: Plugin Orchestration Foundation** 🆕 **BREAKTHROUGH TASK**
+**Duration**: 2-3 days | **Points**: 15 | **Priority**: 🚨 **BLOCKING**  
+**Dependencies**: Current plugin interfaces complete
+
+### **Revolutionary Libraries Integration for Junior Developer**
+
+**Step 1: Add Plugin Orchestration Dependencies**
+```bash
+cd crates\ttrpg-core
+```
+
+Update `Cargo.toml` with orchestration stack:
+```toml
+[dependencies]
+# Existing dependencies...
+serde = { workspace = true }
+tokio = { workspace = true }
+async-trait = { workspace = true }
+
+# 🚀 PLUGIN ORCHESTRATION STACK
+daggy = "0.8"           # DAG pipeline orchestration
+shaku = "0.6"           # Dependency injection framework
+inventory = "0.3"       # Compile-time plugin registration  
+petgraph = "0.6"        # Graph algorithms and optimization
+tokio-util = "0.7"      # Pipeline coordination utilities
+```
+
+**Step 2: Create Plugin Orchestration Engine**
+Create `ttrpg-core/src/orchestration/mod.rs`:
+```rust
+use daggy::{Dag, NodeIndex, EdgeIndex};
+use shaku::{Component, Interface, HasComponent};
+use std::collections::HashMap;
+use std::sync::Arc;
+
+/// Revolutionary plugin orchestration engine
+pub struct PluginOrchestrator {
+    /// DAG for plugin execution order
+    pipeline_dag: Dag<PluginNode, PluginDependency>,
+    /// Dependency injection container
+    container: Arc<dyn shaku::Container>,
+    /// Plugin metadata registry
+    plugin_registry: HashMap<PluginId, PluginMetadata>,
+    /// Active pipeline configurations
+    active_pipelines: HashMap<PipelineId, PipelineConfig>,
+}
+
+#[derive(Debug, Clone)]
+pub struct PluginNode {
+    pub plugin_id: PluginId,
+    pub plugin_type: PluginType,
+    pub config: PluginConfig,
+    pub status: PluginStatus,
+}
+
+#[derive(Debug, Clone)]
+pub struct PluginDependency {
+    pub dependency_type: DependencyType,
+    pub required: bool,
+    pub version_constraint: Option<String>,
+}
+
+impl PluginOrchestrator {
+    /// Create new orchestrator with automatic plugin discovery
+    pub fn new() -> OrchestrationResult<Self> {
+        let mut orchestrator = Self {
+            pipeline_dag: Dag::new(),
+            container: shaku::ContainerBuilder::new().build(),
+            plugin_registry: HashMap::new(),
+            active_pipelines: HashMap::new(),
+        };
+        
+        // Auto-discover plugins using inventory
+        orchestrator.discover_plugins()?;
+        orchestrator.build_dependency_graph()?;
+        
+        Ok(orchestrator)
+    }
+    
+    /// Automatically discover all registered plugins
+    fn discover_plugins(&mut self) -> OrchestrationResult<()> {
+        // Use inventory to find all plugins registered at compile time
+        for plugin_info in inventory::iter::<PluginInfo> {
+            self.register_plugin(plugin_info)?;
+        }
+        Ok(())
+    }
+    
+    /// Build optimal execution DAG for pipeline
+    pub fn build_pipeline(
+        &mut self,
+        input_format: &str,
+        output_format: &str,
+        requirements: PipelineRequirements,
+    ) -> OrchestrationResult<PipelineId> {
+        // Automatically determine required plugins
+        let required_plugins = self.resolve_plugin_dependencies(
+            input_format, output_format, requirements
+        )?;
+        
+        // Build DAG with optimal execution order
+        let pipeline_dag = self.build_execution_dag(required_plugins)?;
+        
+        // Validate pipeline (cycle detection with petgraph)
+        self.validate_pipeline(&pipeline_dag)?;
+        
+        // Store pipeline configuration
+        let pipeline_id = PipelineId::new();
+        self.active_pipelines.insert(pipeline_id, PipelineConfig {
+            dag: pipeline_dag,
+            metadata: PipelineMetadata::new(input_format, output_format),
+        });
+        
+        Ok(pipeline_id)
+    }
+    
+    /// Execute pipeline with parallel processing
+    pub async fn execute_pipeline(
+        &self,
+        pipeline_id: PipelineId,
+        input_data: InputData,
+    ) -> OrchestrationResult<OutputData> {
+        let pipeline = self.active_pipelines.get(&pipeline_id)
+            .ok_or(OrchestrationError::PipelineNotFound)?;
+        
+        // Execute DAG with automatic parallelization
+        let mut execution_context = ExecutionContext::new(input_data);
+        
+        // Process DAG in topological order with parallel execution where possible
+        let node_indices = daggy::petgraph::algo::toposort(&pipeline.dag.graph(), None)
+            .map_err(|_| OrchestrationError::CyclicDependency)?;
+        
+        for node_index in node_indices {
+            let plugin_node = &pipeline.dag[node_index];
+            self.execute_plugin_node(plugin_node, &mut execution_context).await?;
+        }
+        
+        Ok(execution_context.into_output())
+    }
+}
+```
+
+**Step 3: Plugin Auto-Registration System**
+Create `ttrpg-core/src/plugins/registry.rs`:
+```rust
+use inventory;
+
+/// Plugin information for compile-time registration
+pub struct PluginInfo {
+    pub id: &'static str,
+    pub name: &'static str,
+    pub version: &'static str,
+    pub plugin_type: PluginType,
+    pub dependencies: &'static [&'static str],
+    pub factory: fn() -> Box<dyn DynPlugin>,
+}
+
+// Auto-register plugins at compile time
+inventory::collect!(PluginInfo);
+
+// Example plugin registration (other plugins will use this pattern)
+inventory::submit! {
+    PluginInfo {
+        id: "console_logging_plugin",
+        name: "Console Logging Plugin",
+        version: "1.0.0",
+        plugin_type: PluginType::Logging,
+        dependencies: &[],
+        factory: || Box::new(ConsoleLoggingPlugin::new()),
+    }
+}
+```
+
+### **Success Criteria for Junior Developer**
+- [ ] ✅ All orchestration libraries integrated and compiling
+- [ ] ✅ Plugin auto-discovery working with `inventory`
+- [ ] ✅ DAG pipeline building and validation functional
+- [ ] ✅ Dependency injection container operational
+- [ ] ✅ Basic pipeline execution with parallel processing
+- [ ] ✅ Comprehensive test suite covering orchestration scenarios
+
+---
+
+## **T2.1: Multi-Format Input Plugin System** 🆕 **MOVED FROM M9**
+**Duration**: 4 days | **Points**: 12 | **Priority**: 🔥 HIGH  
+**Dependencies**: T2.0 Plugin Orchestration Foundation
 
 ### **Implementation Steps for Junior Developer**
 
-**Step 1: Set Up ttrpg-formats Crate**
+**Step 1: Enhanced Multi-Format Support**
 ```bash
 cd crates\ttrpg-formats
 ```
 
-Update `Cargo.toml`:
+Update `Cargo.toml` with multi-format dependencies:
 ```toml
 [dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
 ttrpg-core = { path = "../ttrpg-core" }
 zip = { workspace = true }
+
+# 🌐 MULTI-FORMAT SUPPORT
+serde_xml_rs = "0.6"     # Fantasy Grounds XML support
+regex = "1.10"           # Pattern matching for format detection
+url = "2.0"              # Pathbuilder URL parsing
 tracing = { workspace = true }
 ```
 

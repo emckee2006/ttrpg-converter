@@ -6,7 +6,7 @@ pub mod commands;
 
 pub mod prelude {
     //! Common imports for this crate
-    pub use crate::commands::test_roll20::*;
+    // CLI commands migrated to plugin architecture - no direct command exports needed
 }
 
 /// Placeholder for initial development

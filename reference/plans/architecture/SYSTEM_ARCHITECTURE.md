@@ -2,82 +2,105 @@
 
 ## 🎯 ARCHITECTURAL VISION
 
-**Transformation**: From simple R20→Foundry converter to Universal TTRPG Campaign Conversion Platform
+**Transformation**: From simple R20→Foundry converter to **Universal Visual Plugin Orchestration Platform**
 
-**Core Capabilities**:
-- **Multi-System**: 5e ↔ PF1e ↔ PF2e ↔ Generic systems
-- **Multi-Platform**: Foundry VTT + Pathbuilder + future integrations
-- **Multi-Version**: Foundry v10, v11, v12+ with automatic migration
-- **High-Performance**: 10-50x speed improvements via Rust services
+**Revolutionary Capabilities**:
+- **Visual Pipeline Builder**: Drag-and-drop plugin orchestration with real-time validation
+- **Plugin Ecosystem**: Unlimited extensibility with automatic dependency resolution
+- **Multi-Format**: Roll20, Foundry VTT, Fantasy Grounds, Pathbuilder with auto-discovery
+- **Multi-System**: 5e ↔ PF1e ↔ PF2e ↔ Generic systems with rule engine integration
+- **Performance**: Native Rust with DAG-optimized parallel pipelines
+- **Professional UX**: Modern GUI with template galleries and interactive workflows
 
 ---
 
-## 📊 CURRENT STATE ARCHITECTURE
+## 🚀 NEW PLUGIN ORCHESTRATION ARCHITECTURE
 
-### **Current System Overview**
+### **Revolutionary Plugin System Overview**
 
 ```mermaid
 graph TB
     %% User Interface Layer
-    subgraph "🖥️ USER INTERFACE LAYER"
-        GUI_WEB["🌐 Web GUI (Eel/Vue.js)<br/>📁 client/ directory<br/>~2K LOC Frontend"]
-        GUI_CLI["⚡ CLI Interface<br/>📄 main.py<br/>~200 LOC"]
+    subgraph "🎨 VISUAL INTERFACE LAYER"
+        GUI_VISUAL["🖼️ Visual Pipeline Builder<br/>egui + egui_graphs<br/>Drag-and-drop DAG Editor<br/>Real-time Validation"]
+        GUI_CLI["⚡ Smart CLI Interface<br/>Rust CLI with Plugin Discovery<br/>Pipeline Templates<br/>Interactive Workflows"]
     end
 
-    %% Python Application Layer  
-    subgraph "🐍 PYTHON APPLICATION LAYER (~11K LOC)"
-        CONVERTER["🔄 R20Converter Core<br/>📄 R20Converter.py<br/>~800 LOC"]
-        
-        subgraph "📊 Entity Processors"
-            ACTORS["👥 Actors<br/>📄 actors.py<br/>~2,806 LOC"]
-            SCENES["🗺️ Scenes<br/>📄 scenes.py<br/>~935 LOC"] 
-            ITEMS["🎒 Items<br/>📄 items.py<br/>~500 LOC"]
-            JOURNAL["📰 Journal<br/>📄 journal.py<br/>~400 LOC"]
-            OTHERS["🔧 Others<br/>Tables, Playlists, etc.<br/>~1,000 LOC"]
+    %% Plugin Orchestration Engine
+    subgraph "🔧 PLUGIN ORCHESTRATION ENGINE"
+        DAGGY["📊 Pipeline Engine<br/>daggy - DAG Execution<br/>Automatic Dependency Resolution<br/>Parallel Processing"]
+        SHAKU["🔗 Dependency Injection<br/>shaku - Service Container<br/>Plugin Lifecycle Management<br/>Type-safe Dependencies"]
+        INVENTORY["📦 Plugin Registry<br/>inventory - Auto-discovery<br/>Compile-time Registration<br/>Metadata Management"]
+        PETGRAPH["🕸️ Graph Analysis<br/>petgraph - Graph Algorithms<br/>Cycle Detection<br/>Optimization"]
+    end
+
+    %% Core Plugin Interfaces
+    subgraph "🔌 UNIFIED PLUGIN INTERFACES"
+        INPUT_PLUGINS["📥 Input Plugins<br/>Roll20InputPlugin<br/>FoundryInputPlugin<br/>FantasyGroundsInputPlugin<br/>PathbuilderInputPlugin"]
+        PROCESS_PLUGINS["⚙️ Processing Plugins<br/>ValidationPlugin<br/>AssetPlugin<br/>ConversionPlugin<br/>OptimizationPlugin"]
+        OUTPUT_PLUGINS["📤 Output Plugins<br/>FoundryOutputPlugin<br/>JSONExportPlugin<br/>PDFExportPlugin<br/>ModuleExportPlugin"]
+        UTILITY_PLUGINS["🛠️ Utility Plugins<br/>LoggingPlugin<br/>MetricsPlugin<br/>CachePlugin<br/>SecurityPlugin"]
+    end
+
+    %% Rust Workspace Architecture
+    subgraph "⚡ RUST WORKSPACE (~15K LOC)"
+        subgraph "🎯 ttrpg-core (Core Engine)"
+            TYPES["📋 Universal Types<br/>Campaign, Actor, Scene<br/>Cross-platform Compatibility"]
+            PLUGINS_CORE["🔧 Plugin Framework<br/>Trait Definitions<br/>Lifecycle Management"]
+            ORCHESTRATOR["🎭 Orchestration Engine<br/>Pipeline Builder<br/>Execution Coordinator"]
         end
         
-        SERVICES_PY["⚙️ Python Services<br/>📁 services/<br/>~300 LOC"]
-        UTILS["🛠️ Utilities<br/>📄 utils.py<br/>~400 LOC"]
-    end
-
-    %% Rust Services Layer - Current Architecture
-    subgraph "⚡ RUST SERVICES LAYER (~4K LOC)"
-        subgraph "🏗️ SINGLE CRATE: r20converter-rust"
-            MANAGER["🎯 Service Manager<br/>📄 manager.rs<br/>~224 LOC"]
-            ASSET["🗂️ Asset Service<br/>📁 asset/<br/>~723 LOC"]
-            VALIDATOR["✅ Validator<br/>📁 validator/<br/>~895 LOC"]
-            LOGGER["📝 Logger<br/>📁 logger/<br/>~344 LOC"]
-            MEDIA["🎨 Media Optimizer<br/>📁 media/<br/>~975 LOC"]
-            DATABASE["💾 Database Layer<br/>📁 database/<br/>~100 LOC"]
+        subgraph "🗂️ ttrpg-assets (Asset Processing)"
+            ASSET_PLUGINS["🖼️ Asset Plugins<br/>Download, Cache, Optimize<br/>Multi-format Support"]
         end
-    end
-
-    %% Integration Layer
-    subgraph "🔌 INTEGRATION LAYER"
-        PYO3["🐍⚡ PyO3 Bindings<br/>📄 lib.rs<br/>~200 LOC<br/>Python ↔ Rust Bridge"]
+        
+        subgraph "📄 ttrpg-formats (Format Support)"
+            FORMAT_PLUGINS["📝 Format Plugins<br/>JSON, XML, Database<br/>Auto-detection"]
+        end
+        
+        subgraph "🖥️ ttrpg-cli (Command Interface)"
+            CLI_ENGINE["⚡ CLI Engine<br/>Plugin Discovery<br/>Template Management"]
+        end
+        
+        subgraph "🎨 ttrpg-gui (Visual Interface)"
+            VISUAL_ENGINE["🖼️ Visual Engine<br/>egui Framework<br/>Pipeline Builder"]
+        end
     end
 
     %% External Systems
-    subgraph "📦 EXTERNAL SYSTEMS"
-        FOUNDRY["🏰 Foundry VTT<br/>Database Files<br/>LevelDB/NeDB"]
-        ROLL20["🎲 Roll20 Exports<br/>ZIP/JSON Files"]
-        WEB["🌐 External Assets<br/>HTTP Downloads"]
+    subgraph "📦 EXTERNAL PLATFORMS"
+        ROLL20["🎲 Roll20<br/>Campaign Exports<br/>Asset References"]
+        FOUNDRY["🏰 Foundry VTT<br/>v10, v11, v12+<br/>Module System"]
+        FANTASY_GROUNDS["🛡️ Fantasy Grounds<br/>XML Campaigns<br/>Asset Packs"]
+        PATHBUILDER["📱 Pathbuilder<br/>Character Data<br/>Mobile Integration"]
+        CLOUD["☁️ Cloud Storage<br/>Google Drive, Dropbox<br/>Sync & Backup"]
     end
 
     %% Data Flow Connections
-    GUI_WEB --> CONVERTER
-    GUI_CLI --> CONVERTER
+    GUI_VISUAL --> DAGGY
+    GUI_CLI --> DAGGY
     
-    CONVERTER --> ACTORS
-    CONVERTER --> SCENES
-    CONVERTER --> ITEMS
-    CONVERTER --> JOURNAL
-    CONVERTER --> OTHERS
+    DAGGY --> SHAKU
+    SHAKU --> INVENTORY
+    INVENTORY --> INPUT_PLUGINS
+    INVENTORY --> PROCESS_PLUGINS
+    INVENTORY --> OUTPUT_PLUGINS
+    INVENTORY --> UTILITY_PLUGINS
     
-    ACTORS --> PYO3
-    SCENES --> PYO3
-    ITEMS --> PYO3
-    JOURNAL --> PYO3
+    INPUT_PLUGINS --> TYPES
+    PROCESS_PLUGINS --> TYPES
+    OUTPUT_PLUGINS --> TYPES
+    
+    TYPES --> PLUGINS_CORE
+    PLUGINS_CORE --> ORCHESTRATOR
+    
+    INPUT_PLUGINS --> ROLL20
+    INPUT_PLUGINS --> FOUNDRY
+    INPUT_PLUGINS --> FANTASY_GROUNDS
+    INPUT_PLUGINS --> PATHBUILDER
+    
+    OUTPUT_PLUGINS --> FOUNDRY
+    OUTPUT_PLUGINS --> CLOUD
     OTHERS --> PYO3
     
     SERVICES_PY --> PYO3

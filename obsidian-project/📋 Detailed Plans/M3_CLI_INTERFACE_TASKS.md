@@ -1,20 +1,25 @@
-# M3: CLI Interface Tasks - Junior Developer Implementation Guide
+# M3: CLI Interface - Junior Developer Implementation Guide
 
-## 🎯 **MILESTONE 3 OVERVIEW** (MASSIVELY EXPANDED SCOPE)
-**Duration**: 3 weeks | **Total Points**: 40 | **Priority**: 🔥 HIGH
+## 🎯 **MILESTONE 3 OVERVIEW**
+**Duration**: 2 weeks | **Total Points**: 20 | **Priority**: 🔥 HIGH
+**Dependencies**: M2 Processing Plugin Architecture Foundation
 
-Advanced command-line interface with 30+ sophisticated options, interactive mode, batch processing, and modern UX from previous R20Converter analysis.
+Professional CLI interface with automatic plugin discovery and interactive processing pipeline management.
 
-### 🚨 **EXPANDED SCOPE BASED ON PREVIOUS R20CONVERTER ANALYSIS**
-Major scope expansion includes 30+ advanced CLI options that were completely missing:
-- **Campaign Customization**: Title, description, password protection, interactive setup
-- **Advanced Wall Processing**: Minimum length, angle optimization, cleanup scenes, boundary walls
-- **Door Detection**: Auto-doors, color-based detection, secret door support
-- **Asset Handling**: Original URLs, images as drawings, path optimization, size limits
-- **Map Features**: Fog control, token bar configuration, grid settings
-- **Module Export**: Export as modules, disable specific features, compendium management
-- **Data Integration**: FVTT data path, NPC source integration, overwrite protection
-- **Batch Operations**: Interactive mode, archived campaign handling, chat conversion control
+### 🔧 **CLI CORE FEATURES**
+Streamlined CLI leveraging Processing Plugin Architecture:
+- **Plugin Discovery Commands**: List and inspect available processing plugins
+- **Interactive Pipeline Builder**: Step-through plugin configuration with `dialoguer`
+- **Template Management**: Save/load common processing workflows
+- **Progress Visualization**: Real-time processing with `indicatif` progress bars
+- **Error Handling**: Clear error messages with recovery suggestions
+
+### 🎆 **USER EXPERIENCE FOCUS**
+Professional CLI experience:
+- **Colored Output**: `console` crate for beautiful terminal output
+- **Interactive Prompts**: Multi-select plugin configuration
+- **Smart Validation**: Real-time pipeline validation before execution
+- **Quick Commands**: Common workflows accessible via shortcuts
 
 ### 📐 **PROFESSIONAL CLI FRAMEWORKS**
 Eliminate reinvented wheels with professional libraries:
@@ -22,22 +27,22 @@ Eliminate reinvented wheels with professional libraries:
 - `dialoguer` - Interactive prompts and confirmation dialogs
 - `indicatif` - Professional progress bars with ETA and throughput
 - `console` - Terminal styling and cross-platform compatibility
-- `figment` - Configuration management with TOML/environment variable support
+- `inventory` - Plugin discovery and metadata access
 
 ---
 
-## **T3.1: CLI Command Structure & Argument Parsing**
-**Duration**: 2 days | **Points**: 6 | **Priority**: 🔥 HIGH
-**Dependencies**: M1 Complete
+## **T3.1: Interactive Plugin Selection CLI** 🆕 **MOVED FROM M4**
+**Duration**: 3 days | **Points**: 8 | **Priority**: 🔥 HIGH
+**Dependencies**: M2.0 Plugin Orchestration Foundation
 
 ### **Implementation Steps for Junior Developer**
 
-**Step 1: Update ttrpg-cli Dependencies**
+**Step 1: Enhanced CLI Dependencies with Plugin Discovery**
 ```bash
 cd crates\ttrpg-cli
 ```
 
-Update `Cargo.toml`:
+Update `Cargo.toml` with plugin orchestration support:
 ```toml
 [dependencies]
 clap = { workspace = true }
@@ -48,9 +53,389 @@ ttrpg-core = { path = "../ttrpg-core" }
 ttrpg-formats = { path = "../ttrpg-formats" }
 console = "0.15"
 directories = "5.0"
+
+# 🔍 PLUGIN DISCOVERY SUPPORT
+inventory = "0.3"        # Access to plugin registry
+serde = { workspace = true }  # Pipeline configuration serialization
+toml = "0.8"             # Template file format
 ```
 
-**Step 2: Design CLI Structure**
+**Step 2: Plugin Discovery CLI Commands**
+Create `ttrpg-cli/src/commands/plugins.rs`:
+```rust
+use clap::Subcommand;
+use dialoguer::{Select, MultiSelect, Input, Confirm};
+use inventory;
+use ttrpg_core::plugins::{PluginInfo, PluginType};
+use ttrpg_processing_plugins::shared::{AssetExecutionContext, ValidationExecutionContext};
+use ttrpg_processing_plugins::asset::coordinator::AssetProcessingCoordinator;
+use std::collections::HashMap;
+
+#[derive(Subcommand, Debug)]
+pub enum PluginCommands {
+    /// List all available plugins
+    List {
+        #[arg(short, long)]
+        plugin_type: Option<PluginType>,
+        #[arg(short, long)]
+        verbose: bool,
+    },
+    /// Interactive plugin selection for pipeline building
+    Select {
+        #[arg(short, long)]
+        input_format: String,
+        #[arg(short, long)]
+        output_format: String,
+        #[arg(long)]
+        save_template: Option<String>,
+    },
+    /// Show detailed plugin information
+    Info {
+        plugin_id: String,
+    },
+    /// Validate plugin compatibility
+    Validate {
+        plugin_ids: Vec<String>,
+    },
+}
+
+pub async fn handle_plugin_commands(cmd: PluginCommands) -> Result<(), CliError> {
+    match cmd {
+        PluginCommands::List { plugin_type, verbose } => {
+            list_plugins(plugin_type, verbose).await
+        }
+        PluginCommands::Select { input_format, output_format, save_template } => {
+            interactive_plugin_selection(input_format, output_format, save_template).await
+        }
+        PluginCommands::Info { plugin_id } => {
+            show_plugin_info(plugin_id).await
+        }
+        PluginCommands::Validate { plugin_ids } => {
+            validate_plugin_compatibility(plugin_ids).await
+        }
+    }
+}
+
+/// List all available plugins with auto-discovery
+async fn list_plugins(plugin_type: Option<PluginType>, verbose: bool) -> Result<(), CliError> {
+    println!("🔍 Discovering available plugins...");
+    
+    let mut plugins_by_type: HashMap<PluginType, Vec<&PluginInfo>> = HashMap::new();
+    
+    // Auto-discover plugins using inventory
+    for plugin_info in inventory::iter::<PluginInfo> {
+        if let Some(filter_type) = &plugin_type {
+            if &plugin_info.plugin_type != filter_type {
+                continue;
+            }
+        }
+        
+        plugins_by_type
+            .entry(plugin_info.plugin_type.clone())
+            .or_insert_with(Vec::new)
+            .push(plugin_info);
+    }
+    
+    // Display plugins organized by type
+    for (ptype, plugins) in plugins_by_type {
+        println!("\n🔧 {} Plugins:", format!("{:?}", ptype).to_uppercase());
+        
+        for plugin in plugins {
+            if verbose {
+                println!("  ✅ {} ({})", plugin.name.bold(), plugin.id.cyan());
+                println!("      Version: {}", plugin.version);
+                println!("      Dependencies: {:?}", plugin.dependencies);
+            } else {
+                println!("  ✅ {} ({})", plugin.name, plugin.id.cyan());
+            }
+        }
+    }
+    
+    Ok(())
+}
+
+/// Interactive plugin selection with smart defaults
+async fn interactive_plugin_selection(
+    input_format: String,
+    output_format: String,
+    save_template: Option<String>,
+) -> Result<(), CliError> {
+    println!("🎯 Building pipeline for {} → {}", input_format.cyan(), output_format.cyan());
+    
+    let mut coordinator = AssetProcessingCoordinator::new()?;
+    
+    // Get smart processing plugin recommendations
+    let recommended_pipeline = coordinator.recommend_processing_pipeline(&input_format, &output_format)?;
+    
+    println!("\n🤖 Recommended pipeline:");
+    for (i, plugin) in recommended_pipeline.plugins.iter().enumerate() {
+        println!("  {}. {} ({})", i + 1, plugin.name.green(), plugin.id);
+    }
+    
+    let use_recommended = Confirm::new()
+        .with_prompt("Use recommended pipeline?")
+        .default(true)
+        .interact()?;
+    
+    let selected_plugins = if use_recommended {
+        recommended_pipeline.plugins
+    } else {
+        // Manual plugin selection
+        interactive_manual_selection(&input_format, &output_format)?
+    };
+    
+    // Build and validate processing pipeline
+    let pipeline_id = coordinator.build_processing_pipeline_from_plugins(selected_plugins)?;
+    
+    println!("✅ Pipeline built successfully: {}", pipeline_id.to_string().green());
+    
+    // Save as processing template if requested
+    if let Some(template_name) = save_template {
+        coordinator.save_processing_template(pipeline_id, &template_name)?;
+        println!("💾 Processing template saved: {}", template_name.cyan());
+    }
+    
+    Ok(())
+}
+```
+
+---
+
+## **T3.2: Pipeline Template Management CLI** 🆕 **MOVED FROM M4**
+**Duration**: 2 days | **Points**: 4 | **Priority**: 🟡 MEDIUM
+**Dependencies**: T3.1 Interactive Plugin Selection CLI
+
+### **Implementation Steps for Junior Developer**
+
+**Step 1: Template Management Commands**
+Create `ttrpg-cli/src/commands/templates.rs`:
+```rust
+use clap::Subcommand;
+use ttrpg_processing_plugins::asset::coordinator::{AssetProcessingCoordinator, ProcessingTemplate};
+use std::path::PathBuf;
+use std::fs;
+
+#[derive(Subcommand, Debug)]
+pub enum TemplateCommands {
+    /// List available pipeline templates
+    List,
+    /// Save current pipeline as template
+    Save {
+        pipeline_id: String,
+        template_name: String,
+        #[arg(short, long)]
+        description: Option<String>,
+    },
+    /// Load pipeline from template
+    Load {
+        template_name: String,
+        #[arg(short, long)]
+        override_input: Option<String>,
+        #[arg(short, long)]
+        override_output: Option<String>,
+    },
+    /// Delete pipeline template
+    Delete {
+        template_name: String,
+        #[arg(short, long)]
+        confirm: bool,
+    },
+    /// Show template details
+    Info {
+        template_name: String,
+    },
+}
+
+pub async fn handle_template_commands(cmd: TemplateCommands) -> Result<(), CliError> {
+    let coordinator = AssetProcessingCoordinator::new()?;
+    
+    match cmd {
+        TemplateCommands::List => list_templates(&coordinator).await,
+        TemplateCommands::Save { pipeline_id, template_name, description } => {
+            save_template(&orchestrator, pipeline_id, template_name, description).await
+        }
+        TemplateCommands::Load { template_name, override_input, override_output } => {
+            load_template(&orchestrator, template_name, override_input, override_output).await
+        }
+        TemplateCommands::Delete { template_name, confirm } => {
+            delete_template(&orchestrator, template_name, confirm).await
+        }
+        TemplateCommands::Info { template_name } => {
+            show_template_info(&orchestrator, template_name).await
+        }
+    }
+}
+
+/// List all available processing templates
+async fn list_templates(coordinator: &AssetProcessingCoordinator) -> Result<(), CliError> {
+    println!("📋 Available Pipeline Templates:");
+    
+    let templates = coordinator.list_processing_templates()?;
+    
+    if templates.is_empty() {
+        println!("  No templates found. Create one with 'ttrpg-cli plugins select --save-template <name>'");
+        return Ok(());
+    }
+    
+    for template in templates {
+        println!("\n  📋 {} ({})", template.name.bold(), template.id.cyan());
+        println!("      {} → {}", template.input_format.green(), template.output_format.green());
+        
+        if let Some(description) = &template.description {
+            println!("      {}", description.dimmed());
+        }
+        
+        println!("      Plugins: {}", template.plugin_count);
+        println!("      Created: {}", template.created_at.format("%Y-%m-%d %H:%M"));
+    }
+    
+    Ok(())
+}
+```
+
+**Step 2: Built-in Template Gallery**
+Create `ttrpg-cli/src/templates/gallery.rs`:
+```rust
+use ttrpg_core::orchestration::{PipelineTemplate, PluginConfig};
+use serde::{Deserialize, Serialize};
+
+/// Built-in template gallery with common processing workflows
+pub struct ProcessingTemplateGallery;
+
+impl ProcessingTemplateGallery {
+    /// Get all built-in processing templates
+    pub fn get_builtin_templates() -> Vec<ProcessingTemplate> {
+        vec![
+            Self::roll20_to_foundry_basic(),
+            Self::roll20_to_foundry_with_assets(),
+            Self::foundry_to_roll20(),
+            Self::multi_format_validation(),
+            Self::asset_optimization_only(),
+        ]
+    }
+    
+    /// Basic Roll20 to Foundry processing pipeline
+    fn roll20_to_foundry_basic() -> ProcessingTemplate {
+        PipelineTemplate {
+            id: "roll20-foundry-basic".to_string(),
+            name: "Roll20 → Foundry (Basic)".to_string(),
+            description: Some("Basic Roll20 to Foundry VTT conversion without asset processing".to_string()),
+            input_format: "roll20".to_string(),
+            output_format: "foundry".to_string(),
+            plugins: vec![
+                PluginConfig {
+                    plugin_id: "roll20_input_plugin".to_string(),
+                    config: serde_json::json!({
+                        "flexible_schema": true,
+                        "skip_malformed": false,
+                    }),
+                },
+                PluginConfig {
+                    plugin_id: "validation_plugin".to_string(),
+                    config: serde_json::json!({
+                        "use_jsonschema": true,
+                        "parallel_validation": true,
+                        "shared_cpu_pool": true,
+                    }),
+                },
+                PluginConfig {
+                    plugin_id: "foundry_output_plugin".to_string(),
+                    config: serde_json::json!({
+                        "foundry_version": "v12",
+                        "create_module": false,
+                    }),
+                },
+            ],
+            plugin_count: 3,
+            created_at: chrono::Utc::now(),
+        }
+    }
+    
+    /// Roll20 to Foundry with comprehensive asset processing
+    fn roll20_to_foundry_with_assets() -> PipelineTemplate {
+        PipelineTemplate {
+            id: "roll20-foundry-assets".to_string(),
+            name: "Roll20 → Foundry (With Assets)".to_string(),
+            description: Some("Complete Roll20 to Foundry conversion with asset optimization".to_string()),
+            input_format: "roll20".to_string(),
+            output_format: "foundry".to_string(),
+            plugins: vec![
+                PluginConfig {
+                    plugin_id: "roll20_input_plugin".to_string(),
+                    config: serde_json::json!({
+                        "flexible_schema": true,
+                        "extract_assets": true,
+                    }),
+                },
+                PluginConfig {
+                    plugin_id: "asset_processing_coordinator".to_string(),
+                    config: serde_json::json!({
+                        "use_blake3_hashing": true,
+                        "shared_http_client": true,
+                        "concurrent_semaphore_limit": 50,
+                        "shared_cpu_pool": true,
+                    }),
+                },
+                PluginConfig {
+                    plugin_id: "asset_resolution_plugin".to_string(),
+                    config: serde_json::json!({
+                        "blake3_deduplication": true,
+                        "shared_execution_context": true,
+                    }),
+                },
+                PluginConfig {
+                    plugin_id: "asset_conversion_plugin".to_string(),
+                    config: serde_json::json!({
+                        "imageproc_optimization": true,
+                        "parallel_processing": true,
+                    }),
+                },
+                PluginConfig {
+                    plugin_id: "scene_processing_plugin".to_string(),
+                    config: serde_json::json!({
+                        "geo_wall_extraction": true,
+                        "parallel_processing": true,
+                    }),
+                },
+                PluginConfig {
+                    plugin_id: "reference_tracking_plugin".to_string(),
+                    config: serde_json::json!({
+                        "campaign_coordination": true,
+                        "dashmap_references": true,
+                    }),
+                },
+                PluginConfig {
+                    plugin_id: "foundry_output_plugin".to_string(),
+                    config: serde_json::json!({
+                        "foundry_version": "v12",
+                        "create_module": true,
+                        "include_assets": true,
+                    }),
+                },
+            ],
+            plugin_count: 7,
+            created_at: chrono::Utc::now(),
+        }
+    }
+}
+```
+
+### **Success Criteria for Junior Developer**
+- [ ] ✅ Template save/load functionality working with `daggy` serialization
+- [ ] ✅ Built-in template gallery with common workflows
+- [ ] ✅ Template validation and compatibility checking
+- [ ] ✅ CLI commands for template management
+- [ ] ✅ Template metadata and versioning support
+
+---
+
+## **T3.3: Enhanced CLI Command Structure**
+**Duration**: 2 days | **Points**: 6 | **Priority**: 🔥 HIGH
+**Dependencies**: M2.0 Plugin Orchestration Foundation
+
+### **Implementation Steps for Junior Developer**
+
+**Step 1: Main CLI Structure with Plugin Support**
 Create `src/cli.rs`:
 ```rust
 #[derive(Parser, Debug)]
@@ -68,28 +453,45 @@ pub struct Cli {
 
 #[derive(Subcommand, Debug)]
 pub enum Commands {
+    /// 🔌 Plugin management and discovery commands
+    #[command(subcommand)]
+    Plugins(PluginCommands),
+    
+    /// 📋 Pipeline template management
+    #[command(subcommand)]  
+    Templates(TemplateCommands),
+    
+    /// 🔄 Convert campaign between formats (smart pipeline selection)
     Convert {
         #[arg(short, long)]
         input: PathBuf,
         #[arg(short, long)]
         output: PathBuf,
-        #[arg(short, long, value_enum)]
-        source: SourceFormat,
-        #[arg(short, long, value_enum)]
-        target: TargetFormat,
+        #[arg(short, long)]
+        input_format: Option<String>,
+        #[arg(short = 'f', long)]
+        output_format: Option<String>,
+        #[arg(long)]
+        template: Option<String>,
+        #[arg(long)]
+        interactive: bool,
         #[arg(long)]
         no_assets: bool,
         #[arg(long)]
         force: bool,
     },
+    
+    /// ✅ Validate campaign data
     Validate {
         #[arg(short, long)]
         input: PathBuf,
-        #[arg(short, long, value_enum)]
-        source: SourceFormat,
+        #[arg(short, long)]
+        format: Option<String>,
         #[arg(long)]
         detailed: bool,
     },
+    
+    /// ℹ️ Show information about files or plugins
     Info {
         #[arg(short, long)]
         input: PathBuf,

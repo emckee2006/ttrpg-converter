@@ -2,10 +2,12 @@
 resolver = "2"
 members = [
     "crates/ttrpg-core",
-    "crates/ttrpg-formats", 
-    "crates/ttrpg-assets",
     "crates/ttrpg-gui",
-    "crates/ttrpg-cli"
+    "crates/ttrpg-cli",
+    # New plugin crates
+    "crates/ttrpg-input-plugins",
+    "crates/ttrpg-output-plugins",
+    "crates/ttrpg-processing-plugins"
 ]
 
 [workspace.dependencies]
@@ -13,10 +15,37 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = { version = "1.0", features = ["full"] }
 anyhow = "1.0"
-thiserror = "1.0"
+thiserror = "2.0"                # Error handling - UPGRADED 1.0→2.0 (BREAKING CHANGES EXPECTED)
 tracing = "0.1"
-tracing-subscriber = "0.3"
+tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
 chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+url = { version = "2.0", features = ["serde"] }
+async-trait = "0.1"
+
+# Additional Core Dependencies - UPGRADED
+toml = "0.9"                     # TOML parsing and serialization - UPGRADED 0.8→0.9
+regex = "1.10"                   # Regular expressions for validation
+figment = { version = "0.10", features = ["toml", "env"] }  # Configuration management
+dirs = "6.0"                     # Cross-platform user directory detection - UPGRADED
+futures = "0.3"                  # Future utilities
+tracing-appender = "0.2"         # Tracing file appender
+
+# CLI dependencies
+clap = { version = "4.4", features = ["derive"] }
+dialoguer = "0.11"                # Interactive prompts and confirmation dialogs
+indicatif = "0.18"                # Professional progress bars with ETA and throughput - UPGRADED
+console = "0.16"                  # Terminal styling and cross-platform compatibility - UPGRADED
+directories = "6.0"               # Cross-platform directory paths - UPGRADED
+
+# Testing dependencies that need to be in main dependencies section for workspace inheritance
+assert_fs = "1.0"                    # File system testing utilities
+predicates = "3.0"                   # Additional assertion predicates
+proptest = "1.4"                     # Property-based testing
+criterion = { version = "0.7", features = ["html_reports"] }  # Benchmarking - UPGRADED
+temp-env = "0.3"                     # Environment variable testing
+tokio-test = "0.4"                   # Async testing utilities
+tempfile = "3.8"                     # Temporary file testing
 
 # GUI dependencies
 egui = "0.28"
@@ -24,8 +53,35 @@ eframe = "0.28"
 
 # Performance
 rayon = "1.8"
+num_cpus = "1.16"               # CPU count detection for parallel processing
 
-# Asset processing  
+# Plugin Orchestration Libraries (M2.0 Foundation) - UPGRADED
+daggy = "0.9"                    # Graph-based plugin orchestration and dependency resolution - UPGRADED 0.8→0.9
+shaku = "0.6"                    # Dependency injection container for plugin lifecycle management
+inventory = "0.3"               # Plugin auto-discovery and registration at compile time
+petgraph = "0.8"                # Advanced graph algorithms for plugin pipeline analysis - UPGRADED 0.6→0.8
+egui_graphs = "0.20"            # Visual plugin pipeline builder and editor
+
+# HTTP Client Stack - UPGRADED
+reqwest = { version = "0.12", features = ["json", "stream"] }  # HTTP client - UPGRADED 0.11→0.12
+reqwest-middleware = "0.4"       # Middleware system - UPGRADED 0.2→0.4
+reqwest-retry = "0.7"           # Retry logic - UPGRADED 0.3→0.7
+reqwest-tracing = "0.5"         # Tracing integration - UPGRADED 0.4→0.5
+http-cache-reqwest = "0.16"     # HTTP caching - UPGRADED 0.11→0.16
+
+# Validation Framework - UPGRADED
+validator = "0.20"              # Validation system - UPGRADED 0.18→0.20
+
+# Asset processing - UPGRADED
 image = "0.25"
-zip = "2.1"
-reqwest = { version = "0.11", features = ["json", "stream"] }
+zip = "4.3"                      # Compression - UPGRADED 0.6→4.3 (MASSIVE ARCHITECTURAL CHANGE)
+
+# Processing Plugin Dependencies - VERIFIED VERSIONS
+jsonschema = "0.17.0"            # Validation plugin - JSON schema validation
+blake3 = "1.8.2"                 # Performance upgrade - 10x faster than sha2
+dashmap = "6.1.0"                # Concurrent collections for shared state
+imageproc = "0.25.0"             # Asset processing - image operations
+geo = "0.28.0"                   # Asset processing - geometric algorithms
+moka = { version = "0.12", features = ["future"] }  # Memory caching
+sha2 = "0.10"                    # Cryptographic hashing
+

@@ -9,13 +9,24 @@ repository = "https://github.com/emckee2006/ttrpg-converter"
 
 [dependencies]
 ttrpg-core = { path = "../ttrpg-core" }
-ttrpg-formats = { path = "../ttrpg-formats" }
-ttrpg-assets = { path = "../ttrpg-assets" }
+ttrpg-output-plugins = { path = "../ttrpg-output-plugins" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 anyhow = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
-tokio = { version = "1.0", features = ["full"] }
-zip = "0.6"
-tracing-subscriber = { version = "0.3", workspace = true }
+tokio = { workspace = true }
+zip = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# 🚀 PLUGIN ORCHESTRATION CLI DEPENDENCIES - WORKSPACE UPGRADED
+clap = { workspace = true }
+dialoguer = { workspace = true }      # Interactive prompts and confirmation dialogs
+indicatif = { workspace = true }      # Professional progress bars with ETA and throughput
+console = { workspace = true }        # Terminal styling and cross-platform compatibility
+
+# 🔍 PLUGIN DISCOVERY SUPPORT
+inventory = { workspace = true }      # Access to plugin registry
+toml = { workspace = true }           # Template file format
+uuid = { workspace = true }           # Pipeline ID generation
+directories = { workspace = true }    # Cross-platform directory paths

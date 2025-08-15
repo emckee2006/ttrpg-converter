@@ -1,42 +1,46 @@
-# M4: GUI Interface Tasks - Junior Developer Implementation Guide
+# M4: Visual Pipeline Builder - Junior Developer Implementation Guide
 
-## 🎯 **MILESTONE 4 OVERVIEW** (MASSIVELY EXPANDED SCOPE)
-**Duration**: 4 weeks | **Total Points**: 45 | **Priority**: 🔥 HIGH
+## 🎯 **MILESTONE 4 OVERVIEW**
+**Duration**: 4 weeks | **Total Points**: 40 | **Priority**: 🔥 HIGH
+**Dependencies**: M3 CLI Interface Complete
 
-Advanced native GUI with egui featuring sophisticated batch processing interface, campaign preview, asset optimization settings, and all advanced conversion options from M3 CLI integration.
+Professional visual drag-and-drop pipeline builder using `egui_graphs`, making Processing Plugin Architecture accessible through intuitive GUI interface.
 
-### 🚨 **EXPANDED SCOPE BASED ON M3 CLI INTEGRATION**
-Major scope expansion to provide GUI access to all 30+ CLI features:
-- **Advanced Batch Processing Interface**: Drag & drop multiple campaigns, parallel processing visualization
-- **Campaign Preview & Validation**: Visual campaign inspection before conversion with asset thumbnails
-- **Asset Optimization Settings GUI**: Interactive asset processing configuration with real-time previews
-- **Advanced Conversion Options**: GUI access to all wall processing, door detection, and module export options
-- **Professional Progress Visualization**: Multi-threaded progress tracking with detailed statistics panels
-- **Interactive Campaign Customization**: GUI wizard mode complementing CLI interactive mode
-- **Configuration Management UI**: Visual TOML config editor with live validation
+### 🎨 **VISUAL PIPELINE FEATURES**
+Builds on Processing Plugin Architecture foundation:
+- **Drag-and-Drop DAG Editor**: Visual pipeline builder using `egui_graphs` 
+- **Real-time Validation**: Live pipeline validation with visual feedback
+- **Interactive Plugin Config**: Visual settings for all 6 processing plugins
+- **Template Gallery**: Save/load visual pipeline templates
+- **Live Execution View**: Real-time progress with visual plugin status
+- **Smart Recommendations**: Context-aware plugin suggestions
+- **Professional UI**: Polished interface competitive with commercial tools
 
-### 📐 **PROFESSIONAL GUI FRAMEWORKS**
-Eliminate reinvented wheels with battle-tested libraries:
-- `egui` (v0.24) - Immediate mode GUI with professional widgets and styling
-- `eframe` - Native windowing with cross-platform support
-- `rfd` - Native file dialogs for professional file selection
-- `image` - Thumbnail generation and preview support
-- `tokio` - Async GUI operations without blocking UI thread
+### 🛠️ **GUI LIBRARIES** 
+Library-driven implementation for rapid development:
+- `egui_graphs` - Professional DAG editor out-of-the-box
+- `egui` - Immediate mode GUI with professional styling
+- `eframe` - Cross-platform windowing 
+- `daggy` - Pipeline serialization and manipulation
+- `inventory` - Plugin discovery for visual browser
+- `tokio` - Async GUI with non-blocking processing
+- `rfd` - Native file dialogs for campaign import/export
+- `image` - Campaign and asset thumbnail generation
 
 ---
 
-## **T4.1: egui Application Foundation**
-**Duration**: 3 days | **Points**: 7 | **Priority**: 🟡 MEDIUM
-**Dependencies**: M3 Complete (CLI foundation)
+## **T4.1: Visual Pipeline Builder Foundation** 🆕 **REVOLUTIONARY FEATURE**
+**Duration**: 5 days | **Points**: 12 | **Priority**: 🔥 HIGH
+**Dependencies**: M2.0 Processing Plugin Architecture Foundation, M3 CLI Complete
 
 ### **Implementation Steps for Junior Developer**
 
-**Step 1: Set Up ttrpg-gui Crate**
+**Step 1: Enhanced GUI Crate with Visual Pipeline Libraries**
 ```bash
 cd crates\ttrpg-gui
 ```
 
-Update `Cargo.toml`:
+Update `Cargo.toml` with revolutionary visual pipeline dependencies:
 ```toml
 [dependencies]
 egui = { workspace = true }
@@ -46,12 +50,650 @@ ttrpg-cli = { path = "../ttrpg-cli" }
 serde = { workspace = true }
 tokio = { workspace = true }
 
+# 🎨 VISUAL PIPELINE BUILDER DEPENDENCIES
+egui_graphs = "0.17"           # Professional DAG editor with drag-and-drop
+petgraph = { workspace = true } # Graph analysis and cycle detection
+daggy = { workspace = true }    # DAG serialization and manipulation
+inventory = { workspace = true }# Plugin metadata access
+
+# 🖼️ VISUAL ENHANCEMENTS
+rfd = "0.12"                   # Native file dialogs
+image = "0.24"                 # Thumbnail generation
+uuid = { workspace = true }    # Pipeline ID generation
+
 [[bin]]
 name = "ttrpg-gui"
 path = "src/main.rs"
 ```
 
-**Step 2: Create Application Structure**
+**Step 2: Visual Pipeline Builder Core Implementation**
+Create `ttrpg-gui/src/pipeline_builder.rs`:
+```rust
+use egui_graphs::{Graph, GraphView, Node, Edge, NodeId, EdgeId};
+use petgraph::Graph as PetGraph;
+use ttrpg_core::orchestration::{PluginOrchestrator, PipelineTemplate, PluginConfig};
+use ttrpg_core::plugins::{PluginInfo, PluginType};
+use std::collections::HashMap;
+use uuid::Uuid;
+
+/// Visual pipeline builder with drag-and-drop DAG editor
+#[derive(Default)]
+pub struct PipelineBuilder {
+    /// The visual graph representation
+    graph: Graph<PluginNodeData, ConnectionData>,
+    
+    /// Plugin orchestrator for validation and execution
+    orchestrator: Option<PluginOrchestrator>,
+    
+    /// Available plugins from inventory discovery
+    available_plugins: Vec<PluginInfo>,
+    
+    /// Current pipeline being built
+    current_pipeline: Option<PipelineTemplate>,
+    
+    /// Plugin configuration panels
+    plugin_configs: HashMap<NodeId, PluginConfig>,
+    
+    /// UI state
+    selected_node: Option<NodeId>,
+    plugin_browser_open: bool,
+    template_gallery_open: bool,
+    validation_errors: Vec<String>,
+}
+
+#[derive(Clone, Debug)]
+pub struct PluginNodeData {
+    pub plugin_info: PluginInfo,
+    pub config: PluginConfig,
+    pub position: egui::Pos2,
+    pub is_valid: bool,
+}
+
+#[derive(Clone, Debug)]
+pub struct ConnectionData {
+    pub from_plugin: String,
+    pub to_plugin: String,
+    pub data_type: String,
+}
+
+impl PipelineBuilder {
+    pub fn new() -> Self {
+        let mut builder = Self::default();
+        
+        // Initialize plugin orchestrator
+        if let Ok(orchestrator) = PluginOrchestrator::new() {
+            builder.orchestrator = Some(orchestrator);
+        }
+        
+        // Discover available plugins using inventory
+        builder.discover_plugins();
+        
+        builder
+    }
+    
+    /// Discover all available plugins using inventory auto-discovery
+    fn discover_plugins(&mut self) {
+        self.available_plugins.clear();
+        
+        // Auto-discover plugins using inventory
+        for plugin_info in inventory::iter::<PluginInfo> {
+            self.available_plugins.push(plugin_info.clone());
+        }
+        
+        // Sort by plugin type and name for better UX
+        self.available_plugins.sort_by_key(|p| (p.plugin_type.clone(), p.name.clone()));
+    }
+    
+    /// Add plugin to the visual pipeline
+    pub fn add_plugin_node(&mut self, plugin_info: &PluginInfo, position: egui::Pos2) -> NodeId {
+        let node_id = NodeId::new();
+        
+        // Create default plugin configuration
+        let config = PluginConfig {
+            plugin_id: plugin_info.id.clone(),
+            config: serde_json::json!({}),
+        };
+        
+        let node_data = PluginNodeData {
+            plugin_info: plugin_info.clone(),
+            config: config.clone(),
+            position,
+            is_valid: true,
+        };
+        
+        // Add to visual graph
+        let node = Node::new(node_id, node_data);
+        self.graph.add_node(node);
+        
+        // Store configuration
+        self.plugin_configs.insert(node_id, config);
+        
+        // Validate pipeline after adding node
+        self.validate_pipeline();
+        
+        node_id
+    }
+    
+    /// Connect two plugins with data flow edge
+    pub fn connect_plugins(&mut self, from_node: NodeId, to_node: NodeId) -> Result<EdgeId, String> {
+        // Validate connection is allowed
+        if let (Some(from_plugin), Some(to_plugin)) = (
+            self.graph.node(from_node),
+            self.graph.node(to_node)
+        ) {
+            // Check plugin compatibility
+            if self.can_connect_plugins(&from_plugin.payload().plugin_info, &to_plugin.payload().plugin_info) {
+                let edge_id = EdgeId::new();
+                let edge_data = ConnectionData {
+                    from_plugin: from_plugin.payload().plugin_info.id.clone(),
+                    to_plugin: to_plugin.payload().plugin_info.id.clone(),
+                    data_type: "campaign_data".to_string(), // TODO: More sophisticated data type detection
+                };
+                
+                let edge = Edge::new(edge_id, from_node, to_node, edge_data);
+                self.graph.add_edge(edge);
+                
+                // Validate pipeline after connection
+                self.validate_pipeline();
+                
+                Ok(edge_id)
+            } else {
+                Err("Incompatible plugin types for connection".to_string())
+            }
+        } else {
+            Err("Invalid node IDs for connection".to_string())
+        }
+    }
+    
+    /// Check if two plugins can be connected
+    fn can_connect_plugins(&self, from_plugin: &PluginInfo, to_plugin: &PluginInfo) -> bool {
+        use PluginType::*;
+        
+        match (&from_plugin.plugin_type, &to_plugin.plugin_type) {
+            // Input -> Validation, Asset, Export
+            (Input, Validation) | (Input, Asset) | (Input, Export) => true,
+            
+            // Validation -> Asset, Export  
+            (Validation, Asset) | (Validation, Export) => true,
+            
+            // Asset -> Export
+            (Asset, Export) => true,
+            
+            // Logging can connect to anything
+            (_, Logging) | (Logging, _) => true,
+            
+            _ => false,
+        }
+    }
+    
+    /// Validate the current pipeline for cycles and compatibility
+    fn validate_pipeline(&mut self) {
+        self.validation_errors.clear();
+        
+        if let Some(orchestrator) = &self.orchestrator {
+            // Convert visual graph to petgraph for cycle detection
+            let mut petgraph = PetGraph::<String, ()>::new();
+            let mut node_map = HashMap::new();
+            
+            // Add nodes
+            for node in self.graph.nodes_iter() {
+                let petgraph_node = petgraph.add_node(node.payload().plugin_info.id.clone());
+                node_map.insert(node.id(), petgraph_node);
+            }
+            
+            // Add edges
+            for edge in self.graph.edges_iter() {
+                if let (Some(&from), Some(&to)) = (
+                    node_map.get(&edge.source()),
+                    node_map.get(&edge.target())
+                ) {
+                    petgraph.add_edge(from, to, ());
+                }
+            }
+            
+            // Check for cycles using petgraph
+            if petgraph::algo::is_cyclic_directed(&petgraph) {
+                self.validation_errors.push("Pipeline contains cycles - this would cause infinite loops".to_string());
+            }
+            
+            // Additional validation logic...
+        }
+    }
+    
+    /// Build executable pipeline from visual representation
+    pub fn build_pipeline(&self) -> Result<PipelineTemplate, String> {
+        if !self.validation_errors.is_empty() {
+            return Err(format!("Pipeline validation failed: {:?}", self.validation_errors));
+        }
+        
+        let pipeline_id = Uuid::new_v4().to_string();
+        
+        // Convert graph to plugin configuration list
+        let mut plugins = Vec::new();
+        
+        // Topological sort to determine execution order
+        let execution_order = self.topological_sort()?;
+        
+        for node_id in execution_order {
+            if let Some(config) = self.plugin_configs.get(&node_id) {
+                plugins.push(config.clone());
+            }
+        }
+        
+        // Determine input/output formats from first/last plugins
+        let input_format = plugins.first()
+            .map(|p| p.plugin_id.clone())
+            .unwrap_or_else(|| "unknown".to_string());
+        let output_format = plugins.last()
+            .map(|p| p.plugin_id.clone())
+            .unwrap_or_else(|| "unknown".to_string());
+        
+        Ok(PipelineTemplate {
+            id: pipeline_id,
+            name: "Visual Pipeline".to_string(),
+            description: Some("Pipeline created with visual builder".to_string()),
+            input_format,
+            output_format,
+            plugins,
+            plugin_count: plugins.len(),
+            created_at: chrono::Utc::now(),
+        })
+    }
+    
+    /// Topological sort of the pipeline DAG
+    fn topological_sort(&self) -> Result<Vec<NodeId>, String> {
+        // TODO: Implement topological sort for execution order
+        // For now, return nodes in arbitrary order
+        Ok(self.graph.nodes_iter().map(|n| n.id()).collect())
+    }
+}
+```
+
+**Step 3: Visual Pipeline UI Integration**
+Create `ttrpg-gui/src/pipeline_ui.rs`:
+```rust
+use egui::{Context, Ui, Response, Sense, Pos2, Vec2, Color32, Stroke};
+use egui_graphs::{GraphView, DisplayNode, DisplayEdge};
+use crate::pipeline_builder::{PipelineBuilder, PluginNodeData, ConnectionData};
+
+impl PipelineBuilder {
+    /// Render the visual pipeline builder UI
+    pub fn ui(&mut self, ctx: &Context, ui: &mut Ui) -> Response {
+        ui.vertical(|ui| {
+            // Top toolbar
+            self.render_toolbar(ui);
+            
+            // Main pipeline canvas
+            let canvas_response = ui.allocate_response(
+                ui.available_size(),
+                Sense::click_and_drag()
+            );
+            
+            // Render the graph
+            let graph_response = GraphView::new(&mut self.graph)
+                .with_navigations_enabled(true)
+                .with_node_render(|node_data, ui| {
+                    self.render_plugin_node(node_data, ui)
+                })
+                .with_edge_render(|edge_data, ui| {
+                    self.render_connection_edge(edge_data, ui)
+                })
+                .show(ui);
+            
+            // Handle interactions
+            self.handle_interactions(&canvas_response, &graph_response);
+            
+            // Side panels
+            self.render_side_panels(ctx, ui);
+        }).response
+    }
+    
+    /// Render the top toolbar with common actions
+    fn render_toolbar(&mut self, ui: &mut Ui) {
+        ui.horizontal(|ui| {
+            if ui.button("🔌 Plugin Browser").clicked() {
+                self.plugin_browser_open = !self.plugin_browser_open;
+            }
+            
+            if ui.button("📋 Template Gallery").clicked() {
+                self.template_gallery_open = !self.template_gallery_open;
+            }
+            
+            ui.separator();
+            
+            if ui.button("✅ Validate Pipeline").clicked() {
+                self.validate_pipeline();
+            }
+            
+            if ui.button("🚀 Build Pipeline").clicked() {
+                match self.build_pipeline() {
+                    Ok(pipeline) => {
+                        // TODO: Handle successful pipeline build
+                        println!("Pipeline built: {}", pipeline.name);
+                    }
+                    Err(e) => {
+                        println!("Pipeline build failed: {}", e);
+                    }
+                }
+            }
+            
+            ui.separator();
+            
+            if ui.button("💾 Save Template").clicked() {
+                // TODO: Open save template dialog
+            }
+            
+            if ui.button("📁 Load Template").clicked() {
+                // TODO: Open load template dialog
+            }
+        });
+        
+        // Show validation errors
+        if !self.validation_errors.is_empty() {
+            ui.colored_label(Color32::RED, format!("⚠️ Validation Errors: {}", self.validation_errors.len()));
+        }
+    }
+    
+    /// Render individual plugin node
+    fn render_plugin_node(&self, node_data: &PluginNodeData, ui: &mut Ui) -> Response {
+        let color = match node_data.plugin_info.plugin_type {
+            ttrpg_core::plugins::PluginType::Input => Color32::GREEN,
+            ttrpg_core::plugins::PluginType::Validation => Color32::YELLOW,
+            ttrpg_core::plugins::PluginType::Asset => Color32::BLUE,
+            ttrpg_core::plugins::PluginType::Export => Color32::RED,
+            ttrpg_core::plugins::PluginType::Logging => Color32::GRAY,
+        };
+        
+        ui.group(|ui| {
+            ui.set_min_size(Vec2::new(120.0, 60.0));
+            
+            // Plugin icon and name
+            ui.horizontal(|ui| {
+                ui.colored_label(color, "🔌");
+                ui.label(&node_data.plugin_info.name);
+            });
+            
+            // Plugin type
+            ui.small(format!("{:?}", node_data.plugin_info.plugin_type));
+            
+            // Validation status
+            if !node_data.is_valid {
+                ui.colored_label(Color32::RED, "⚠️");
+            }
+        }).response
+    }
+    
+    /// Render connection edge between plugins
+    fn render_connection_edge(&self, edge_data: &ConnectionData, ui: &mut Ui) -> Response {
+        // Custom edge rendering with data flow visualization
+        ui.label(&edge_data.data_type)
+    }
+    
+    /// Handle drag-and-drop interactions and other UI events
+    fn handle_interactions(&mut self, canvas_response: &Response, graph_response: &Response) {
+        // TODO: Implement drag-and-drop from plugin browser
+        // TODO: Handle node selection and configuration
+        // TODO: Handle edge creation by dragging between nodes
+    }
+    
+    /// Render side panels for plugin browser and configuration
+    fn render_side_panels(&mut self, ctx: &Context, ui: &mut Ui) {
+        // Plugin browser panel
+        if self.plugin_browser_open {
+            egui::SidePanel::left("plugin_browser").show(ctx, |ui| {
+                ui.heading("🔌 Available Plugins");
+                
+                for plugin in &self.available_plugins {
+                    let color = match plugin.plugin_type {
+                        ttrpg_core::plugins::PluginType::Input => Color32::GREEN,
+                        ttrpg_core::plugins::PluginType::Validation => Color32::YELLOW,
+                        ttrpg_core::plugins::PluginType::Asset => Color32::BLUE,
+                        ttrpg_core::plugins::PluginType::Export => Color32::RED,
+                        ttrpg_core::plugins::PluginType::Logging => Color32::GRAY,
+                    };
+                    
+                    ui.horizontal(|ui| {
+                        ui.colored_label(color, "🔌");
+                        if ui.button(&plugin.name).clicked() {
+                            // Add plugin to canvas at center
+                            let center_pos = egui::Pos2::new(400.0, 300.0);
+                            self.add_plugin_node(plugin, center_pos);
+                        }
+                    });
+                    
+                    ui.small(&plugin.description);
+                    ui.separator();
+                }
+            });
+        }
+        
+        // Template gallery panel
+        if self.template_gallery_open {
+            egui::SidePanel::right("template_gallery").show(ctx, |ui| {
+                ui.heading("📋 Pipeline Templates");
+                
+                // TODO: Implement template gallery with built-in templates
+                ui.label("Built-in Templates:");
+                if ui.button("Roll20 → Foundry (Basic)").clicked() {
+                    // TODO: Load template
+                }
+                if ui.button("Roll20 → Foundry (With Assets)").clicked() {
+                    // TODO: Load template
+                }
+            });
+        }
+    }
+}
+```
+
+### **Success Criteria for Junior Developer**
+- [ ] ✅ Visual DAG editor working with `egui_graphs` drag-and-drop interface
+- [ ] ✅ Plugin browser with inventory auto-discovery and metadata display
+- [ ] ✅ Real-time pipeline validation using `petgraph` cycle detection
+- [ ] ✅ Plugin configuration panels with visual settings interface
+- [ ] ✅ Template gallery with built-in and user-created pipeline templates
+- [ ] ✅ Pipeline execution with live progress visualization
+- [ ] ✅ Smart plugin recommendations based on input/output compatibility
+
+---
+
+## **T4.2: Plugin Configuration UI** 🆕 **REVOLUTIONARY FEATURE**
+**Duration**: 3 days | **Points**: 8 | **Priority**: 🟡 MEDIUM
+**Dependencies**: T4.1 Visual Pipeline Builder Foundation
+
+### **Implementation Steps for Junior Developer**
+
+**Step 1: Dynamic Plugin Configuration Panels**
+Create `ttrpg-gui/src/plugin_config_ui.rs`:
+```rust
+use egui::{Ui, Response, Color32};
+use serde_json::{Value, Map};
+use ttrpg_core::plugins::{PluginInfo, PluginType};
+use ttrpg_core::orchestration::PluginConfig;
+
+/// Dynamic plugin configuration UI generator
+pub struct PluginConfigUI;
+
+impl PluginConfigUI {
+    /// Render configuration UI for any plugin type
+    pub fn render_config_panel(
+        plugin_info: &PluginInfo,
+        config: &mut PluginConfig,
+        ui: &mut Ui
+    ) -> Response {
+        ui.group(|ui| {
+            ui.heading(&format!("⚙️ {} Configuration", plugin_info.name));
+            
+            match plugin_info.plugin_type {
+                PluginType::Input => Self::render_input_plugin_config(plugin_info, config, ui),
+                PluginType::Validation => Self::render_validation_plugin_config(plugin_info, config, ui),
+                PluginType::Asset => Self::render_asset_plugin_config(plugin_info, config, ui),
+                PluginType::Export => Self::render_export_plugin_config(plugin_info, config, ui),
+                PluginType::Logging => Self::render_logging_plugin_config(plugin_info, config, ui),
+            }
+        }).response
+    }
+    
+    /// Roll20 input plugin configuration
+    fn render_input_plugin_config(
+        plugin_info: &PluginInfo,
+        config: &mut PluginConfig,
+        ui: &mut Ui
+    ) -> Response {
+        ui.vertical(|ui| {
+            ui.label("Roll20 Input Settings:");
+            
+            // Flexible schema option
+            let mut flexible_schema = Self::get_bool_config(config, "flexible_schema", true);
+            if ui.checkbox(&mut flexible_schema, "Flexible schema parsing").clicked() {
+                Self::set_config(config, "flexible_schema", Value::Bool(flexible_schema));
+            }
+            
+            // Skip malformed entities
+            let mut skip_malformed = Self::get_bool_config(config, "skip_malformed", false);
+            if ui.checkbox(&mut skip_malformed, "Skip malformed entities").clicked() {
+                Self::set_config(config, "skip_malformed", Value::Bool(skip_malformed));
+            }
+            
+            // Extract assets
+            let mut extract_assets = Self::get_bool_config(config, "extract_assets", true);
+            if ui.checkbox(&mut extract_assets, "Extract assets").clicked() {
+                Self::set_config(config, "extract_assets", Value::Bool(extract_assets));
+            }
+        }).response
+    }
+    
+    /// Asset processing plugin configuration
+    fn render_asset_plugin_config(
+        plugin_info: &PluginInfo,
+        config: &mut PluginConfig,
+        ui: &mut Ui
+    ) -> Response {
+        ui.vertical(|ui| {
+            ui.label("Asset Processing Settings:");
+            
+            // Image optimization
+            let mut optimize_images = Self::get_bool_config(config, "optimize_images", true);
+            if ui.checkbox(&mut optimize_images, "Optimize images").clicked() {
+                Self::set_config(config, "optimize_images", Value::Bool(optimize_images));
+            }
+            
+            // WebP conversion
+            let mut webp_conversion = Self::get_bool_config(config, "webp_conversion", true);
+            if ui.checkbox(&mut webp_conversion, "Convert to WebP").clicked() {
+                Self::set_config(config, "webp_conversion", Value::Bool(webp_conversion));
+            }
+            
+            // Maximum image size
+            let mut max_size = Self::get_number_config(config, "max_image_size", 2048.0);
+            ui.horizontal(|ui| {
+                ui.label("Max image size:");
+                if ui.add(egui::Slider::new(&mut max_size, 512.0..=4096.0)).changed() {
+                    Self::set_config(config, "max_image_size", Value::Number(max_size.into()));
+                }
+            });
+        }).response
+    }
+    
+    /// Foundry export plugin configuration  
+    fn render_export_plugin_config(
+        plugin_info: &PluginInfo,
+        config: &mut PluginConfig,
+        ui: &mut Ui
+    ) -> Response {
+        ui.vertical(|ui| {
+            ui.label("Foundry VTT Export Settings:");
+            
+            // Foundry version selection
+            let mut foundry_version = Self::get_string_config(config, "foundry_version", "v12");
+            ui.horizontal(|ui| {
+                ui.label("Foundry Version:");
+                egui::ComboBox::from_label("")
+                    .selected_text(&foundry_version)
+                    .show_ui(ui, |ui| {
+                        if ui.selectable_value(&mut foundry_version, "v10".to_string(), "v10").clicked() {
+                            Self::set_config(config, "foundry_version", Value::String(foundry_version.clone()));
+                        }
+                        if ui.selectable_value(&mut foundry_version, "v11".to_string(), "v11").clicked() {
+                            Self::set_config(config, "foundry_version", Value::String(foundry_version.clone()));
+                        }
+                        if ui.selectable_value(&mut foundry_version, "v12".to_string(), "v12").clicked() {
+                            Self::set_config(config, "foundry_version", Value::String(foundry_version.clone()));
+                        }
+                    });
+            });
+            
+            // Create module option
+            let mut create_module = Self::get_bool_config(config, "create_module", false);
+            if ui.checkbox(&mut create_module, "Create as module").clicked() {
+                Self::set_config(config, "create_module", Value::Bool(create_module));
+            }
+            
+            // Include assets
+            let mut include_assets = Self::get_bool_config(config, "include_assets", true);
+            if ui.checkbox(&mut include_assets, "Include assets").clicked() {
+                Self::set_config(config, "include_assets", Value::Bool(include_assets));
+            }
+        }).response
+    }
+    
+    // Helper methods for configuration access
+    fn get_bool_config(config: &PluginConfig, key: &str, default: bool) -> bool {
+        config.config.get(key)
+            .and_then(|v| v.as_bool())
+            .unwrap_or(default)
+    }
+    
+    fn get_string_config(config: &PluginConfig, key: &str, default: &str) -> String {
+        config.config.get(key)
+            .and_then(|v| v.as_str())
+            .unwrap_or(default)
+            .to_string()
+    }
+    
+    fn get_number_config(config: &PluginConfig, key: &str, default: f64) -> f64 {
+        config.config.get(key)
+            .and_then(|v| v.as_f64())
+            .unwrap_or(default)
+    }
+    
+    fn set_config(config: &mut PluginConfig, key: &str, value: Value) {
+        if let Value::Object(ref mut map) = config.config {
+            map.insert(key.to_string(), value);
+        } else {
+            let mut map = Map::new();
+            map.insert(key.to_string(), value);
+            config.config = Value::Object(map);
+        }
+    }
+}
+```
+
+### **Success Criteria for Junior Developer**
+- [ ] ✅ Dynamic configuration UI generation for all plugin types
+- [ ] ✅ Real-time configuration validation and preview
+- [ ] ✅ Plugin-specific configuration panels with appropriate controls
+- [ ] ✅ Configuration persistence and template integration
+- [ ] ✅ Visual feedback for invalid configuration values
+
+---
+
+## **M4 MILESTONE SUMMARY** 
+
+### **🚀 Revolutionary Visual Pipeline Builder Achievement**
+**Total Duration**: 4 weeks | **Total Points**: 40 | **Priority**: 🔥 HIGH
+
+**Extraordinary Capabilities Delivered**:
+- **Visual DAG Editor**: Professional drag-and-drop interface using `egui_graphs`
+- **Real-time Validation**: Live cycle detection and compatibility checking
+- **Smart Plugin Discovery**: Automatic plugin discovery with `inventory` metadata
+- **Interactive Configuration**: Visual plugin settings with live preview
+- **Template System**: Built-in gallery and user template management
+- **Pipeline Execution**: Live progress visualization with plugin-level detail
+
+**Architectural Breakthrough**: Plugin orchestration libraries (`daggy` + `shaku` + `inventory` + `petgraph` + `egui_graphs`) enable professional visual programming interface that makes complex plugin orchestration accessible to all users through intuitive GUI.
+
+**Strategic Impact**: Transforms TTRPG Converter from CLI-only tool to revolutionary visual pipeline builder, enabling non-technical users to create sophisticated conversion workflows through drag-and-drop interface.
 Create `src/app.rs`:
 ```rust
 use eframe::egui;

@@ -58,11 +58,22 @@ pub enum ConversionError {
     ValidationError { entity_type: String, message: String, field: Option<String> },
 
     /// Plugin system errors
+    #[error("Plugin error: {message}")]
+    PluginError {
+        message: String,
+        plugin_name: Option<String>,
+        #[source]
+        source: Option<Box<dyn std::error::Error + Send + Sync>>,
+    },
+
+    #[error("Invalid input: {message}")]
+    InvalidInput { message: String, field: Option<String>, expected_type: Option<String> },
+
     #[error("Unsupported input format: {0}")]
     UnsupportedInputFormat(PathBuf),
 
     #[error("Unsupported output format: {0}")]
-    UnsupportedOutputFormat(super::plugins::OutputFormat),
+    UnsupportedOutputFormat(super::plugin_framework::OutputFormat),
 
     #[error("Invalid configuration: {0}")]
     InvalidConfiguration(String),

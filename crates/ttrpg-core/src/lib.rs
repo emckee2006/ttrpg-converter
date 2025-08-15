@@ -27,34 +27,36 @@
 
 // Public modules
 pub mod error;
-pub mod logging;
-pub mod manager;
-pub mod plugins;
-pub mod services;
+// Legacy logging module removed - use plugin_framework::console_logging::ConsoleLoggingPlugin instead
+// Legacy manager module removed - use plugin_framework::registry::PluginManager instead
+pub mod plugin_framework;
+// Legacy services module removed - use plugin interfaces instead
 pub mod types;
-pub mod validation;
+// Legacy validation module removed - use plugins::interfaces::ValidationPlugin instead
 
 // Re-exports for convenience
 pub use error::{AssetError, AssetResult, ConversionError, ConversionResult, ErrorExt};
-pub use logging::{LoggingConfig, RustLogger};
-pub use manager::DefaultServiceManager;
-pub use plugins::{
+// Legacy logging exports removed - use plugins::console_logging::ConsoleLoggingPlugin instead
+// Legacy DefaultServiceManager removed - use plugin_framework::registry::PluginManager instead
+pub use plugin_framework::{
     AssetInfo, CampaignMetadata, GameSystem, InputPlugin, OutputBundle, OutputConfig, OutputFormat,
     OutputPlugin, PluginInfo, PluginManager, ProcessedAsset, SourceFormat as PluginSourceFormat,
     UniversalCampaign,
 };
-pub use services::{
-    AssetService, IssueSeverity, LogLevel, LoggingService, ServiceManager, ValidationIssue,
-    ValidationResult, ValidationService,
+// Legacy service exports removed - functionality moved to plugin interfaces:
+// - AssetService → plugin_framework::interfaces::AssetPlugin
+// - ServiceManager → plugin_framework::registry::PluginManager
+// Re-export unified plugin types from plugin_framework module
+pub use plugin_framework::types::{
+    IssueSeverity, ValidationIssue, ValidationResult, ValidationStats,
 };
+pub use plugin_framework::LogLevel;
 pub use types::{
     Actor, Campaign, EntityPermissions, Item, JournalEntry, PermissionLevel, Scene, SourceFormat,
     TargetFormat,
 };
-pub use validation::{
-    ProfessionalValidationService, ValidatedAsset, ValidatedCampaign, ValidatedCharacter,
-    ValidatedPage, ValidatedToken, ValidatedWall, ValidationStats,
-};
+// Legacy validation module exports removed - use plugin_framework::interfaces::ValidationPlugin instead
+// ValidationStats now comes from plugin_framework::types (already re-exported above)
 
 /// Common imports for this crate and dependent crates
 ///
@@ -83,14 +85,12 @@ pub mod prelude {
         SpellComponents, TableEntry, TargetFormat, Token, TokenSize, Wall, WallType,
     };
 
-    // Service abstractions
-    pub use crate::services::{AssetService, LoggingService, ServiceManager, ValidationService};
+    // Legacy service abstractions removed - replaced by pure plugin architecture
+    // AssetService → plugins::interfaces::AssetPlugin
+    // ServiceManager → plugins::registry::PluginManager
 
-    // Professional validation system
-    pub use crate::validation::{
-        ProfessionalValidationService, ValidatedAsset, ValidatedCampaign, ValidatedCharacter,
-        ValidatedPage, ValidatedToken, ValidatedWall, ValidationStats,
-    };
+    // Legacy validation system removed - use plugins::interfaces::ValidationPlugin instead
+    // ValidationStats now comes from plugins::types
 
     // External dependencies commonly used
     pub use serde::{Deserialize, Serialize};

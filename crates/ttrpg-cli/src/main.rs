@@ -1,143 +1,121 @@
-//! CLI entry point for testing Roll20 zip files
+//! CLI entry point for testing TTRPG Converter Plugin System
 //!
-//! Usage: cargo run -p ttrpg-cli <path-to-zip-file>
+//! Usage: cargo run -p ttrpg-cli [options]
 
+use std::collections::HashMap;
 use std::path::Path;
-use std::sync::Arc;
-use ttrpg_core::{
-    manager::DefaultServiceManager,
-    // ServiceManager trait used via Arc<dyn ServiceManager>
-    types::TargetFormat,
+use ttrpg_core::plugin_framework::{
+    DiscoveryConfig, LogLevel, LoggingPlugin, PluginConfig, PluginDiscovery, PluginLifecycle,
+    StaticPluginCategory,
 };
-use ttrpg_formats::roll20_asset_integration::Roll20AssetPipeline;
-// Asset service handled through pipeline
+use ttrpg_output_plugins; // Import to ensure inventory registration
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Logging will be initialized by the service manager
+    println!("🎯 Testing TTRPG Converter Plugin System with Console Logging");
+    println!("🔍 Demonstrating inventory discovery and plugin functionality\n");
 
-    // Get command line arguments
-    let args: Vec<String> = std::env::args().collect();
+    // Step 1: Test Plugin Discovery System
+    println!("🔧 Step 1: Testing Plugin Discovery...");
 
-    let zip_path = if args.len() > 1 {
-        Path::new(&args[1])
-    } else {
-        // Default to looking for test_campaign.zip in current directory
-        Path::new("./test_campaign.zip")
-    };
+    let discovery = PluginDiscovery::new(DiscoveryConfig::default());
+    discovery.discover_all()?;
 
-    let output_dir = Path::new("./output");
+    let stats = discovery.get_stats()?;
+    println!("   ✅ Plugins discovered: {}", stats.total_discovered);
+    println!("   ✅ Plugins loaded: {}", stats.loaded_plugins);
 
-    println!("🎯 Testing TTRPG Converter M2.4 Export System");
-    println!("📁 Input:  {zip_path:?}");
-    println!("📂 Output: {output_dir:?}");
+    // Step 2: Get Logging Plugins
+    println!("\n🔧 Step 2: Finding Console Logging Plugin...");
 
-    // Check if zip file exists
-    if !zip_path.exists() {
-        eprintln!("❌ Error: Zip file not found at {zip_path:?}");
-        eprintln!("📝 Instructions:");
-        eprintln!("   1. Export a campaign from Roll20 as a zip file");
-        eprintln!("   2. Either:");
-        eprintln!("      - Place it as 'test_campaign.zip' in project root, OR");
-        eprintln!("      - Run: cargo run -p ttrpg-cli path/to/your/file.zip");
+    let logging_plugins =
+        discovery.get_plugins_by_category(&StaticPluginCategory::Logging("console").into())?;
+
+    if logging_plugins.is_empty() {
+        println!("   ❌ No console logging plugins found");
         return Ok(());
     }
 
-    // Create output directory
-    std::fs::create_dir_all(output_dir)?;
+    println!("   ✅ Found {} logging plugin(s)", logging_plugins.len());
 
-    // Step 1: Determine input type and get campaign directory
-    let campaign_dir = if zip_path.is_file() && zip_path.extension().is_some_and(|ext| ext == "zip")
-    {
-        println!("\n🔧 Step 1: Processing Roll20 zip file...");
-        // For zip files, extract only campaign.json first to validate
-        extract_campaign_json_only(zip_path).await?
-    } else if zip_path.is_dir() {
-        println!("\n🔧 Step 1: Using extracted Roll20 campaign directory...");
-        zip_path.to_path_buf()
-    } else {
-        return Err("Input must be either a .zip file or a directory containing campaign.json"
-            .to_string()
-            .into());
+    // Step 3: Create and test Console Logging Plugin
+    println!("\n🔧 Step 3: Testing Console Logging Plugin...");
+
+    // Create plugin instance using factory
+    let plugin_registration = &logging_plugins[0];
+    let plugin_any = (plugin_registration.factory)();
+
+    // Downcast to ConsoleLoggingPlugin
+    let console_plugin = plugin_any
+        .downcast::<ttrpg_output_plugins::logging::console::ConsoleLoggingPlugin>()
+        .map_err(|_| "Failed to downcast to ConsoleLoggingPlugin")?;
+
+    let mut console_plugin = *console_plugin;
+
+    // Display plugin info
+    let plugin_info = console_plugin.plugin_info();
+    println!("   📋 Plugin: {} v{}", plugin_info.name, plugin_info.version);
+    println!("   📝 Description: {}", plugin_info.description);
+    println!("   🏷️  Features: {:?}", plugin_info.supported_features);
+
+    // Step 4: Initialize Plugin
+    println!("\n🔧 Step 4: Initializing Console Logging Plugin...");
+
+    let config = PluginConfig {
+        config_data: HashMap::from([("log_level".to_string(), serde_json::json!("info"))]),
+        cache_dir: None,
+        temp_dir: None,
     };
-    let campaign_json = campaign_dir.join("campaign.json");
 
-    if !campaign_json.exists() {
-        eprintln!("❌ Error: campaign.json not found in zip file");
-        eprintln!("📋 Zip contents:");
-        list_zip_contents(zip_path)?;
-        return Ok(());
-    }
+    LoggingPlugin::initialize(&mut console_plugin, config).await?;
+    println!("   ✅ Plugin initialized successfully");
 
-    println!("✅ Found campaign.json");
+    // Step 5: Test Logging Functionality
+    println!("\n🔧 Step 5: Testing Logging Functionality...");
 
-    // Step 2: Initialize services
-    println!("\n🔧 Step 2: Initializing services...");
+    console_plugin.set_level(LogLevel::Debug);
 
-    // Use service manager as designed - with proper service coordination and dependency injection
-    let service_manager = DefaultServiceManager::with_defaults()?;
-    let cache_dir = std::env::temp_dir().join("ttrpg_cache");
-    let config = ttrpg_assets::prelude::Roll20ProcessorConfig::default();
+    // Test different log levels
+    console_plugin.info("🎉 Testing INFO level logging from Console Logging Plugin", None);
+    console_plugin.debug("🔍 Testing DEBUG level logging - this should be visible", None);
+    console_plugin.warn("⚠️ Testing WARN level logging", None);
+    console_plugin.error("❌ Testing ERROR level logging", None);
 
-    let service_manager_arc = Arc::new(service_manager);
-    let pipeline = Roll20AssetPipeline::new(cache_dir, config, service_manager_arc).await?;
+    // Test structured logging
+    let mut context = HashMap::new();
+    context.insert("test_key".to_string(), "test_value".to_string());
+    context.insert("plugin_name".to_string(), plugin_info.name.clone());
 
-    println!("✅ Services initialized");
-
-    // Step 3: Process complete pipeline
-    println!("\n🔧 Step 3: Processing Roll20 campaign...");
-    let start_time = std::time::Instant::now();
-
-    let results = pipeline
-        .process_and_export_campaign(
-            &campaign_json,
-            TargetFormat::JsonExport,
-            &output_dir.join("exported_campaign.json"),
-            Some(Arc::new(|progress| {
-                println!("   Progress: {}%", (progress.overall_progress * 100.0) as u32);
-            })),
-        )
-        .await?;
-
-    let total_time = start_time.elapsed();
-
-    // Step 4: Display results
-    println!("\n🎉 PROCESSING COMPLETE!");
-    println!("⏱️  Total time: {:.2}s", total_time.as_secs_f64());
-    println!();
-    println!("📊 Campaign Statistics:");
-    println!("   • Actors: {}", results.asset_results.campaign.actors.len());
-    println!("   • Scenes: {}", results.asset_results.campaign.scenes.len());
-    println!("   • Items:  {}", results.asset_results.campaign.items.len());
-    println!();
-    println!("📦 Asset Processing:");
-    println!("   • Assets discovered: {}", results.asset_results.total_discovered);
-    println!("   • Assets processed:  {}", results.asset_results.processed_assets.len());
-    println!("   • Assets failed:     {}", results.asset_results.failed_assets.len());
-    println!("   • Processing time:   {}ms", results.asset_results.processing_time_ms);
-    println!();
-    println!("🎯 Export Results:");
-    println!("   • Format: {}", results.export_result.target_format);
-    println!(
-        "   • Success: {}",
-        if results.export_result.success {
-            "✅ YES"
-        } else {
-            "❌ NO"
-        }
+    let context_json = serde_json::to_value(context)?;
+    console_plugin.log_with_data(
+        LogLevel::Info,
+        "📊 Testing structured logging with context",
+        &context_json,
     );
-    println!("   • Output size: {} bytes", results.export_result.stats.output_size_bytes);
-    println!("   • Export time: {}ms", results.export_result.stats.processing_time_ms);
 
-    println!("\n📁 Output files created in: {output_dir:?}");
+    // Step 6: Test Health Check
+    println!("\n🔧 Step 6: Testing Plugin Health Check...");
 
-    // Cleanup temp directory only if we extracted files
-    if campaign_dir
-        .file_name()
-        .is_some_and(|name| name == "roll20_test")
-    {
-        let _ = std::fs::remove_dir_all(&campaign_dir);
-    }
+    let health = console_plugin.health_check().await?;
+    println!("   📊 Plugin Health: {:?}", health);
+
+    // Step 7: Get Stats
+    println!("\n🔧 Step 7: Getting Plugin Statistics...");
+
+    let logging_stats = console_plugin.get_stats();
+    println!("   📈 Messages logged: {}", logging_stats.messages_logged);
+    println!("   ❌ Errors logged: {}", logging_stats.errors_logged);
+    println!("   ⚠️ Warnings logged: {}", logging_stats.warnings_logged);
+    println!("   ⏱️ Started at: {:?}", logging_stats.start_time);
+
+    // Step 8: Cleanup
+    println!("\n🔧 Step 8: Cleaning up...");
+
+    console_plugin.cleanup().await?;
+    println!("   ✅ Plugin cleanup completed");
+
+    println!("\n🎉 CONSOLE LOGGING PLUGIN TEST COMPLETE!");
+    println!("✅ All functionality verified successfully");
 
     Ok(())
 }
@@ -162,7 +140,7 @@ async fn extract_zip_file(
         let mut file = archive.by_index(i)?;
         let outpath = match file.enclosed_name() {
             Some(path) => {
-                let sanitized_path = sanitize_path_for_windows(path);
+                let sanitized_path = sanitize_path_for_windows(&path);
                 temp_dir.join(sanitized_path)
             }
             None => continue,
