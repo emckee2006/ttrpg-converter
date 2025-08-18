@@ -1,0 +1,38 @@
+{
+    "description":  "Extracted table definition",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/roll20/table.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "id":  {
+                                  "type":  "string"
+                              },
+                       "name":  {
+                                    "type":  "string"
+                                },
+                       "showplayers":  {
+                                           "type":  "boolean"
+                                       },
+                       "tableitems":  {
+                                          "type":  "array",
+                                          "items":  {
+                                                        "type":  "object",
+                                                        "properties":  {
+                                                                           "name":  {
+                                                                                        "type":  "string"
+                                                                                    },
+                                                                           "weight":  {
+                                                                                          "type":  "number"
+                                                                                      },
+                                                                           "avatar":  {
+                                                                                          "type":  "string"
+                                                                                      }
+                                                                       }
+                                                    }
+                                      }
+                   },
+    "title":  "Table",
+    "required":  [
+                     "name"
+                 ]
+}

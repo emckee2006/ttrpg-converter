@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/roll20/ability.json",
+  "title": "Roll20 Character Ability",
+  "description": "Character sheet ability/macro",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^-[A-Za-z0-9_-]{19}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Ability name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Ability description"
+    },
+    "action": {
+      "type": "string",
+      "description": "Macro commands/actions"
+    },
+    "istokenaction": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this appears as token action"
+    }
+  }
+}

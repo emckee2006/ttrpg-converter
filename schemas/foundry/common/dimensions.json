@@ -1,0 +1,17 @@
+{
+    "description":  "Width and height dimensions",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/foundry/common/dimensions.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "width":  {
+                                     "type":  "number",
+                                     "minimum":  0
+                                 },
+                       "height":  {
+                                      "type":  "number",
+                                      "minimum":  0
+                                  }
+                   },
+    "title":  "Dimensions"
+}

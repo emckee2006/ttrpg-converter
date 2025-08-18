@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/roll20/attribute.json",
+  "title": "Roll20 Character Attribute",
+  "description": "Character sheet attribute (e.g., strength, hp)",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^-[A-Za-z0-9_-]{19}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Attribute name (e.g., 'strength', 'hp')"
+    },
+    "current": {
+      "type": "string",
+      "description": "Current value as string"
+    },
+    "max": {
+      "type": "string",
+      "description": "Maximum value as string"
+    }
+  }
+}

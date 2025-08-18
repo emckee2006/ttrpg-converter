@@ -1,0 +1,30 @@
+{
+    "description":  "Extracted card definition",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/roll20/card.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "id":  {
+                                  "type":  "string",
+                                  "pattern":  "^-[A-Za-z0-9_-]{19}$"
+                              },
+                       "name":  {
+                                    "type":  "string",
+                                    "minLength":  1,
+                                    "description":  "Card name"
+                                },
+                       "avatar":  {
+                                      "type":  "string",
+                                      "format":  "uri",
+                                      "description":  "Card face image URL"
+                                  },
+                       "tooltip":  {
+                                       "type":  "string",
+                                       "description":  "Card tooltip text"
+                                   }
+                   },
+    "title":  "Card",
+    "required":  [
+                     "name"
+                 ]
+}

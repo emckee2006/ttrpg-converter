@@ -1,0 +1,11 @@
+{
+    "description":  "Image file URL or path",
+    "type":  [
+                 "string",
+                 "null"
+             ],
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/foundry/common/image-reference.json",
+    "format":  "uri",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "title":  "Image Reference"
+}

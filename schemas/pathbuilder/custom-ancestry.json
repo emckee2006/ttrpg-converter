@@ -1,0 +1,127 @@
+{
+    "description":  "Extracted custom_ancestry definition",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/pathbuilder/custom-ancestry.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "databaseID":  {
+                                          "type":  "integer",
+                                          "description":  "Database identifier"
+                                      },
+                       "timestamp":  {
+                                         "type":  "string",
+                                         "pattern":  "^\\d+$",
+                                         "description":  "Creation timestamp"
+                                     },
+                       "id":  {
+                                  "type":  "string",
+                                  "pattern":  "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                                  "description":  "Unique ancestry ID (UUID)"
+                              },
+                       "name":  {
+                                    "type":  "string",
+                                    "minLength":  1,
+                                    "description":  "Ancestry name"
+                                },
+                       "hp":  {
+                                  "type":  "integer",
+                                  "minimum":  4,
+                                  "maximum":  12,
+                                  "description":  "Base hit points"
+                              },
+                       "size":  {
+                                    "type":  "integer",
+                                    "enum":  [
+                                                 1,
+                                                 2,
+                                                 3,
+                                                 4
+                                             ],
+                                    "description":  "Size category: 1=Small, 2=Medium, 3=Large, 4=Huge"
+                                },
+                       "speed":  {
+                                     "type":  "integer",
+                                     "minimum":  5,
+                                     "description":  "Base speed in feet"
+                                 },
+                       "traits":  {
+                                      "type":  "string",
+                                      "description":  "Ancestry traits (comma-separated)"
+                                  },
+                       "boost_ref_1":  {
+                                           "type":  "string",
+                                           "enum":  [
+                                                        "0",
+                                                        "1",
+                                                        "2",
+                                                        "3",
+                                                        "4",
+                                                        "5",
+                                                        "FREE"
+                                                    ],
+                                           "description":  "First ability boost reference"
+                                       },
+                       "boost_ref_2":  {
+                                           "type":  "string",
+                                           "enum":  [
+                                                        "0",
+                                                        "1",
+                                                        "2",
+                                                        "3",
+                                                        "4",
+                                                        "5",
+                                                        "FREE"
+                                                    ],
+                                           "description":  "Second ability boost reference"
+                                       },
+                       "flaw_ref":  {
+                                        "type":  "string",
+                                        "enum":  [
+                                                     "0",
+                                                     "1",
+                                                     "2",
+                                                     "3",
+                                                     "4",
+                                                     "5",
+                                                     ""
+                                                 ],
+                                        "description":  "Ability flaw reference (empty if none)"
+                                    },
+                       "languages":  {
+                                         "type":  "array",
+                                         "items":  {
+                                                       "type":  "string"
+                                                   },
+                                         "description":  "Starting languages"
+                                     },
+                       "senses":  {
+                                      "type":  "array",
+                                      "items":  {
+                                                    "type":  "string"
+                                                },
+                                      "description":  "Special senses"
+                                  },
+                       "description":  {
+                                           "type":  "string",
+                                           "minLength":  1,
+                                           "description":  "Ancestry description"
+                                       },
+                       "src":  {
+                                   "type":  "string",
+                                   "description":  "Source book/pack"
+                               }
+                   },
+    "title":  "Custom Ancestry",
+    "required":  [
+                     "databaseID",
+                     "timestamp",
+                     "id",
+                     "name",
+                     "hp",
+                     "size",
+                     "speed",
+                     "traits",
+                     "description",
+                     "src"
+                 ]
+}

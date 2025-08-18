@@ -1,0 +1,93 @@
+{
+    "description":  "Extracted custom_background definition",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/pathbuilder/custom-background.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "databaseID":  {
+                                          "type":  "integer",
+                                          "description":  "Database identifier"
+                                      },
+                       "timestamp":  {
+                                         "type":  "string",
+                                         "pattern":  "^\\d+$",
+                                         "description":  "Creation timestamp"
+                                     },
+                       "id":  {
+                                  "type":  "string",
+                                  "pattern":  "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                                  "description":  "Unique background ID (UUID)"
+                              },
+                       "name":  {
+                                    "type":  "string",
+                                    "minLength":  1,
+                                    "description":  "Background name"
+                                },
+                       "traits":  {
+                                      "type":  "string",
+                                      "description":  "Background traits (e.g., \u00273rd Party\u0027)"
+                                  },
+                       "boost_ref_1":  {
+                                           "type":  "string",
+                                           "enum":  [
+                                                        "0",
+                                                        "1",
+                                                        "2",
+                                                        "3",
+                                                        "4",
+                                                        "5"
+                                                    ],
+                                           "description":  "First ability boost reference (0=Str, 1=Dex, 2=Con, 3=Int, 4=Wis, 5=Cha)"
+                                       },
+                       "boost_ref_2":  {
+                                           "type":  "string",
+                                           "enum":  [
+                                                        "0",
+                                                        "1",
+                                                        "2",
+                                                        "3",
+                                                        "4",
+                                                        "5"
+                                                    ],
+                                           "description":  "Second ability boost reference"
+                                       },
+                       "freeFeatID":  {
+                                          "type":  "string",
+                                          "description":  "Free feat granted by background"
+                                      },
+                       "freeFeatDetail":  {
+                                              "type":  "string",
+                                              "description":  "Additional details for free feat"
+                                          },
+                       "skill":  {
+                                     "type":  "string",
+                                     "description":  "Skill proficiency granted"
+                                 },
+                       "lore":  {
+                                    "type":  "string",
+                                    "description":  "Lore skill granted"
+                                },
+                       "description":  {
+                                           "type":  "string",
+                                           "minLength":  1,
+                                           "description":  "Background description"
+                                       },
+                       "src":  {
+                                   "type":  "string",
+                                   "description":  "Source book/pack"
+                               }
+                   },
+    "title":  "Custom Background",
+    "required":  [
+                     "databaseID",
+                     "timestamp",
+                     "id",
+                     "name",
+                     "traits",
+                     "boost_ref_1",
+                     "boost_ref_2",
+                     "skill",
+                     "description",
+                     "src"
+                 ]
+}

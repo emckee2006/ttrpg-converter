@@ -1,0 +1,21 @@
+{
+    "description":  "Resource with current/maximum values",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/foundry/common/resource.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "value":  {
+                                     "type":  "number",
+                                     "minimum":  0
+                                 },
+                       "max":  {
+                                   "type":  "number",
+                                   "minimum":  0
+                               },
+                       "temp":  {
+                                    "type":  "number",
+                                    "description":  "Temporary bonus"
+                                }
+                   },
+    "title":  "Resource"
+}

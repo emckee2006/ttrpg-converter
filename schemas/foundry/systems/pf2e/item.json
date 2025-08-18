@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/systems/pf2e/item.json",
+  "title": "Foundry PF2e Item",
+  "description": "Schema for Foundry VTT Pathfinder 2e item documents",
+  "allOf": [
+    {
+      "$ref": "../../common/base-document.json"
+    },
+    {
+      "type": "object",
+      "required": ["type", "system"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["weapon", "armor", "equipment", "consumable", "treasure", "backpack", "kit", "ancestry", "background", "class", "feat", "spell", "action", "lore"],
+          "description": "PF2e item type"
+        },
+        "img": {
+          "$ref": "../../common/image-reference.json"
+        },
+        "system": {
+          "type": "object",
+          "description": "PF2e-specific item data",
+          "properties": {
+            "description": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "$ref": "../../common/html-string.json"
+                }
+              }
+            },
+            "level": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number", "minimum": 0, "maximum": 25}
+              }
+            },
+            "traits": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
+                "rarity": {
+                  "type": "string",
+                  "enum": ["common", "uncommon", "rare", "unique"]
+                }
+              }
+            },
+            "quantity": {
+              "type": "number",
+              "minimum": 0
+            },
+            "weight": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number", "minimum": 0}
+              }
+            },
+            "price": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"},
+                "denomination": {
+                  "type": "string",
+                  "enum": ["pp", "gp", "sp", "cp"]
+                }
+              }
+            },
+            "equipped": {
+              "type": "object",
+              "properties": {
+                "carryType": {
+                  "type": "string",
+                  "enum": ["held", "worn", "stowed"]
+                },
+                "invested": {"type": "boolean"},
+                "handsHeld": {"type": "number", "enum": [0, 1, 2]}
+              }
+            },
+            "usage": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"}
+              }
+            },
+            "bulk": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number"}
+              }
+            },
+            "damage": {
+              "type": "object",
+              "properties": {
+                "dice": {"type": "number"},
+                "die": {"type": "string"},
+                "damageType": {"type": "string"}
+              }
+            },
+            "range": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number"}
+              }
+            },
+            "reload": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"}
+              }
+            },
+            "armor": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number"},
+                "dex": {"type": "number"},
+                "check": {"type": "number"},
+                "speed": {"type": "number"},
+                "strength": {"type": "number"}
+              }
+            },
+            "hardness": {
+              "type": "number"
+            },
+            "hp": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number"},
+                "max": {"type": "number"}
+              }
+            },
+            "broken": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "boolean"}
+              }
+            },
+            "activation": {
+              "type": "object",
+              "properties": {
+                "type": {"type": "string"},
+                "cost": {"type": "number"},
+                "condition": {"type": "string"}
+              }
+            },
+            "duration": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"},
+                "units": {"type": "string"}
+              }
+            },
+            "target": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"}
+              }
+            },
+            "area": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"}
+              }
+            },
+            "time": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"}
+              }
+            },
+            "save": {
+              "type": "object",
+              "properties": {
+                "basic": {"type": "boolean"},
+                "value": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

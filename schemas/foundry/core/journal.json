@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/core/journal.json",
+  "title": "Foundry Journal Entry",
+  "description": "Schema for Foundry VTT journal entry documents (system-agnostic)",
+  "allOf": [
+    {
+      "$ref": "../common/base-document.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "pages": {
+          "type": "array",
+          "description": "Journal pages",
+          "items": {
+            "$ref": "./journal-page.json"
+          }
+        }
+      }
+    }
+  ]
+}

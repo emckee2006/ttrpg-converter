@@ -1,0 +1,92 @@
+{
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "$id":  "https://ttrpg-converter.com/schemas/roll20/campaign.json",
+    "title":  "Roll20 Campaign Export",
+    "description":  "Schema for Roll20 campaign export format (based on R20Exporter)",
+    "type":  "object",
+    "required":  [
+                     "characters",
+                     "pages",
+                     "handouts"
+                 ],
+    "properties":  {
+                       "handouts":  {
+                                        "type":  "array",
+                                        "description":  "Journal entries and handouts",
+                                        "items":  {
+                                                      "$ref":  "./handout.json"
+                                                  }
+                                    },
+                       "pdfs":  {
+                                    "type":  "array",
+                                    "description":  "PDF attachments",
+                                    "items":  {
+                                                  "$ref":  "./pdf.json"
+                                              }
+                                },
+                       "characters":  {
+                                          "type":  "array",
+                                          "description":  "Character sheets with attributes and abilities",
+                                          "items":  {
+                                                        "$ref":  "./character.json"
+                                                    }
+                                      },
+                       "pages":  {
+                                     "type":  "array",
+                                     "description":  "Maps/scenes with tokens, paths, lighting",
+                                     "items":  {
+                                                   "$ref":  "./page.json"
+                                               }
+                                 },
+                       "players":  {
+                                       "type":  "array",
+                                       "description":  "Campaign players",
+                                       "items":  {
+                                                     "$ref":  "./player.json"
+                                                 }
+                                   },
+                       "macros":  {
+                                      "type":  "array",
+                                      "description":  "Campaign macros",
+                                      "items":  {
+                                                    "$ref":  "./macro.json"
+                                                }
+                                  },
+                       "decks":  {
+                                     "type":  "array",
+                                     "description":  "Card decks",
+                                     "items":  {
+                                                   "$ref":  "./deck.json"
+                                               }
+                                 },
+                       "tables":  {
+                                      "type":  "array",
+                                      "description":  "Random tables (rollabletables)",
+                                      "items":  {
+                                                    "$ref":  "./table.json"
+                                                }
+                                  },
+                       "jukebox":  {
+                                       "type":  "array",
+                                       "description":  "Audio playlists",
+                                       "items":  {
+                                                     "$ref":  "./audio-track.json"
+                                                 }
+                                   },
+                       "jukeboxfolder":  {
+                                             "type":  "array",
+                                             "description":  "Audio folder organization"
+                                         },
+                       "journalfolder":  {
+                                             "type":  "array",
+                                             "description":  "Journal folder organization"
+                                         },
+                       "turnorder":  {
+                                         "type":  "array",
+                                         "description":  "Combat turn order",
+                                         "items":  {
+                                                       "$ref":  "./turn-entry.json"
+                                                   }
+                                     }
+                   }
+}

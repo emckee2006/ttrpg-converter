@@ -1,0 +1,27 @@
+{
+    "description":  "Extracted audio_track definition",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/roll20/audio-track.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "id":  {
+                                  "type":  "string"
+                              },
+                       "title":  {
+                                     "type":  "string"
+                                 },
+                       "track_id":  {
+                                        "type":  "string"
+                                    },
+                       "loop":  {
+                                    "type":  "boolean"
+                                },
+                       "volume":  {
+                                      "type":  "number"
+                                  },
+                       "playing":  {
+                                       "type":  "boolean"
+                                   }
+                   },
+    "title":  "Audio Track"
+}

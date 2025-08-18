@@ -1,0 +1,11 @@
+{
+    "description":  "Audio file URL or path",
+    "type":  [
+                 "string",
+                 "null"
+             ],
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/foundry/common/audio-reference.json",
+    "format":  "uri",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "title":  "Audio Reference"
+}

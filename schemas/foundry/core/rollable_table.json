@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/core/rollable_table.json",
+  "title": "Foundry VTT RollTable",
+  "description": "Schema for Foundry VTT rollable table documents",
+  "allOf": [
+    {
+      "$ref": "../common/base-document.json"
+    },
+    {
+      "type": "object",
+      "required": ["name", "results"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Table description"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["text", "weight"],
+            "properties": {
+              "_id": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9]{16}$"
+              },
+              "type": {
+                "type": "number",
+                "enum": [0, 1, 2],
+                "description": "Result type: 0=text, 1=document, 2=compendium",
+                "default": 0
+              },
+              "text": {
+                "type": "string",
+                "description": "Result text"
+              },
+              "img": {
+                "$ref": "../common/image-reference.json",
+                "description": "Result image"
+              },
+              "collection": {
+                "type": "string",
+                "description": "Document collection name"
+              },
+              "resultId": {
+                "type": "string",
+                "description": "Referenced document ID"
+              },
+              "weight": {
+                "type": "number",
+                "minimum": 1,
+                "default": 1
+              },
+              "range": {
+                "type": "array",
+                "items": {"type": "number"},
+                "minItems": 2,
+                "maxItems": 2,
+                "description": "Dice range [low, high]"
+              },
+              "drawn": {
+                "type": "boolean",
+                "default": false,
+                "description": "Whether this result has been drawn"
+              }
+            }
+          }
+        },
+        "formula": {
+          "$ref": "../common/dice-formula.json",
+          "description": "Dice formula for rolling",
+          "default": "1d20"
+        },
+        "replacement": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether results can be rolled multiple times"
+        },
+        "displayRoll": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to display the dice roll"
+        }
+      }
+    }
+  ]
+}

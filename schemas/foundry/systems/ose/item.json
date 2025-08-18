@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/systems/ose/item.json",
+  "title": "Foundry OSE Item",
+  "description": "Schema for Foundry VTT Old School Essentials item documents",
+  "allOf": [
+    {
+      "$ref": "../../common/base-document.json"
+    },
+    {
+      "type": "object",
+      "required": ["type", "system"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["weapon", "armor", "item", "spell", "ability", "container"],
+          "description": "OSE item type"
+        },
+        "img": {
+          "$ref": "../../common/image-reference.json"
+        },
+        "system": {
+          "type": "object",
+          "description": "OSE-specific item data",
+          "properties": {
+            "description": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "$ref": "../../common/html-string.json"
+                }
+              }
+            },
+            "quantity": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number", "minimum": 0}
+              }
+            },
+            "weight": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number", "minimum": 0}
+              }
+            },
+            "cost": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number", "minimum": 0}
+              }
+            },
+            "equipped": {
+              "type": "boolean"
+            },
+            "treasure": {
+              "type": "boolean"
+            },
+            "damage": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"}
+              }
+            },
+            "range": {
+              "type": "object",
+              "properties": {
+                "short": {"type": "number"},
+                "medium": {"type": "number"},
+                "long": {"type": "number"}
+              }
+            },
+            "rate": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"}
+              }
+            },
+            "slow": {
+              "type": "boolean"
+            },
+            "melee": {
+              "type": "boolean"
+            },
+            "missile": {
+              "type": "boolean"
+            },
+            "ac": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number"}
+              }
+            },
+            "aac": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number"}
+              }
+            },
+            "lvl": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number", "minimum": 1, "maximum": 6}
+              }
+            },
+            "class": {
+              "type": "string"
+            },
+            "range_spell": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"}
+              }
+            },
+            "duration": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"}
+              }
+            },
+            "save": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"}
+              }
+            },
+            "roll": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"}
+              }
+            },
+            "memorized": {
+              "type": "boolean"
+            },
+            "cast": {
+              "type": "boolean"
+            },
+            "reqs": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"}
+              }
+            },
+            "rollType": {
+              "type": "string",
+              "enum": ["result", "above", "below"]
+            },
+            "rollTarget": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

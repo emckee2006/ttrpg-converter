@@ -1,0 +1,34 @@
+{
+    "description":  "Currency amounts",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/foundry/common/currency.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "pp":  {
+                                  "type":  "number",
+                                  "minimum":  0,
+                                  "description":  "Platinum pieces"
+                              },
+                       "gp":  {
+                                  "type":  "number",
+                                  "minimum":  0,
+                                  "description":  "Gold pieces"
+                              },
+                       "ep":  {
+                                  "type":  "number",
+                                  "minimum":  0,
+                                  "description":  "Electrum pieces"
+                              },
+                       "sp":  {
+                                  "type":  "number",
+                                  "minimum":  0,
+                                  "description":  "Silver pieces"
+                              },
+                       "cp":  {
+                                  "type":  "number",
+                                  "minimum":  0,
+                                  "description":  "Copper pieces"
+                              }
+                   },
+    "title":  "Currency"
+}

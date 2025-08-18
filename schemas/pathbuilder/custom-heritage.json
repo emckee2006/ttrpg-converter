@@ -1,0 +1,47 @@
+{
+    "description":  "Extracted custom_heritage definition",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/pathbuilder/custom-heritage.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "databaseID":  {
+                                          "type":  "integer"
+                                      },
+                       "timestamp":  {
+                                         "type":  "string",
+                                         "pattern":  "^\\d+$"
+                                     },
+                       "id":  {
+                                  "type":  "string",
+                                  "pattern":  "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+                              },
+                       "name":  {
+                                    "type":  "string",
+                                    "minLength":  1,
+                                    "description":  "Heritage name"
+                                },
+                       "ancestryID":  {
+                                          "type":  "string",
+                                          "description":  "Parent ancestry ID"
+                                      },
+                       "description":  {
+                                           "type":  "string",
+                                           "minLength":  1,
+                                           "description":  "Heritage description and abilities"
+                                       },
+                       "src":  {
+                                   "type":  "string",
+                                   "description":  "Source book/pack"
+                               }
+                   },
+    "title":  "Custom Heritage",
+    "required":  [
+                     "databaseID",
+                     "timestamp",
+                     "id",
+                     "name",
+                     "ancestryID",
+                     "description",
+                     "src"
+                 ]
+}

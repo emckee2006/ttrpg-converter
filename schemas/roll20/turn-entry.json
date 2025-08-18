@@ -1,0 +1,21 @@
+{
+    "description":  "Extracted turn_entry definition",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/roll20/turn-entry.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "id":  {
+                                  "type":  "string"
+                              },
+                       "pr":  {
+                                  "type":  "string"
+                              },
+                       "custom":  {
+                                      "type":  "string"
+                                  },
+                       "_pageid":  {
+                                       "type":  "string"
+                                   }
+                   },
+    "title":  "Turn Entry"
+}

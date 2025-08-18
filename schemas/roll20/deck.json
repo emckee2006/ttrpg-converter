@@ -1,0 +1,30 @@
+{
+    "description":  "Extracted deck definition",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/roll20/deck.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "id":  {
+                                  "type":  "string"
+                              },
+                       "name":  {
+                                    "type":  "string"
+                                },
+                       "showplayers":  {
+                                           "type":  "boolean"
+                                       },
+                       "playerscandraw":  {
+                                              "type":  "boolean"
+                                          },
+                       "avatar":  {
+                                      "type":  "string"
+                                  },
+                       "shown":  {
+                                     "type":  "boolean"
+                                 },
+                       "cards":  {
+                                     "type":  "array"
+                                 }
+                   },
+    "title":  "Deck"
+}

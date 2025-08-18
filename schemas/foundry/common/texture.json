@@ -1,0 +1,40 @@
+{
+    "description":  "Texture/image with additional properties",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/foundry/common/texture.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "src":  {
+                                   "$ref":  "./image-reference.json"
+                               },
+                       "scaleX":  {
+                                      "type":  "number",
+                                      "description":  "Horizontal scale factor"
+                                  },
+                       "scaleY":  {
+                                      "type":  "number",
+                                      "description":  "Vertical scale factor"
+                                  },
+                       "offsetX":  {
+                                       "type":  "number",
+                                       "description":  "Horizontal offset"
+                                   },
+                       "offsetY":  {
+                                       "type":  "number",
+                                       "description":  "Vertical offset"
+                                   },
+                       "rotation":  {
+                                        "type":  "number",
+                                        "description":  "Rotation in degrees"
+                                    },
+                       "tint":  {
+                                    "type":  [
+                                                 "string",
+                                                 "null"
+                                             ],
+                                    "pattern":  "^#[0-9a-fA-F]{6}$",
+                                    "description":  "Hex color tint"
+                                }
+                   },
+    "title":  "Texture"
+}

@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/systems/dnd5e/actor.json",
+  "title": "Foundry DND5e Actor",
+  "description": "Schema for Foundry VTT D&D 5e actor documents",
+  "allOf": [
+    {
+      "$ref": "../../common/base-document.json"
+    },
+    {
+      "type": "object",
+      "required": ["type", "system"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["character", "npc", "vehicle", "group"],
+          "description": "DND5e actor type"
+        },
+        "img": {
+          "$ref": "../../common/image-reference.json"
+        },
+        "system": {
+          "type": "object",
+          "description": "DND5e-specific actor data",
+          "properties": {
+            "abilities": {
+              "type": "object",
+              "properties": {
+                "str": {
+                  "$ref": "../../common/data-types.json#/$defs/ability_score"
+                },
+                "dex": {
+                  "$ref": "../../common/data-types.json#/$defs/ability_score"
+                },
+                "con": {
+                  "$ref": "../../common/data-types.json#/$defs/ability_score"
+                },
+                "int": {
+                  "$ref": "../../common/data-types.json#/$defs/ability_score"
+                },
+                "wis": {
+                  "$ref": "../../common/data-types.json#/$defs/ability_score"
+                },
+                "cha": {
+                  "$ref": "../../common/data-types.json#/$defs/ability_score"
+                }
+              }
+            },
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "hp": {
+                  "$ref": "../../common/data-types.json#/$defs/resource"
+                },
+                "ac": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"},
+                    "min": {"type": "number"},
+                    "calc": {"type": "string"},
+                    "formula": {"type": "string"}
+                  }
+                },
+                "init": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"},
+                    "bonus": {"type": "number"}
+                  }
+                },
+                "speed": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"},
+                    "special": {"type": "string"}
+                  }
+                }
+              }
+            },
+            "details": {
+              "type": "object",
+              "properties": {
+                "biography": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "$ref": "../../common/html-string.json"
+                    },
+                    "public": {
+                      "$ref": "../../common/html-string.json"
+                    }
+                  }
+                },
+                "alignment": {"type": "string"},
+                "race": {"type": "string"},
+                "background": {"type": "string"},
+                "class": {"type": "string"},
+                "level": {"type": "number", "minimum": 1, "maximum": 20},
+                "xp": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"},
+                    "min": {"type": "number"},
+                    "max": {"type": "number"}
+                  }
+                }
+              }
+            },
+            "currency": {
+              "$ref": "../../common/data-types.json#/$defs/currency"
+            },
+            "spells": {
+              "type": "object",
+              "properties": {
+                "spell1": {
+                  "$ref": "./spell-slot.json"
+                },
+                "spell2": {
+                  "$ref": "./spell-slot.json"
+                },
+                "spell3": {
+                  "$ref": "./spell-slot.json"
+                },
+                "spell4": {
+                  "$ref": "./spell-slot.json"
+                },
+                "spell5": {
+                  "$ref": "./spell-slot.json"
+                },
+                "spell6": {
+                  "$ref": "./spell-slot.json"
+                },
+                "spell7": {
+                  "$ref": "./spell-slot.json"
+                },
+                "spell8": {
+                  "$ref": "./spell-slot.json"
+                },
+                "spell9": {
+                  "$ref": "./spell-slot.json"
+                },
+                "pact": {
+                  "$ref": "./spell-slot.json"
+                }
+              }
+            }
+          }
+        },
+        "items": {
+          "type": "array",
+          "description": "Owned items",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]{16}$"
+          }
+        },
+        "effects": {
+          "type": "array",
+          "description": "Active effects",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]{16}$"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/systems/dnd5e/item.json",
+  "title": "Foundry DND5e Item",
+  "description": "Schema for Foundry VTT D&D 5e item documents",
+  "allOf": [
+    {
+      "$ref": "../../common/base-document.json"
+    },
+    {
+      "type": "object",
+      "required": ["type", "system"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["weapon", "equipment", "consumable", "tool", "loot", "class", "subclass", "spell", "feat", "background", "race"],
+          "description": "DND5e item type"
+        },
+        "img": {
+          "$ref": "../../common/image-reference.json"
+        },
+        "system": {
+          "type": "object",
+          "description": "DND5e-specific item data",
+          "properties": {
+            "description": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "$ref": "../../common/html-string.json"
+                },
+                "chat": {
+                  "$ref": "../../common/html-string.json"
+                },
+                "unidentified": {
+                  "$ref": "../../common/html-string.json"
+                }
+              }
+            },
+            "quantity": {
+              "type": "number",
+              "minimum": 0
+            },
+            "weight": {
+              "type": "number", 
+              "minimum": 0
+            },
+            "price": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number", "minimum": 0},
+                "denomination": {
+                  "type": "string",
+                  "enum": ["pp", "gp", "ep", "sp", "cp"]
+                }
+              }
+            },
+            "rarity": {
+              "type": "string",
+              "enum": ["common", "uncommon", "rare", "veryRare", "legendary", "artifact"]
+            },
+            "identified": {
+              "type": "boolean"
+            },
+            "activation": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["", "action", "bonus", "reaction", "minute", "hour", "day"]
+                },
+                "cost": {"type": "number"},
+                "condition": {"type": "string"}
+              }
+            },
+            "duration": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "string"},
+                "units": {
+                  "type": "string",
+                  "enum": ["inst", "turn", "round", "minute", "hour", "day", "month", "year", "perm", "spec"]
+                }
+              }
+            },
+            "target": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number"},
+                "width": {"type": "number"},
+                "units": {"type": "string"},
+                "type": {"type": "string"}
+              }
+            },
+            "range": {
+              "type": "object", 
+              "properties": {
+                "value": {"type": "number"},
+                "long": {"type": "number"},
+                "units": {"type": "string"}
+              }
+            },
+            "uses": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number"},
+                "max": {"type": "number"},
+                "per": {
+                  "type": "string",
+                  "enum": ["charges", "day", "sr", "lr"]
+                },
+                "recovery": {"type": "string"}
+              }
+            },
+            "damage": {
+              "type": "object",
+              "properties": {
+                "parts": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "minItems": 2,
+                    "maxItems": 2
+                  }
+                },
+                "versatile": {"type": "string"}
+              }
+            },
+            "armor": {
+              "type": "object",
+              "properties": {
+                "type": {"type": "string"},
+                "value": {"type": "number"},
+                "dex": {"type": "number"},
+                "magicalBonus": {"type": "number"}
+              }
+            },
+            "hp": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number"},
+                "max": {"type": "number"},
+                "dt": {"type": "number"},
+                "conditions": {"type": "string"}
+              }
+            },
+            "weaponType": {
+              "type": "string",
+              "enum": ["simpleM", "simpleR", "martialM", "martialR", "natural", "improv", "siege"]
+            },
+            "properties": {
+              "type": "object",
+              "additionalProperties": {"type": "boolean"}
+            },
+            "proficient": {
+              "type": "boolean"
+            },
+            "equipped": {
+              "type": "boolean"
+            },
+            "attuned": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

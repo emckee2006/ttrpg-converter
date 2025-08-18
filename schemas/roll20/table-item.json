@@ -1,0 +1,32 @@
+{
+    "description":  "Extracted table_item definition",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/roll20/table-item.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "id":  {
+                                  "type":  "string",
+                                  "pattern":  "^-[A-Za-z0-9_-]{19}$"
+                              },
+                       "name":  {
+                                    "type":  "string",
+                                    "minLength":  1,
+                                    "description":  "Table item name/result text"
+                                },
+                       "weight":  {
+                                      "type":  "number",
+                                      "minimum":  1,
+                                      "description":  "Relative weight for random selection"
+                                  },
+                       "avatar":  {
+                                      "type":  "string",
+                                      "format":  "uri",
+                                      "description":  "Optional image URL for this result"
+                                  }
+                   },
+    "title":  "Table Item",
+    "required":  [
+                     "name",
+                     "weight"
+                 ]
+}

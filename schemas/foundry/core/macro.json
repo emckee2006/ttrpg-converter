@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/core/macro.json",
+  "title": "Foundry Macro",
+  "description": "Schema for Foundry VTT macro documents (system-agnostic)",
+  "allOf": [
+    {
+      "$ref": "../common/base-document.json"
+    },
+    {
+      "type": "object",
+      "required": ["type", "command"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["script", "chat"],
+          "description": "Macro execution type"
+        },
+        "command": {
+          "type": "string",
+          "description": "Macro command/script content"
+        },
+        "author": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9]{16}$",
+          "description": "Author user ID"
+        },
+        "img": {
+          "$ref": "../common/image-reference.json"
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["global", "actors", "actor"],
+          "description": "Macro execution scope"
+        },
+        "hotbar": {
+          "type": "boolean",
+          "description": "Whether macro appears in hotbar"
+        }
+      }
+    }
+  ]
+}

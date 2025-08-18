@@ -1,0 +1,6 @@
+{
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "$id":  "https://ttrpg-converter.com/schemas/foundry/common/assets.json",
+    "title":  "Foundry Asset References",
+    "description":  "Common asset and media reference structures for Foundry VTT"
+}
