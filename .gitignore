@@ -1,0 +1,14 @@
+# C# build artifacts
+bin/
+obj/
+*.user
+.vs/
+*.suo
+
+# Rust artifacts (exclude from C# branch)
+target/
+Cargo.lock
+crates/
+clippy.toml
+.rustfmt.toml
+justfile

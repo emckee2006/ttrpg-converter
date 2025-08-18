@@ -1,0 +1,201 @@
+{
+  "main": {
+    "id": "ttrpg-converter-main",
+    "type": "split",
+    "children": [
+      {
+        "id": "98ea87dd96aab5f4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9504aafa5a64d976",
+            "type": "leaf",
+            "state": {
+              "type": "kanban",
+              "state": {
+                "file": "📋 TTRPGConverter Pure Rust Kanban Board.md",
+                "kanbanViewState": {
+                  "kanban-plugin": "board",
+                  "list-collapse": []
+                }
+              },
+              "icon": "lucide-trello",
+              "title": "📋 TTRPGConverter Pure Rust Kanban Board"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "ttrpg-left-sidebar",
+    "type": "split",
+    "children": [
+      {
+        "id": "file-explorer",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "file-explorer-tab",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "386f7d5192acca4d",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "b40a031a602cfe87",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "ttrpg-right-sidebar",
+    "type": "split",
+    "children": [
+      {
+        "id": "outline-pane",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "outline-tab",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "📋 TTRPGConverter Pure Rust Kanban Board.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of 📋 TTRPGConverter Pure Rust Kanban Board"
+            }
+          },
+          {
+            "id": "dbfefa1eaf436f9f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "📋 TTRPGConverter Pure Rust Kanban Board.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for 📋 TTRPGConverter Pure Rust Kanban Board"
+            }
+          },
+          {
+            "id": "700c995707d12d53",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "📋 TTRPGConverter Pure Rust Kanban Board.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from 📋 TTRPGConverter Pure Rust Kanban Board"
+            }
+          },
+          {
+            "id": "1f1de1ba1e6121b7",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "obsidian-kanban:Create new board": false
+    }
+  },
+  "active": "9504aafa5a64d976",
+  "lastOpenFiles": [
+    "📋 Detailed Plans/M8_PERFORMANCE_OPTIMIZATION.md",
+    "📋 Detailed Plans/M5_PRODUCTION_READY_TASKS.md",
+    "📋 Detailed Plans/M9_UNIVERSAL_PLATFORM_INTEGRATION.md",
+    "📋 Detailed Plans/M10_ADVANCED_OUTPUT_FORMATS.md",
+    "📋 Detailed Plans/M6_ADVANCED_MEDIA_PROCESSING.md",
+    "📋 Detailed Plans/M7_MULTI_SYSTEM_CONVERSION.md",
+    "📋 Detailed Plans/M7_OUTPUT_PRODUCTION.md",
+    "📋 Detailed Plans/M6_PLATFORM_INTEGRATION.md",
+    "📋 Detailed Plans/M5_ADVANCED_PROCESSING.md",
+    "📋 Detailed Plans/archive/M6_ADVANCED_MEDIA_PROCESSING.md",
+    "📋 Detailed Plans/archive/M10_ADVANCED_OUTPUT_FORMATS.md",
+    "📋 Detailed Plans/archive/M9_UNIVERSAL_PLATFORM_INTEGRATION.md",
+    "📋 Detailed Plans/archive/M8_PERFORMANCE_OPTIMIZATION.md",
+    "📋 Detailed Plans/archive/M7_MULTI_SYSTEM_CONVERSION.md",
+    "📋 Detailed Plans/archive/OLD_MILESTONE_STRUCTURE_README.md",
+    "📋 Detailed Plans/archive/M5_PRODUCTION_READY_TASKS.md",
+    "📋 Detailed Plans/archive",
+    "📊 Dashboards/COMPREHENSIVE_PLANNING_INDEX.md",
+    "📋 TTRPGConverter Pure Rust Kanban Board.md",
+    "📋 Detailed Plans/M1_FOUNDATION_TASKS.md",
+    "📊 Dashboards/Development Dashboard.md",
+    "📊 Dashboards/DETAILED_TASK_BREAKDOWN.md",
+    "📐 Architecture/ARCHITECTURAL_DECISIONS.md",
+    "../M2_CORE_ENGINE_TASKS.md",
+    "../M3_CLI_INTERFACE_TASKS.md"
+  ]
+}
