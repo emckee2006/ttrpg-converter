@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/roll20/character.json",
+  "title": "Roll20 Character Sheet",
+  "description": "Schema for Roll20 character sheet with attributes and abilities",
+  "type": "object",
+  "required": ["id", "name"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^-[A-Za-z0-9_-]{19}$",
+      "description": "Unique Roll20 character ID"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Character name"
+    },
+    "avatar": {
+      "type": "string",
+      "format": "uri",
+      "description": "Character avatar image URL"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Character biography/notes"
+    },
+    "gmnotes": {
+      "type": "string",
+      "description": "GM-only notes"
+    },
+    "defaulttoken": {
+      "type": "string",
+      "description": "Default token settings JSON"
+    },
+    "tags": {
+      "type": "string",
+      "description": "Character tags"
+    },
+    "controlledby": {
+      "type": "string",
+      "description": "Comma-separated player IDs who can control this character"
+    },
+    "inplayerjournals": {
+      "type": "string",
+      "description": "Comma-separated player IDs who can see this character"
+    },
+    "archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether character is archived"
+    },
+    "attribs": {
+      "type": "array",
+      "description": "Character sheet attributes",
+      "items": {
+        "$ref": "./attribute.json"
+      }
+    },
+    "abilities": {
+      "type": "array",
+      "description": "Character sheet abilities/macros",
+      "items": {
+        "$ref": "./ability.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/common/ownership.json",
+  "title": "Foundry Document Ownership",
+  "description": "Document ownership permissions by user role",
+  "type": "object",
+  "properties": {
+    "default": {
+      "type": "integer",
+      "enum": [0, 1, 2, 3],
+      "description": "Default permission level (0=None, 1=Limited, 2=Observer, 3=Owner)"
+    }
+  },
+  "patternProperties": {
+    "^[a-zA-Z0-9]{16}$": {
+      "type": "integer",
+      "enum": [0, 1, 2, 3],
+      "description": "User-specific permission level"
+    },
+    "^(PLAYER|TRUSTED|ASSISTANT|GAMEMASTER)$": {
+      "type": "integer", 
+      "enum": [0, 1, 2, 3],
+      "description": "Role-based permission level"
+    }
+  },
+  "additionalProperties": false
+}

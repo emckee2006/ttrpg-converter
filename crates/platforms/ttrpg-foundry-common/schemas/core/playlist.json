@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/core/playlist.json",
+  "title": "Foundry VTT Playlist",
+  "description": "Schema for Foundry VTT playlist documents",
+  "allOf": [
+    {
+      "$ref": "../common/base-document.json"
+    },
+    {
+      "type": "object",
+      "required": ["name", "sounds"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Playlist description"
+        },
+        "sounds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "path"],
+            "properties": {
+              "_id": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9]{16}$"
+              },
+              "name": {
+                "type": "string",
+                "description": "Sound name"
+              },
+              "description": {
+                "type": "string",
+                "description": "Sound description"
+              },
+              "path": {
+                "$ref": "../common/audio-reference.json",
+                "description": "Audio file path"
+              },
+              "playing": {
+                "type": "boolean",
+                "default": false
+              },
+              "pausedTime": {
+                "type": "number",
+                "minimum": 0,
+                "default": 0
+              },
+              "repeat": {
+                "type": "boolean",
+                "default": false
+              },
+              "volume": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.5
+              },
+              "fade": {
+                "type": "number",
+                "minimum": 0,
+                "default": 0
+              },
+              "sort": {
+                "type": "number",
+                "default": 0
+              },
+              "streaming": {
+                "type": "boolean",
+                "default": false
+              }
+            }
+          }
+        },
+        "mode": {
+          "type": "number",
+          "enum": [-1, 0, 1, 2],
+          "description": "Playback mode: -1=disabled, 0=sequential, 1=shuffle, 2=simultaneous",
+          "default": 0
+        },
+        "playing": {
+          "type": "boolean",
+          "default": false
+        },
+        "fade": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "volume": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.5
+        }
+      }
+    }
+  ]
+}

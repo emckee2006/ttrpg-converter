@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/core/cards.json",
+  "title": "Foundry VTT Cards",
+  "description": "Schema for Foundry VTT card deck documents",
+  "allOf": [
+    {
+      "$ref": "../common/base-document.json"
+    },
+    {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["deck", "pile", "hand"],
+          "description": "Type of card collection"
+        },
+        "description": {
+          "type": "string",
+          "description": "Cards description"
+        },
+        "cards": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type"],
+            "properties": {
+              "_id": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9]{16}$"
+              },
+              "name": {
+                "type": "string",
+                "description": "Card name"
+              },
+              "description": {
+                "type": "string",
+                "description": "Card description"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["base", "preset"],
+                "default": "base"
+              },
+              "suit": {
+                "type": "string",
+                "description": "Card suit"
+              },
+              "value": {
+                "type": "string", 
+                "description": "Card value"
+              },
+              "faces": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {"type": "string"},
+                    "text": {"type": "string"},
+                    "img": {"$ref": "../common/image-reference.json"}
+                  }
+                }
+              },
+              "face": {
+                "type": "number",
+                "minimum": 0,
+                "description": "Current face index"
+              },
+              "drawn": {
+                "type": "boolean",
+                "default": false
+              },
+              "origin": {
+                "type": "string",
+                "description": "Origin deck ID"
+              },
+              "width": {
+                "type": "number",
+                "minimum": 1,
+                "default": 1
+              },
+              "height": {
+                "type": "number", 
+                "minimum": 1,
+                "default": 1
+              },
+              "sort": {
+                "type": "number",
+                "default": 0
+              }
+            }
+          }
+        },
+        "displayCount": {
+          "type": "boolean",
+          "default": false
+        },
+        "preset": {
+          "type": "string",
+          "enum": ["", "poker", "tarot"],
+          "description": "Preset card configuration"
+        },
+        "shuffle": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    }
+  ]
+}

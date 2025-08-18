@@ -1,0 +1,23 @@
+# TTRPG Converter - Validation Plugin Configuration
+# Validation-specific settings (business rules, asset validation, security)
+# Note: Schema paths are managed centrally in ttrpg-core/schema-config.toml
+
+# Performance settings
+[validation]
+parallel_validation = true
+max_validation_time_ms = 5000
+strictness = "standard"  # lenient, standard, strict = true
+validate_asset_references = true
+
+# Asset validation configuration
+[assets]
+max_file_size = 52428800  # 50MB in bytes
+check_url_accessibility = true
+allowed_extensions = ["png", "jpg", "jpeg", "pdf", "json"]
+base_paths = ["assets", "images"]
+
+# Security validation configuration  
+[security]
+enforce_permissions = true
+allowed_domains = ["github.com", "dndbeyond.com", "roll20.net"]
+max_redirects = 3

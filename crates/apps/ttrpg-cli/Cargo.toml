@@ -1,0 +1,32 @@
+[package]
+name = "ttrpg-cli"
+version = "0.1.0"
+edition = "2021"
+description = "Command-line interface"
+authors = ["Your Name <your.email@example.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/emckee2006/ttrpg-converter"
+
+[dependencies]
+ttrpg-core = { path = "../../core/ttrpg-core" }
+ttrpg-orchestration = { path = "../../orchestration/ttrpg-orchestration" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tokio = { workspace = true }
+zip = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# 🚀 PLUGIN ORCHESTRATION CLI DEPENDENCIES - WORKSPACE UPGRADED
+clap = { workspace = true }
+dialoguer = { workspace = true }      # Interactive prompts and confirmation dialogs
+indicatif = { workspace = true }      # Professional progress bars with ETA and throughput
+console = { workspace = true }        # Terminal styling and cross-platform compatibility
+
+# 🔍 PLUGIN DISCOVERY SUPPORT
+inventory = { workspace = true }      # Access to plugin registry
+toml = { workspace = true }           # Template file format
+uuid = { workspace = true }           # Pipeline ID generation
+directories = { workspace = true }    # Cross-platform directory paths

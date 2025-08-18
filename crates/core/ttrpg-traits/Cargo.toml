@@ -1,0 +1,16 @@
+[package]
+name = "ttrpg-traits"
+version = "0.1.0"
+edition = "2021"
+description = "Plugin trait definitions for TTRPG Converter"
+
+[dependencies]
+async-trait = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+ttrpg-core = { path = "../ttrpg-core" }
+ttrpg-types = { path = "../ttrpg-types" }
+
+[dev-dependencies]
+tokio = { workspace = true }

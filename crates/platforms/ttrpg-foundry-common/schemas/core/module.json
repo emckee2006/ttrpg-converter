@@ -1,0 +1,293 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/core/module.json",
+  "title": "Foundry VTT Module Manifest",
+  "description": "Schema for Foundry VTT module.json manifest files",
+  "type": "object",
+  "required": ["id", "title", "description", "version", "compatibility", "authors"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-_]+$",
+      "description": "Module identifier"
+    },
+    "title": {
+      "type": "string",
+      "description": "Module display name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Module description"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version string"
+    },
+    "compatibility": {
+      "type": "object",
+      "required": ["minimum", "verified"],
+      "properties": {
+        "minimum": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Minimum compatible Foundry version"
+        },
+        "verified": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Verified compatible Foundry version"
+        },
+        "maximum": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Maximum compatible Foundry version"
+        }
+      }
+    },
+    "authors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Author name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Author email"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Author URL"
+          },
+          "discord": {
+            "type": "string",
+            "description": "Author Discord username"
+          }
+        }
+      }
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Module homepage URL"
+    },
+    "license": {
+      "type": "string",
+      "description": "Module license"
+    },
+    "readme": {
+      "type": "string",
+      "format": "uri",
+      "description": "README file URL"
+    },
+    "bugs": {
+      "type": "string",
+      "format": "uri",
+      "description": "Bug report URL"
+    },
+    "changelog": {
+      "type": "string",
+      "format": "uri",
+      "description": "Changelog URL"
+    },
+    "media": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["icon", "screenshot", "video"]
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "caption": {
+            "type": "string"
+          },
+          "loop": {
+            "type": "boolean"
+          },
+          "thumbnail": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    },
+    "esmodules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "ES module files"
+    },
+    "scripts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Script files"
+    },
+    "styles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "CSS files"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["lang", "name", "path"],
+        "properties": {
+          "lang": {
+            "type": "string",
+            "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "packs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "label", "path", "type"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["Actor", "Item", "Scene", "JournalEntry", "Macro", "RollTable", "Playlist", "Adventure", "Card", "Cards"]
+          },
+          "system": {
+            "type": "string"
+          },
+          "private": {
+            "type": "boolean"
+          },
+          "flags": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "system": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Compatible systems"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["module", "system", "world"]
+          },
+          "manifest": {
+            "type": "string",
+            "format": "uri"
+          },
+          "compatibility": {
+            "type": "object",
+            "required": ["minimum", "verified"],
+            "properties": {
+              "minimum": {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$",
+                "description": "Minimum compatible Foundry version"
+              },
+              "verified": {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$",
+                "description": "Verified compatible Foundry version"
+              },
+              "maximum": {
+                "type": "string",
+                "pattern": "^\\d+\\.\\d+\\.\\d+$",
+                "description": "Maximum compatible Foundry version"
+              }
+            }
+          }
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["module", "system", "world"]
+          },
+          "versionMin": {
+            "type": "string"
+          },
+          "versionMax": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "socket": {
+      "type": "boolean",
+      "description": "Whether module uses socket functionality"
+    },
+    "manifest": {
+      "type": "string",
+      "format": "uri",
+      "description": "Module manifest URL"
+    },
+    "download": {
+      "type": "string",
+      "format": "uri",
+      "description": "Module download URL"
+    },
+    "protected": {
+      "type": "boolean",
+      "description": "Whether module is DRM protected"
+    },
+    "coreTranslation": {
+      "type": "boolean",
+      "description": "Whether module provides core translations"
+    },
+    "library": {
+      "type": "boolean",
+      "description": "Whether module is a library"
+    }
+  }
+}

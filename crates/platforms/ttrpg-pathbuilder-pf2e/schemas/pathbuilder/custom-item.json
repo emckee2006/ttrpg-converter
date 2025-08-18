@@ -1,0 +1,130 @@
+{
+    "description":  "Extracted custom_item definition",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/pathbuilder/custom-item.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "databaseID":  {
+                                          "type":  "integer",
+                                          "description":  "Database identifier"
+                                      },
+                       "timestamp":  {
+                                         "type":  "string",
+                                         "pattern":  "^\\d+$",
+                                         "description":  "Creation timestamp"
+                                     },
+                       "id":  {
+                                  "type":  "string",
+                                  "pattern":  "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                                  "description":  "Unique item ID (UUID)"
+                              },
+                       "name":  {
+                                    "type":  "string",
+                                    "minLength":  1,
+                                    "description":  "Item name"
+                                },
+                       "level":  {
+                                     "type":  "integer",
+                                     "minimum":  0,
+                                     "maximum":  25,
+                                     "description":  "Item level"
+                                 },
+                       "traits":  {
+                                      "type":  "string",
+                                      "description":  "Item traits (comma-separated)"
+                                  },
+                       "category":  {
+                                        "type":  "string",
+                                        "description":  "Item category (weapon, armor, consumable, etc.)"
+                                    },
+                       "price":  {
+                                     "type":  "string",
+                                     "description":  "Item price in gold/silver/copper"
+                                 },
+                       "bulk":  {
+                                    "type":  "string",
+                                    "description":  "Item bulk (L, 1, 2, etc.)"
+                                },
+                       "damage":  {
+                                      "type":  "string",
+                                      "description":  "Weapon damage dice"
+                                  },
+                       "damageType":  {
+                                          "type":  "string",
+                                          "description":  "Damage type (piercing, slashing, etc.)"
+                                      },
+                       "weaponGroup":  {
+                                           "type":  "string",
+                                           "description":  "Weapon group classification"
+                                       },
+                       "ac":  {
+                                  "type":  "integer",
+                                  "description":  "Armor AC bonus"
+                              },
+                       "dexCap":  {
+                                      "type":  "integer",
+                                      "description":  "Maximum Dex bonus for armor"
+                                  },
+                       "checkPenalty":  {
+                                            "type":  "integer",
+                                            "description":  "Armor check penalty"
+                                        },
+                       "speedPenalty":  {
+                                            "type":  "integer",
+                                            "description":  "Speed penalty from armor"
+                                        },
+                       "strength":  {
+                                        "type":  "integer",
+                                        "description":  "Required Strength score"
+                                    },
+                       "armorGroup":  {
+                                          "type":  "string",
+                                          "description":  "Armor group classification"
+                                      },
+                       "range":  {
+                                     "type":  "string",
+                                     "description":  "Weapon range increment"
+                                 },
+                       "reload":  {
+                                      "type":  "string",
+                                      "description":  "Reload time for ranged weapons"
+                                  },
+                       "hands":  {
+                                     "type":  "string",
+                                     "enum":  [
+                                                  "1",
+                                                  "2",
+                                                  "1+"
+                                              ],
+                                     "description":  "Number of hands required"
+                                 },
+                       "usage":  {
+                                     "type":  "string",
+                                     "description":  "Item usage/activation"
+                                 },
+                       "activate":  {
+                                        "type":  "string",
+                                        "description":  "Activation method"
+                                    },
+                       "description":  {
+                                           "type":  "string",
+                                           "minLength":  1,
+                                           "description":  "Item description and abilities"
+                                       },
+                       "src":  {
+                                   "type":  "string",
+                                   "description":  "Source book/pack"
+                               }
+                   },
+    "title":  "Custom Item",
+    "required":  [
+                     "databaseID",
+                     "timestamp",
+                     "id",
+                     "name",
+                     "level",
+                     "traits",
+                     "description",
+                     "src"
+                 ]
+}

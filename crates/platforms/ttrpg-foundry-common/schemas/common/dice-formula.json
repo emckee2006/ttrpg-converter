@@ -1,0 +1,8 @@
+{
+    "description":  "Dice formula (e.g., \u00271d20+5\u0027, \u00272d6\u0027, \u002710\u0027)",
+    "type":  "string",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/foundry/common/dice-formula.json",
+    "title":  "Dice Formula",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "pattern":  "^\\d*d\\d+([+-]\\d+)?$|^\\d+$"
+}

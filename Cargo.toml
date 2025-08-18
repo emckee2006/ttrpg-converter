@@ -1,13 +1,29 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/ttrpg-core",
-    "crates/ttrpg-gui",
-    "crates/ttrpg-cli",
-    # New plugin crates
-    "crates/ttrpg-input-plugins",
-    "crates/ttrpg-output-plugins",
-    "crates/ttrpg-processing-plugins"
+    # Core architecture crates
+    "crates/core/ttrpg-core",
+    "crates/core/ttrpg-types", 
+    "crates/core/ttrpg-traits",
+    "crates/core/ttrpg-manager",
+    "crates/core/ttrpg-build-utils",
+    # Self-contained platform crates (future DLLs)  
+    "crates/platforms/ttrpg-foundry-common",  # Consolidated - all Foundry systems
+    # "crates/platforms/ttrpg-foundry-dnd5e",  # Consolidated into foundry-common
+    # "crates/platforms/ttrpg-foundry-pf2e",  # Consolidated into foundry-common  
+    # "crates/platforms/ttrpg-foundry-pf1e",  # Consolidated into foundry-common
+    "crates/platforms/ttrpg-roll20",
+    # "crates/platforms/ttrpg-pathbuilder-pf1e",  # Disabled - identical to PF2e
+    "crates/platforms/ttrpg-pathbuilder-pf2e",
+    # Plugin implementation crates
+    "crates/plugins/ttrpg-input-plugins",
+    "crates/plugins/ttrpg-output-plugins",
+    "crates/plugins/ttrpg-processing-plugins", 
+    # Orchestration layer
+    "crates/orchestration/ttrpg-orchestration",
+    # Applications
+    "crates/apps/ttrpg-gui",
+    "crates/apps/ttrpg-cli"
 ]
 
 [workspace.dependencies]
@@ -18,6 +34,7 @@ anyhow = "1.0"
 thiserror = "2.0"                # Error handling - UPGRADED 1.0→2.0 (BREAKING CHANGES EXPECTED)
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
+log = "0.4"                      # Traditional logging facade
 chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "1.0", features = ["v4", "serde"] }
 url = { version = "2.0", features = ["serde"] }
@@ -26,10 +43,14 @@ async-trait = "0.1"
 # Additional Core Dependencies - UPGRADED
 toml = "0.9"                     # TOML parsing and serialization - UPGRADED 0.8→0.9
 regex = "1.10"                   # Regular expressions for validation
+regress = "0.10"                  # Regular expression handling for typify
 figment = { version = "0.10", features = ["toml", "env"] }  # Configuration management
+prettyplease = "0.2"             # Code formatting for build scripts
 dirs = "6.0"                     # Cross-platform user directory detection - UPGRADED
 futures = "0.3"                  # Future utilities
 tracing-appender = "0.2"         # Tracing file appender
+schemars = "0.8"                 # JSON Schema types - Reverted to 0.8 due to typify compatibility
+jsonref = "0.4"                  # JSON Schema reference resolution
 
 # CLI dependencies
 clap = { version = "4.4", features = ["derive"] }
@@ -44,8 +65,13 @@ predicates = "3.0"                   # Additional assertion predicates
 proptest = "1.4"                     # Property-based testing
 criterion = { version = "0.7", features = ["html_reports"] }  # Benchmarking - UPGRADED
 temp-env = "0.3"                     # Environment variable testing
+mockall = "0.12"                     # Mock generation for traits
 tokio-test = "0.4"                   # Async testing utilities
-tempfile = "3.8"                     # Temporary file testing
+tempfile = "3.8"                     # Temporary files/directories
+serde_test = "1.0"                   # Serde testing utilities
+rstest = "0.18"                      # Parameterized testing
+test-case = "3.3"                    # Simple parameterized tests
+rand = "0.9"                         # Random number generation for testing
 
 # GUI dependencies
 egui = "0.28"
@@ -72,16 +98,21 @@ http-cache-reqwest = "0.16"     # HTTP caching - UPGRADED 0.11→0.16
 # Validation Framework - UPGRADED
 validator = "0.20"              # Validation system - UPGRADED 0.18→0.20
 
+# Object-to-Object mapping
+o2o = "0.5"                     # Alternative to custom derive macro for type conversions
+
 # Asset processing - UPGRADED
 image = "0.25"
 zip = "4.3"                      # Compression - UPGRADED 0.6→4.3 (MASSIVE ARCHITECTURAL CHANGE)
 
-# Processing Plugin Dependencies - VERIFIED VERSIONS
-jsonschema = "0.17.0"            # Validation plugin - JSON schema validation
+# Processing Plugin Dependencies - VERIFIED VERSIONS  
+jsonschema = "0.32.1"            # Validation plugin - JSON schema validation
 blake3 = "1.8.2"                 # Performance upgrade - 10x faster than sha2
 dashmap = "6.1.0"                # Concurrent collections for shared state
 imageproc = "0.25.0"             # Asset processing - image operations
-geo = "0.28.0"                   # Asset processing - geometric algorithms
+geo = "0.30.0"                   # Asset processing - geometric algorithms
 moka = { version = "0.12", features = ["future"] }  # Memory caching
 sha2 = "0.10"                    # Cryptographic hashing
+typify = "0.4.3"                 # JSON Schema to Rust struct generation
+syn = { version = "2.0", features = ["full"] }  # Proc macro parsing for code generation
 

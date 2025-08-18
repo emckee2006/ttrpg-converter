@@ -1,0 +1,57 @@
+{
+    "description":  "Extracted page definition",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/roll20/page.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "id":  {
+                                  "type":  "string",
+                                  "pattern":  "^-[A-Za-z0-9_-]{19}$"
+                              },
+                       "name":  {
+                                    "type":  "string",
+                                    "minLength":  1
+                                },
+                       "width":  {
+                                     "type":  "number"
+                                 },
+                       "height":  {
+                                      "type":  "number"
+                                  },
+                       "background_color":  {
+                                                "type":  "string"
+                                            },
+                       "grid_opacity":  {
+                                            "type":  "number"
+                                        },
+                       "grid_size":  {
+                                         "type":  "number"
+                                     },
+                       "snapping_increment":  {
+                                                  "type":  "number"
+                                              },
+                       "fog_opacity":  {
+                                           "type":  "number"
+                                       },
+                       "archived":  {
+                                        "type":  "boolean"
+                                    },
+                       "lightupdatedrop":  {
+                                               "type":  "boolean"
+                                           },
+                       "lightenforcelos":  {
+                                               "type":  "boolean"
+                                           },
+                       "lightrestrictmovement":  {
+                                                     "type":  "boolean"
+                                                 },
+                       "lightglobalillum":  {
+                                                "type":  "boolean"
+                                            }
+                   },
+    "title":  "Page",
+    "required":  [
+                     "id",
+                     "name"
+                 ]
+}

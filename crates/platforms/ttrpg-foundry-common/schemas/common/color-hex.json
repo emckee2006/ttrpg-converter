@@ -1,0 +1,8 @@
+{
+    "description":  "6-digit hexadecimal color code",
+    "type":  "string",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/foundry/common/color-hex.json",
+    "title":  "Color Hex",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "pattern":  "^#[0-9a-fA-F]{6}$"
+}

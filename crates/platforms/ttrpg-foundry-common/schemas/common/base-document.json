@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/common/base-document.json",
+  "title": "Foundry Base Document",
+  "description": "Common properties shared by all Foundry VTT documents",
+  "type": "object",
+  "required": ["_id", "name"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9]{16}$",
+      "description": "Unique 16-character document ID"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Document name"
+    },
+    "folder": {
+      "type": ["string", "null"],
+      "pattern": "^[a-zA-Z0-9]{16}$",
+      "description": "Parent folder ID, null if in root"
+    },
+    "sort": {
+      "type": "number",
+      "description": "Sort order for display"
+    },
+    "ownership": {
+      "$ref": "./ownership.json"
+    },
+    "flags": {
+      "type": "object",
+      "description": "Module/system-specific flags",
+      "additionalProperties": true
+    },
+    "_stats": {
+      "$ref": "./document-stats.json"
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/world.json",
+  "title": "Foundry VTT World",
+  "description": "Schema for Foundry VTT world.json configuration file",
+  "type": "object",
+  "required": ["title", "id", "system", "coreVersion"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Display name of the world"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9-_]+$",
+      "description": "Unique world identifier (lowercase, alphanumeric, hyphens, underscores)"
+    },
+    "system": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Game system ID (e.g., dnd5e, pf2e, ose)"
+    },
+    "coreVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+      "description": "Foundry core version (e.g., 12.331)"
+    },
+    "systemVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+      "description": "Game system version"
+    },
+    "description": {
+      "type": "string",
+      "description": "World description"
+    },
+    "joinTheme": {
+      "type": "string",
+      "default": "default",
+      "description": "Join screen theme"
+    },
+    "compatibility": {
+      "type": "object",
+      "description": "Foundry version compatibility",
+      "properties": {
+        "minimum": {
+          "type": "string",
+          "pattern": "^\\d+(\\.\\d+)?$",
+          "description": "Minimum supported Foundry version"
+        },
+        "verified": {
+          "type": "string", 
+          "pattern": "^\\d+(\\.\\d+)?$",
+          "description": "Last verified Foundry version"
+        },
+        "maximum": {
+          "type": "string",
+          "pattern": "^\\d+(\\.\\d+)?$",
+          "description": "Maximum supported Foundry version"
+        }
+      }
+    },
+    "lastPlayed": {
+      "type": "string",
+      "description": "ISO date string of last play session"
+    },
+    "playtime": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total playtime in seconds"
+    },
+    "packs": {
+      "type": "array",
+      "description": "Compendium packs in this world",
+      "items": {
+        "$ref": "./compendium-pack.json"
+      }
+    },
+    "authors": {
+      "type": "array",
+      "description": "World authors",
+      "items": {
+        "$ref": "./author.json"
+      }
+    },
+    "version": {
+      "type": "string",
+      "description": "World version"
+    },
+    "minimumCoreVersion": {
+      "type": "string",
+      "description": "Legacy compatibility field"
+    },
+    "compatibleCoreVersion": {
+      "type": "string", 
+      "description": "Legacy compatibility field"
+    }
+  }
+}

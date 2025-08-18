@@ -1,0 +1,90 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$id": "https://ttrpg-converter.com/schemas/foundry/common/data-types.json",
+    "title": "Foundry Data Types",
+    "description": "Common data type definitions for Foundry VTT schemas",
+    "$defs": {
+        "ability_score": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 30
+                },
+                "proficient": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "bonuses": {
+                    "type": "object",
+                    "properties": {
+                        "check": {
+                            "type": "string"
+                        },
+                        "save": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "required": ["value"]
+        },
+        "resource": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "min": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "max": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "temp": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "tempmax": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "required": ["value", "max"]
+        },
+        "currency": {
+            "type": "object",
+            "properties": {
+                "pp": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0
+                },
+                "gp": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0
+                },
+                "ep": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0
+                },
+                "sp": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0
+                },
+                "cp": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0
+                }
+            }
+        }
+    }
+}

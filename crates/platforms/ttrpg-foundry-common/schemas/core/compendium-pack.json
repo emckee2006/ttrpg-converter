@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/core/compendium-pack.json",
+  "title": "Foundry Compendium Pack",
+  "description": "Compendium pack configuration",
+  "type": "object",
+  "required": ["name", "label", "type"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Pack identifier"
+    },
+    "label": {
+      "type": "string",
+      "description": "Pack display name"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["Actor", "Item", "JournalEntry", "Macro", "Playlist", "RollTable", "Scene"],
+      "description": "Document type stored in this pack"
+    },
+    "path": {
+      "type": "string",
+      "description": "Relative path to pack database file"
+    },
+    "system": {
+      "type": "string",
+      "description": "Game system identifier (for system packs)"
+    },
+    "ownership": {
+      "$ref": "../common/ownership.json"
+    },
+    "flags": {
+      "type": "object",
+      "description": "Pack-specific flags"
+    }
+  }
+}

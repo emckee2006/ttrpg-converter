@@ -1,0 +1,6 @@
+{
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "$id":  "https://ttrpg-converter.com/schemas/pathbuilder/ancestry.json",
+    "title":  "Pathbuilder Custom Ancestry",
+    "description":  "Schema for Pathbuilder 2e custom ancestry and heritage definitions"
+}

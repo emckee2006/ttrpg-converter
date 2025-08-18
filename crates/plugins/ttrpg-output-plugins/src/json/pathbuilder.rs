@@ -1,0 +1,70 @@
+//! Pathbuilder JSON Output Handler
+
+use async_trait::async_trait;
+use std::path::Path;
+use tracing::info;
+
+use ttrpg_core::plugin_framework::{OutputPlugin, PluginInfo, ConversionResult, OutputBundle, WriteOptions, OutputConfig};
+use ttrpg_core::types::{Campaign, OutputFormat};
+
+#[derive(Debug, Clone)]
+pub struct PathbuilderJsonHandler;
+
+impl Default for PathbuilderJsonHandler {
+    fn default() -> Self {
+        Self
+    }
+}
+
+impl PathbuilderJsonHandler {
+    pub fn new() -> Self {
+        Self
+    }
+}
+
+#[async_trait]
+impl OutputPlugin for PathbuilderJsonHandler {
+    fn plugin_info(&self) -> PluginInfo {
+        PluginInfo {
+            name: "Pathbuilder JSON Output Plugin".to_string(),
+            version: "0.1.0".to_string(),
+            description: "Exports campaigns as Pathbuilder JSON format".to_string(),
+            author: "TTRPG Converter".to_string(),
+            supported_features: vec!["json".to_string(), "pathbuilder".to_string()],
+            dependencies: Vec::new(),
+        }
+    }
+
+    fn supported_formats(&self) -> Vec<OutputFormat> {
+        vec![OutputFormat::PathbuilderJson]
+    }
+
+    fn validate_config(&self, _config: &OutputConfig) -> ttrpg_core::plugin_framework::PluginResult<()> {
+        Ok(())
+    }
+
+    async fn generate_output(
+        &self,
+        _campaign: &Campaign,
+        _assets: &[ttrpg_core::plugin_framework::AssetInfo],
+        _config: &OutputConfig,
+    ) -> ConversionResult<OutputBundle> {
+        info!("Generating Pathbuilder JSON output (stub implementation)");
+        
+        Ok(OutputBundle {
+            format: OutputFormat::PathbuilderJson,
+            files: std::collections::HashMap::new(),
+            metadata: std::collections::HashMap::new(),
+        })
+    }
+
+    async fn write_output(
+        &self,
+        _bundle: OutputBundle,
+        _target: &Path,
+        _options: &WriteOptions,
+    ) -> ConversionResult<()> {
+        info!("Writing Pathbuilder JSON output (stub implementation)");
+        Ok(())
+    }
+}

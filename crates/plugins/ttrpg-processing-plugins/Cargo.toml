@@ -1,0 +1,84 @@
+[package]
+name = "ttrpg-processing-plugins"
+version = "0.1.0"
+edition = "2021"
+description = "Processing plugins for asset management and validation"
+authors = ["TTRPG Converter Team"]
+
+[dependencies]
+# Core plugin interfaces and types
+ttrpg-core = { path = "../../core/ttrpg-core" }
+ttrpg-traits = { path = "../../core/ttrpg-traits" }
+ttrpg-types = { path = "../../core/ttrpg-types" }
+
+# Async trait support for plugin interfaces
+async-trait = { workspace = true }
+
+# JSON processing - WORKSPACE UPGRADED
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+
+# HTTP client for asset downloading with middleware support - WORKSPACE UPGRADED
+reqwest = { workspace = true, features = ["json", "stream"] }
+reqwest-middleware = { workspace = true }
+reqwest-retry = { workspace = true }
+reqwest-tracing = { workspace = true }
+http-cache-reqwest = { workspace = true }
+
+# URL parsing
+url = { workspace = true }
+
+# Memory caching
+moka = { workspace = true }
+
+# Cryptographic hashing for asset security
+sha2 = { workspace = true }
+
+# Error handling and logging - WORKSPACE UPGRADED
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+# File I/O and path handling
+tokio = { workspace = true, features = ["full"] }
+dirs = { workspace = true }
+
+# Progress reporting for bulk operations
+indicatif = { workspace = true }
+
+# Asset validation and metadata extraction
+image = { workspace = true }
+
+# Logging and error handling
+log = { workspace = true }
+
+# Date/time handling
+chrono = { workspace = true, features = ["serde"] }
+
+# Validation framework
+validator = { workspace = true }
+
+# Processing plugin dependencies
+jsonschema = { workspace = true }
+blake3 = { workspace = true }
+dashmap = { workspace = true }
+regex = { workspace = true }
+toml = { workspace = true }
+imageproc = { workspace = true }
+geo = { workspace = true }
+zip = { workspace = true }
+rayon = { workspace = true }
+num_cpus = { workspace = true }
+futures = { workspace = true }
+daggy = { workspace = true }
+petgraph = { workspace = true }
+shaku = { workspace = true }
+inventory = { workspace = true }
+
+# Testing framework
+[dev-dependencies]
+tokio-test = { workspace = true }
+tempfile = { workspace = true }
+
+[lib]
+name = "ttrpg_processing_plugins"
+path = "src/lib.rs"

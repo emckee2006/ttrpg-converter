@@ -1,21 +1,21 @@
 # 📊 TTRPGConverter Development Dashboard
 
-**Project**: Pure Rust TTRPGConverter  
+**Project**: Pure Rust TTRPGConverter with DLL Plugin Architecture  
 **Status**: 🟢 Active Development  
-**Phase**: Ready for M2 Processing Plugin Architecture Foundation  
-**Last Updated**: 2025-08-15
+**Phase**: Ready for M1.4 Core Foundation + Plugin System  
+**Last Updated**: 2025-08-17
 
 ---
 
-## 🎯 Current Status: M1 Foundation Complete ✅
+## 🎯 Current Status: Ready for DLL-Based Plugin Architecture
 
 ### Progress Overview
 ```progress
-[████░░░░░░░░░░░░░░░░░░░░] 10% Complete - M1 Foundation Complete
-20/193 story points completed
+[███░░░░░░░░░░░░░░░░░░░░] 15% Complete - M1.1-M1.3 Foundation Complete
+20/109 story points completed
 ```
 
-**Next Milestone**: M2 Processing Plugin Architecture Foundation (18 pts, 2 weeks)  
+**Next Milestone**: M1.4 Core Foundation + Plugin System (18 pts, 2 weeks)  
 **Status**: 🚀 Ready to Begin  
 **Target Velocity**: 9-10 pts/week
 
@@ -25,11 +25,13 @@
 - ✅ **M1.3: RustValidator Service** (8pts) - Complete with zero compilation errors
 - ✅ **M1.5: Service Integration** (4pts) - Complete with thread-safe service management
 
-### 🚀 Ready for M2: Processing Plugin Architecture Foundation
-**T2.0: ValidationPlugin + 5 Asset Plugins** (18pts) - Detailed implementation plan ready
-- AssetRetrievalPlugin, AssetResolutionPlugin, AssetConversionPlugin
-- SceneProcessingPlugin, ReferenceTrackingPlugin
-- Shared execution contexts using `tokio`, `rayon`, and professional libraries
+### 🚀 Ready for M1.4: Core Foundation + Plugin System
+**T1.4: DLL Plugin Loading System** (18pts) - Ready for implementation
+- Database layer (LevelDB/NeDB integration)
+- File format support & detection
+- Plugin loading system with dynamic DLL support
+- Orchestration framework for unified plugin management
+- Shared services architecture (validation, compendium, asset processing)
 
 ---
 
@@ -37,11 +39,11 @@
 
 | Metric | Value | Status |
 |--------|-------|--------|
-| **Total Story Points** | 193 | 📊 |
-| **Completed** | 20 (10%) | ✅ |
-| **Ready for Development** | 173 (90%) | 🚀 |
+| **Total Story Points** | 125 | 📊 |
+| **Completed** | 20 (18%) | ✅ |
+| **Ready for Development** | 89 (82%) | 🚀 |
 | **Blocked Items** | 0 (0%) | ✅ |
-| **Estimated Timeline** | 15 weeks remaining | ⏰ |
+| **Estimated Timeline** | ~12 weeks total | ⏰ |
 | **Code Quality** | Excellent | 🟢 |
 | **Test Coverage** | TBD | ⚪ |
 | **Documentation** | Comprehensive | 🟢 |
@@ -51,23 +53,23 @@
 ## 🏗️ Architecture Status
 
 ### ✅ Completed Components
+- **M1 Foundation**: Project structure, RustLogger, RustValidator services complete
 - **Error Handling**: Comprehensive `ConversionError` and `AssetError` types
 - **Data Models**: Complete `Campaign`, `Actor`, `Scene`, `Item` etc. structures  
 - **Service Layer**: Abstract service traits for dependency injection
 - **Development Environment**: Full tooling setup (clippy, rustfmt, just, etc.)
 - **Project Management**: Git + Obsidian integration
+- **📋 All Milestone Plans**: Detailed implementation guides for M1.4-M7 complete
 
-### 🔄 In Development  
-- **Validation System**: Core validation traits and implementations
-- **Service Manager**: Dependency injection coordination
-
-### 📋 Planned Components
-- **Logging Service**: Structured logging with multiple backends
-- **Asset Service**: Download, cache, and process campaign assets  
-- **Format Parsers**: Roll20 → Internal format conversion
-- **Format Writers**: Internal → Foundry VTT conversion
-- **CLI Interface**: User-friendly command-line tools
-- **GUI Interface**: Native egui-based interface
+### 🚀 Ready for Implementation
+- **M1.4 Plugin Loading System**: Dynamic DLL loading with shared services
+- **M1.5 Performance Foundation**: Thread pools, memory management, benchmarking
+- **M2 Processing Plugin DLLs**: Validation.dll, Compendium.dll, AssetProcessor.dll
+- **M3 Format Plugin DLLs**: Roll20.dll, Foundry.dll, Pathbuilder.dll (unified import+export)
+- **M4 GUI Interface**: Desktop GUI with plugin management
+- **M5 Output Plugin DLLs**: PDF.dll, WebExport.dll, multi-system conversion
+- **M6 CLI Tools**: Advanced CLI interface, batch processing, automation
+- **M7 Distribution**: Cross-platform installers, auto-update system
 
 ---
 
@@ -79,13 +81,14 @@
 - [[../DEVELOPMENT_ENVIRONMENT_SETUP|Environment Setup]]
 
 ### 📋 Planning Documents  
-- [[../M1_FOUNDATION_TASKS|M1: Foundation Services]] ✅ Complete
-- [[../M2_CORE_ENGINE_TASKS|M2: Processing Plugin Architecture]] 🚀 Next
-- [[../M3_CLI_INTERFACE_TASKS|M3: CLI Interface]]  
-- [[../M4_GUI_INTERFACE_TASKS|M4: Visual Pipeline Builder]]
-- [[../M5_ADVANCED_PROCESSING|M5: Advanced Processing]]
-- [[../M6_PLATFORM_INTEGRATION|M6: Platform Integration]]
-- [[../M7_OUTPUT_PRODUCTION|M7: Output + Production]]
+- [[M1.4_CORE_FOUNDATION_PLUGIN_SYSTEM|M1.4: Core Foundation + Plugin System]] ✅ Ready
+- [[M1.5_PERFORMANCE_FOUNDATION|M1.5: Performance Foundation]] ✅ Ready
+- [[M2_PROCESSING_PLUGINS_DLL|M2: Processing Plugins DLLs]] ✅ Ready
+- [[M3_PLATFORM_FORMAT_PLUGINS|M3: Platform Format Plugins]] ✅ Ready
+- [[M4_GUI_INTERFACE|M4: GUI Interface]] ✅ Ready
+- [[M5_ADVANCED_PROCESSING_OUTPUT_PLUGINS|M5: Advanced Processing + Output]] ✅ Ready
+- [[M6_CLI_TOOLS_AUTOMATION|M6: CLI Tools and Automation]] ✅ Ready
+- [[M7_DISTRIBUTION_DEPLOYMENT|M7: Distribution and Deployment]] ✅ Ready
 
 ### 🏗️ Architecture
 - [[../ARCHITECTURAL_DECISIONS|Architecture Decisions]]
@@ -117,34 +120,44 @@
 
 ---
 
-## 🎯 Streamlined 6-Milestone Roadmap
+## 🎯 DLL-Based Plugin Architecture Roadmap (7 Milestones)
 
-### **M1: Foundation Services** ✅ Complete (20 pts)
-- Complete service architecture with logging, validation, asset processing
+### **M1.4: Core Foundation + Plugin System** 🚀 Next (18 pts, 2 weeks)
+- Database layer (LevelDB/NeDB), file format support & detection
+- Plugin loading system with dynamic DLL support
+- Orchestration framework and shared services architecture
 
-### **M2: Processing Plugin Architecture Foundation** 🚀 Next (18 pts, 2 weeks)
-- ValidationPlugin + 5 Asset Plugins with shared execution contexts
-- `daggy` pipeline orchestration, `inventory` plugin discovery
+### **M1.5: Performance Foundation** (12 pts, 1.5 weeks)
+- Thread pools & concurrency, memory management
+- Advanced file handling (ZIP, complex directories)
+- Benchmarking infrastructure
 
-### **M3: CLI Interface** (20 pts, 2 weeks)
-- Professional CLI with `clap`, `dialoguer`, `indicatif`
-- Interactive plugin discovery and template management
+### **M2: Processing Plugins DLLs** (16 pts, 2 weeks)
+- Validation.dll, Compendium.dll, AssetProcessor.dll
+- Plugin interfaces & testing framework
 
-### **M4: Visual Pipeline Builder** (40 pts, 4 weeks)
-- Drag-and-drop DAG editor using `egui_graphs`
-- Visual plugin configuration and live execution visualization
+### **M3: Platform Format Plugins** (20 pts, 2.5 weeks)
+- Roll20.dll (unified import+export+mappings)
+- Foundry.dll (unified import+export+mappings)
+- Pathbuilder.dll (unified import+export+mappings)
 
-### **M5: Advanced Processing** (25 pts, 3 weeks)
-- Computer vision scene analysis, multi-system conversion, ML classification
-- OpenCV integration, rule engines, performance optimization
+### **M4: GUI Interface** (15 pts, 2 weeks)
+- Desktop GUI with plugin discovery & loading UI
+- Configuration management
 
-### **M6: Platform Integration** (35 pts, 4 weeks)
-- Universal platform support with OAuth authentication
-- Roll20, Foundry, Fantasy Grounds, D&D Beyond, cloud sync
+### **M5: Advanced Processing + Output Plugins** (18 pts, 2 weeks)
+- PDF.dll, WebExport.dll, multi-system conversion
+- Computer vision processing integration
 
-### **M7: Output + Production** (35 pts, 4 weeks)
-- Advanced PDF generation, Docker containerization, CI/CD pipeline
-- Comprehensive testing and production deployment
+### **M6: CLI Tools and Automation** (16 pts, 2 weeks)
+- Advanced CLI interface with rich terminal UI
+- Batch processing engine and workflow automation
+- Plugin development kit and debugging tools
+
+### **M7: Distribution & Deployment** (14 pts, 2 weeks)
+- Cross-platform installers (Windows MSI, macOS PKG, Linux AppImage)
+- Auto-update system with secure delta patches
+- Plugin marketplace and release automation pipeline
 
 ---
 

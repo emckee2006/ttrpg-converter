@@ -1,0 +1,39 @@
+[package]
+name = "ttrpg-orchestration"
+version = "0.1.0"
+edition = "2021"
+description = "Plugin orchestration and pipeline management for TTRPG converter"
+
+[dependencies]
+# Core conversion types and utilities
+ttrpg-core = { path = "../../core/ttrpg-core" }
+ttrpg-traits = { path = "../../core/ttrpg-traits" }
+ttrpg-manager = { path = "../../core/ttrpg-manager" }
+ttrpg-types = { path = "../../core/ttrpg-types" }
+# Plugin implementations should be discovered/loaded dynamically through ttrpg-manager
+# No direct coupling to specific plugin implementation crates
+
+# Standard dependencies
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tokio = { workspace = true }
+
+# Orchestration dependencies
+daggy = { workspace = true }
+shaku = { workspace = true }
+inventory = { workspace = true }
+petgraph = { workspace = true }
+rayon = { workspace = true }
+num_cpus = "1.0"
+
+# CLI dependencies
+console = { workspace = true }
+dialoguer = { workspace = true }
+indicatif = { workspace = true }
+
+[dev-dependencies]
+tokio-test = { workspace = true }
+tempfile = { workspace = true }

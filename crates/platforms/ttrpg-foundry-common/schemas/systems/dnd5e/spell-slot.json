@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/systems/dnd5e/spell-slot.json",
+  "title": "D&D 5e Spell Slot",
+  "description": "D&D 5e spell slot with current/max values",
+  "type": "object",
+  "properties": {
+    "value": {
+      "type": "number",
+      "minimum": 0
+    },
+    "max": {
+      "type": "number", 
+      "minimum": 0
+    },
+    "override": {
+      "type": ["number", "null"]
+    }
+  }
+}

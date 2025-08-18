@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/systems/ose/actor.json",
+  "title": "Foundry OSE Actor",
+  "description": "Schema for Foundry VTT Old School Essentials actor documents",
+  "allOf": [
+    {
+      "$ref": "../../common/base-document.json"
+    },
+    {
+      "type": "object",
+      "required": ["type", "system"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["character", "monster", "npc"],
+          "description": "OSE actor type"
+        },
+        "img": {
+          "$ref": "../../common/image-reference.json"
+        },
+        "system": {
+          "type": "object",
+          "description": "OSE-specific actor data",
+          "properties": {
+            "abilities": {
+              "type": "object",
+              "properties": {
+                "str": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 3, "maximum": 18},
+                    "mod": {"type": "number"}
+                  }
+                },
+                "int": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 3, "maximum": 18},
+                    "mod": {"type": "number"}
+                  }
+                },
+                "wis": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 3, "maximum": 18},
+                    "mod": {"type": "number"}
+                  }
+                },
+                "dex": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 3, "maximum": 18},
+                    "mod": {"type": "number"}
+                  }
+                },
+                "con": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 3, "maximum": 18},
+                    "mod": {"type": "number"}
+                  }
+                },
+                "cha": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 3, "maximum": 18},
+                    "mod": {"type": "number"}
+                  }
+                }
+              }
+            },
+            "hp": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number", "minimum": 0},
+                "max": {"type": "number", "minimum": 1},
+                "hd": {"type": "string"}
+              }
+            },
+            "ac": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number"},
+                "naked": {"type": "number"},
+                "shield": {"type": "number"},
+                "armor": {"type": "number"}
+              }
+            },
+            "aac": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number"}
+              }
+            },
+            "thac0": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number"}
+              }
+            },
+            "saves": {
+              "type": "object",
+              "properties": {
+                "death": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"}
+                  }
+                },
+                "wand": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"}
+                  }
+                },
+                "paralysis": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"}
+                  }
+                },
+                "breath": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"}
+                  }
+                },
+                "spell": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"}
+                  }
+                }
+              }
+            },
+            "details": {
+              "type": "object",
+              "properties": {
+                "biography": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "$ref": "../../common/html-string.json"
+                    }
+                  }
+                },
+                "class": {"type": "string"},
+                "level": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 1, "maximum": 14}
+                  }
+                },
+                "xp": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"}
+                  }
+                },
+                "alignment": {"type": "string"},
+                "race": {"type": "string"}
+              }
+            },
+            "movement": {
+              "type": "object",
+              "properties": {
+                "base": {"type": "number"},
+                "encounter": {"type": "number"},
+                "overland": {"type": "number"}
+              }
+            },
+            "retainer": {
+              "type": "object",
+              "properties": {
+                "enabled": {"type": "boolean"},
+                "loyalty": {"type": "number"},
+                "wage": {"type": "string"}
+              }
+            },
+            "spells": {
+              "type": "object",
+              "properties": {
+                "enabled": {"type": "boolean"},
+                "spellList": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                }
+              }
+            },
+            "currency": {
+              "type": "object",
+              "properties": {
+                "pp": {"type": "number", "minimum": 0},
+                "gp": {"type": "number", "minimum": 0},
+                "ep": {"type": "number", "minimum": 0},
+                "sp": {"type": "number", "minimum": 0},
+                "cp": {"type": "number", "minimum": 0}
+              }
+            },
+            "encumbrance": {
+              "type": "object",
+              "properties": {
+                "value": {"type": "number"},
+                "max": {"type": "number"},
+                "pct": {"type": "number"}
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

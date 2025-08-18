@@ -1,6 +1,9 @@
 # Development Commands - Works with all IDEs (VS Code, RustRover, Eclipse)
 # Run with: just <command>
 
+# Set shell to PowerShell on Windows
+set shell := ["powershell.exe", "-c"]
+
 # Default recipe shows available commands
 default:
     @just --list
@@ -31,9 +34,16 @@ test-coverage:
 
 # 🔍 Code quality commands
 
-# Lint code (clippy + fmt check)
+# Lint code (clippy + fmt check) - Pre-commit friendly (ignores generated code)
 lint:
-    @echo "Running clippy..."
+    @echo "Running clippy on source code..."
+    cargo clippy --all-features --lib --bins -- -D warnings
+    @echo "Checking formatting..."
+    cargo fmt --check
+
+# Lint all targets including tests (may show generated code warnings)
+lint-all:
+    @echo "Running clippy on all targets..."
     cargo clippy --all-features --all-targets -- -D warnings
     @echo "Checking formatting..."
     cargo fmt --check

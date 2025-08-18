@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/common/permissions.json",
+  "title": "Foundry Permission Level",
+  "description": "Permission levels: 0=None, 1=Limited, 2=Observer, 3=Owner",
+  "type": "integer",
+  "enum": [0, 1, 2, 3]
+}

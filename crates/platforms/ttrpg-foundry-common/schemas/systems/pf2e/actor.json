@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/systems/pf2e/actor.json",
+  "title": "Foundry PF2e Actor",
+  "description": "Schema for Foundry VTT Pathfinder 2e actor documents",
+  "allOf": [
+    {
+      "$ref": "../../common/base-document.json"
+    },
+    {
+      "type": "object",
+      "required": ["type", "system"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["character", "npc", "hazard", "loot", "familiar", "vehicle"],
+          "description": "PF2e actor type"
+        },
+        "img": {
+          "$ref": "../../common/image-reference.json"
+        },
+        "system": {
+          "type": "object",
+          "description": "PF2e-specific actor data",
+          "properties": {
+            "abilities": {
+              "type": "object",
+              "properties": {
+                "str": {
+                  "type": "object",
+                  "properties": {
+                    "mod": {"type": "number"},
+                    "value": {"type": "number", "minimum": 1, "maximum": 30}
+                  }
+                },
+                "dex": {
+                  "type": "object",
+                  "properties": {
+                    "mod": {"type": "number"},
+                    "value": {"type": "number", "minimum": 1, "maximum": 30}
+                  }
+                },
+                "con": {
+                  "type": "object",
+                  "properties": {
+                    "mod": {"type": "number"},
+                    "value": {"type": "number", "minimum": 1, "maximum": 30}
+                  }
+                },
+                "int": {
+                  "type": "object",
+                  "properties": {
+                    "mod": {"type": "number"},
+                    "value": {"type": "number", "minimum": 1, "maximum": 30}
+                  }
+                },
+                "wis": {
+                  "type": "object",
+                  "properties": {
+                    "mod": {"type": "number"},
+                    "value": {"type": "number", "minimum": 1, "maximum": 30}
+                  }
+                },
+                "cha": {
+                  "type": "object",
+                  "properties": {
+                    "mod": {"type": "number"},
+                    "value": {"type": "number", "minimum": 1, "maximum": 30}
+                  }
+                }
+              }
+            },
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "hp": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 0},
+                    "max": {"type": "number", "minimum": 1},
+                    "temp": {"type": "number", "minimum": 0}
+                  }
+                },
+                "ac": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"}
+                  }
+                },
+                "perception": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"}
+                  }
+                },
+                "classDC": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"}
+                  }
+                },
+                "speed": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 0}
+                  }
+                }
+              }
+            },
+            "details": {
+              "type": "object",
+              "properties": {
+                "biography": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "$ref": "../../common/html-string.json"
+                    },
+                    "public": {
+                      "$ref": "../../common/html-string.json"
+                    }
+                  }
+                },
+                "ancestry": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "string"}
+                  }
+                },
+                "heritage": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "string"}
+                  }
+                },
+                "background": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "string"}
+                  }
+                },
+                "class": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "string"}
+                  }
+                },
+                "level": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 1, "maximum": 20}
+                  }
+                },
+                "alignment": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "string"}
+                  }
+                },
+                "keyability": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string",
+                      "enum": ["str", "dex", "con", "int", "wis", "cha"]
+                    }
+                  }
+                }
+              }
+            },
+            "traits": {
+              "type": "object",
+              "properties": {
+                "size": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string",
+                      "enum": ["tiny", "sm", "med", "lg", "huge", "grg"]
+                    }
+                  }
+                },
+                "languages": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "array",
+                      "items": {"type": "string"}
+                    }
+                  }
+                },
+                "senses": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                }
+              }
+            },
+            "saves": {
+              "type": "object",
+              "properties": {
+                "fortitude": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"},
+                    "proficient": {"type": "number"}
+                  }
+                },
+                "reflex": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"},
+                    "proficient": {"type": "number"}
+                  }
+                },
+                "will": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"},
+                    "proficient": {"type": "number"}
+                  }
+                }
+              }
+            },
+            "currency": {
+              "type": "object",
+              "properties": {
+                "pp": {"type": "number", "minimum": 0},
+                "gp": {"type": "number", "minimum": 0},
+                "sp": {"type": "number", "minimum": 0},
+                "cp": {"type": "number", "minimum": 0}
+              }
+            }
+          }
+        },
+        "items": {
+          "type": "array",
+          "description": "Owned items",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9]{16}$"
+          }
+        }
+      }
+    }
+  ]
+}

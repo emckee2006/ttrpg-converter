@@ -1,0 +1,6 @@
+{
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "$id":  "https://ttrpg-converter.com/schemas/pathbuilder/background.json",
+    "title":  "Pathbuilder Custom Background",
+    "description":  "Schema for Pathbuilder 2e custom background definitions"
+}

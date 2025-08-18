@@ -1,0 +1,27 @@
+[metadata]
+name = "foundry-common"
+description = "Foundry VTT common and core schemas"
+version = "12.331"
+
+[schemas]
+
+[schemas.common]
+include_patterns = ["schemas/common/*.json"]
+module_name = "common"
+
+[schemas.core] 
+include_patterns = ["schemas/core/*.json"]
+module_name = "core"
+
+[schemas.systems]
+include_patterns = [
+    "schemas/systems/dnd5e/*.json",
+    "schemas/systems/pf1e/*.json", 
+    "schemas/systems/pf2e/*.json"
+]
+module_name = "systems"
+
+[generation]
+# Generate unified module that re-exports all types
+unified_module = true
+type_prefix = "Foundry"

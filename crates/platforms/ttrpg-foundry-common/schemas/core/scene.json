@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/core/scene.json",
+  "title": "Foundry Scene",
+  "description": "Schema for Foundry VTT scene documents (system-agnostic)",
+  "allOf": [
+    {
+      "$ref": "../common/base-document.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean",
+          "description": "Whether this is the active scene"
+        },
+        "navigation": {
+          "type": "boolean",
+          "description": "Whether scene appears in navigation bar"
+        },
+        "navOrder": {
+          "type": "number",
+          "description": "Navigation bar sort order"
+        },
+        "img": {
+          "$ref": "../common/image-reference.json",
+          "description": "Scene thumbnail image"
+        },
+        "foreground": {
+          "$ref": "../common/image-reference.json",
+          "description": "Foreground overlay image"
+        },
+        "thumb": {
+          "$ref": "../common/image-reference.json",
+          "description": "Navigation thumbnail"
+        },
+        "width": {
+          "type": "number",
+          "minimum": 100,
+          "description": "Scene width in pixels"
+        },
+        "height": {
+          "type": "number", 
+          "minimum": 100,
+          "description": "Scene height in pixels"
+        },
+        "padding": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Scene boundary padding"
+        },
+        "initial": {
+          "$ref": "../common/position.json",
+          "description": "Initial view position"
+        },
+        "backgroundColor": {
+          "$ref": "../common/color-hex.json"
+        },
+        "grid": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "integer",
+              "enum": [0, 1, 2, 3, 4, 5],
+              "description": "Grid type: 0=None, 1=Square, 2=Hex(V), 3=Hex(H), 4=Gridless, 5=Isometric"
+            },
+            "size": {
+              "type": "number",
+              "minimum": 50,
+              "description": "Grid size in pixels"
+            },
+            "color": {
+              "$ref": "../common/color-hex.json"
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Grid opacity"
+            },
+            "distance": {
+              "type": "number",
+              "minimum": 1,
+              "description": "Distance per grid unit"
+            },
+            "units": {
+              "type": "string",
+              "description": "Distance units (ft, m, etc.)"
+            }
+          }
+        },
+        "tokenVision": {
+          "type": "boolean",
+          "description": "Whether token vision is enabled"
+        },
+        "fogExploration": {
+          "type": "boolean", 
+          "description": "Whether fog exploration is enabled"
+        },
+        "fogReset": {
+          "type": "number",
+          "description": "Timestamp of last fog reset"
+        },
+        "globalLight": {
+          "type": "boolean",
+          "description": "Whether global illumination is enabled"
+        },
+        "globalLightThreshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Global light darkness threshold"
+        },
+        "darkness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Scene darkness level"
+        },
+        "playlistSound": {
+          "type": ["string", "null"],
+          "pattern": "^[a-zA-Z0-9]{16}$",
+          "description": "Background playlist sound ID"
+        },
+        "playlist": {
+          "type": ["string", "null"],
+          "pattern": "^[a-zA-Z0-9]{16}$", 
+          "description": "Scene playlist ID"
+        },
+        "journal": {
+          "type": ["string", "null"],
+          "pattern": "^[a-zA-Z0-9]{16}$",
+          "description": "Associated journal entry ID"
+        },
+        "weather": {
+          "type": "string",
+          "description": "Weather conditions"
+        }
+      }
+    }
+  ]
+}

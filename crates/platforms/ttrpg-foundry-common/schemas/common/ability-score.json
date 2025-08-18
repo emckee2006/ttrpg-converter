@@ -1,0 +1,30 @@
+{
+    "description":  "Ability score with modifiers",
+    "type":  "object",
+    "$id":  "https://ttrpg-converter.com/schemas/crates/ttrpg-core/schemas/foundry/common/ability-score.json",
+    "$schema":  "https://json-schema.org/draft-07/schema#",
+    "properties":  {
+                       "value":  {
+                                     "type":  "number",
+                                     "minimum":  1,
+                                     "maximum":  30
+                                 },
+                       "proficient":  {
+                                          "type":  "number",
+                                          "description":  "Proficiency multiplier (0, 0.5, 1, 2)"
+                                      },
+                       "bonus":  {
+                                     "type":  "number",
+                                     "description":  "Additional bonus"
+                                 },
+                       "mod":  {
+                                   "type":  "number",
+                                   "description":  "Calculated modifier"
+                               },
+                       "save":  {
+                                    "type":  "number",
+                                    "description":  "Calculated save bonus"
+                                }
+                   },
+    "title":  "Ability Score"
+}

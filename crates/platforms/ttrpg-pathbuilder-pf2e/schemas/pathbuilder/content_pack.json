@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/pathbuilder/content_pack.json",
+  "title": "Pathbuilder Custom Content Pack",
+  "description": "Schema for Pathbuilder 2e custom content pack JSON files",
+  "type": "object",
+  "required": ["customPackID", "customPackName"],
+  "properties": {
+    "customPackID": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "Unique pack identifier (UUID)"
+    },
+    "customPackName": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Display name for the content pack"
+    },
+    "listCustomBackgrounds": {
+      "type": "array",
+      "description": "Custom backgrounds in this pack",
+      "items": {
+        "$ref": "./custom-background.json"
+      }
+    },
+    "listCustomFeats": {
+      "type": "array",
+      "description": "Custom feats in this pack",
+      "items": {
+        "$ref": "./custom-feat.json"
+      }
+    },
+    "listCustomAncestries": {
+      "type": "array", 
+      "description": "Custom ancestries in this pack",
+      "items": {
+        "$ref": "./custom-ancestry.json"
+      }
+    },
+    "listCustomHeritages": {
+      "type": "array",
+      "description": "Custom heritages in this pack",
+      "items": {
+        "$ref": "./custom-heritage.json"
+      }
+    },
+    "listCustomSpells": {
+      "type": "array",
+      "description": "Custom spells in this pack",
+      "items": {
+        "$ref": "./custom-spell.json"
+      }
+    },
+    "listCustomItems": {
+      "type": "array",
+      "description": "Custom items in this pack", 
+      "items": {
+        "$ref": "./custom-item.json"
+      }
+    },
+    "listCustomClasses": {
+      "type": "array",
+      "description": "Custom classes in this pack"
+    },
+    "listCustomArchetypes": {
+      "type": "array",
+      "description": "Custom archetypes in this pack"
+    }
+  }
+}

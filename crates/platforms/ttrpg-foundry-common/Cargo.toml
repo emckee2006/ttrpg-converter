@@ -1,0 +1,27 @@
+[package]
+name = "ttrpg-foundry-common"
+version = "0.1.0"
+edition = "2021"
+description = "Foundry VTT common schemas and types shared across all Foundry systems"
+
+[features]
+default = ["schemas", "mappings"]
+schemas = []
+mappings = ["schemas"]
+schemas-only = ["schemas"]
+minimal = []
+
+[dependencies]
+ttrpg-types = { path = "../../core/ttrpg-types" }
+ttrpg-traits = { path = "../../core/ttrpg-traits" }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+regress = { workspace = true }
+o2o = { workspace = true }
+
+[dev-dependencies]
+rand = { workspace = true }
+
+[build-dependencies]
+ttrpg-build-utils = { path = "../../core/ttrpg-build-utils" }

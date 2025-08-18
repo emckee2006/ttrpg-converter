@@ -1,0 +1,15 @@
+[metadata]
+name = "roll20"
+description = "Roll20 VTT schemas"
+version = "1.0.0"
+
+[schemas]
+
+[schemas.roll20]
+include_patterns = ["schemas/roll20/*.json"]
+module_name = "roll20"
+
+[generation]
+# Generate unified module that re-exports all types
+unified_module = true
+type_prefix = "Roll20"

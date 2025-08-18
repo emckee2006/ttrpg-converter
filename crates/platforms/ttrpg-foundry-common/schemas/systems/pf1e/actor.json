@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/foundry/systems/pf1e/actor.json",
+  "title": "Foundry PF1e Actor",
+  "description": "Schema for Foundry VTT Pathfinder 1e actor documents",
+  "allOf": [
+    {
+      "$ref": "../../common/base-document.json"
+    },
+    {
+      "type": "object",
+      "required": ["type", "system"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["character", "npc"],
+          "description": "PF1e actor type"
+        },
+        "img": {
+          "$ref": "../../common/image-reference.json"
+        },
+        "system": {
+          "type": "object",
+          "description": "PF1e-specific actor data",
+          "properties": {
+            "abilities": {
+              "type": "object",
+              "properties": {
+                "str": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 1, "maximum": 50},
+                    "mod": {"type": "number"},
+                    "base": {"type": "number"},
+                    "total": {"type": "number"}
+                  }
+                },
+                "dex": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 1, "maximum": 50},
+                    "mod": {"type": "number"},
+                    "base": {"type": "number"},
+                    "total": {"type": "number"}
+                  }
+                },
+                "con": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 1, "maximum": 50},
+                    "mod": {"type": "number"},
+                    "base": {"type": "number"},
+                    "total": {"type": "number"}
+                  }
+                },
+                "int": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 1, "maximum": 50},
+                    "mod": {"type": "number"},
+                    "base": {"type": "number"},
+                    "total": {"type": "number"}
+                  }
+                },
+                "wis": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 1, "maximum": 50},
+                    "mod": {"type": "number"},
+                    "base": {"type": "number"},
+                    "total": {"type": "number"}
+                  }
+                },
+                "cha": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 1, "maximum": 50},
+                    "mod": {"type": "number"},
+                    "base": {"type": "number"},
+                    "total": {"type": "number"}
+                  }
+                }
+              }
+            },
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "hp": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 0},
+                    "max": {"type": "number", "minimum": 1},
+                    "temp": {"type": "number", "minimum": 0},
+                    "nonlethal": {"type": "number", "minimum": 0}
+                  }
+                },
+                "ac": {
+                  "type": "object",
+                  "properties": {
+                    "normal": {
+                      "type": "object",
+                      "properties": {
+                        "total": {"type": "number"}
+                      }
+                    },
+                    "touch": {
+                      "type": "object",
+                      "properties": {
+                        "total": {"type": "number"}
+                      }
+                    },
+                    "flatFooted": {
+                      "type": "object",
+                      "properties": {
+                        "total": {"type": "number"}
+                      }
+                    }
+                  }
+                },
+                "cmd": {
+                  "type": "object",
+                  "properties": {
+                    "total": {"type": "number"}
+                  }
+                },
+                "cmb": {
+                  "type": "object",
+                  "properties": {
+                    "total": {"type": "number"}
+                  }
+                },
+                "init": {
+                  "type": "object",
+                  "properties": {
+                    "total": {"type": "number"}
+                  }
+                },
+                "speed": {
+                  "type": "object",
+                  "properties": {
+                    "land": {
+                      "type": "object",
+                      "properties": {
+                        "base": {"type": "number"},
+                        "total": {"type": "number"}
+                      }
+                    },
+                    "climb": {
+                      "type": "object",
+                      "properties": {
+                        "base": {"type": "number"},
+                        "total": {"type": "number"}
+                      }
+                    },
+                    "swim": {
+                      "type": "object",
+                      "properties": {
+                        "base": {"type": "number"},
+                        "total": {"type": "number"}
+                      }
+                    },
+                    "fly": {
+                      "type": "object",
+                      "properties": {
+                        "base": {"type": "number"},
+                        "total": {"type": "number"},
+                        "maneuverability": {"type": "string"}
+                      }
+                    }
+                  }
+                },
+                "bab": {
+                  "type": "number"
+                }
+              }
+            },
+            "details": {
+              "type": "object",
+              "properties": {
+                "biography": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "$ref": "../../common/html-string.json"
+                    }
+                  }
+                },
+                "level": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 1, "maximum": 20}
+                  }
+                },
+                "mythicTier": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number", "minimum": 0, "maximum": 10}
+                  }
+                },
+                "cr": {
+                  "type": "object",
+                  "properties": {
+                    "total": {"type": "number"}
+                  }
+                },
+                "xp": {
+                  "type": "object",
+                  "properties": {
+                    "value": {"type": "number"}
+                  }
+                },
+                "alignment": {"type": "string"},
+                "race": {"type": "string"},
+                "class": {"type": "string"}
+              }
+            },
+            "saves": {
+              "type": "object",
+              "properties": {
+                "fort": {
+                  "type": "object",
+                  "properties": {
+                    "total": {"type": "number"},
+                    "base": {"type": "number"}
+                  }
+                },
+                "ref": {
+                  "type": "object",
+                  "properties": {
+                    "total": {"type": "number"},
+                    "base": {"type": "number"}
+                  }
+                },
+                "will": {
+                  "type": "object",
+                  "properties": {
+                    "total": {"type": "number"},
+                    "base": {"type": "number"}
+                  }
+                }
+              }
+            },
+            "currency": {
+              "type": "object",
+              "properties": {
+                "pp": {"type": "number", "minimum": 0},
+                "gp": {"type": "number", "minimum": 0},
+                "sp": {"type": "number", "minimum": 0},
+                "cp": {"type": "number", "minimum": 0}
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

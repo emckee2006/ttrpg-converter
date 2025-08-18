@@ -1,0 +1,15 @@
+[metadata]
+name = "pathbuilder-pf2e"
+description = "Pathbuilder 2e character schemas"
+version = "1.0.0"
+
+[schemas]
+
+[schemas.pathbuilder]
+include_patterns = ["schemas/pathbuilder/*.json"]
+module_name = "pathbuilder"
+
+[generation]
+# Generate unified module that re-exports all types
+unified_module = true
+type_prefix = "Pathbuilder"
