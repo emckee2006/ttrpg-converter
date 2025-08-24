@@ -1,32 +1,27 @@
 # M3: Foundry PF1e → PF2e Conversion
 
-**Timeline**: 2.5 weeks  
-**Status**: 🔴 Blocked (requires M2)  
+**Timeline**: 1.5 weeks  
+**Status**: 🔴 Blocked (requires M2.5)  
 **Priority**: High - Complex System Conversion
 
 ## Overview
 
-Convert existing Foundry VTT Pathfinder 1e campaigns to Pathfinder 2e format. This involves the most complex rule system conversion due to fundamental differences between PF1e and PF2e mechanics.
+Convert existing Foundry VTT Pathfinder 1e campaigns to Pathfinder 2e format leveraging the interface conversion engine from M2.5. Focus on PF1e-specific rule differences and complex system translations.
 
 ## Key Deliverables
 
-### Week 1: PF1e Input Processing
+### Week 1: PF1e Input Processing & Interface Integration
 - 🔲 Foundry world file parsing and validation
-- 🔲 PF1e actor data structure understanding
+- 🔲 PF1e → IFoundryActor adapter implementation
 - 🔲 Legacy system data migration preparation
 - 🔲 Asset inventory and compatibility check
 
-### Week 2: Core System Translation
-- 🔲 Ability score system conversion
+### Week 1.5: PF1e-Specific System Translation
 - 🔲 Skill system overhaul (many-to-few mapping)
 - 🔲 Class feature translation with documentation
-- 🔲 Feat system complete restructuring
-
-### Week 2.5: Advanced Conversions
 - 🔲 Spell system migration (spell schools → traditions)
 - 🔲 Action economy conversion (full/standard → 3-action)
-- 🔲 Combat maneuver system translation
-- 🔲 Equipment and magic item conversion
+- 🔲 Combat maneuver system translation using M2.5 engine
 
 ## System Conversion Challenges
 

@@ -1,0 +1,105 @@
+using TTRPGConverter.Core.Services;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+namespace TTRPGConverter.CLI.Commands;
+
+/// <summary>
+/// CLI command for converting Roll20 campaigns to Foundry worlds
+/// </summary>
+public static class ConvertWorldCommandRunner
+{
+    public static async Task<int> RunAsync(string[] args)
+    {
+        // Create host with dependency injection
+        var builder = Host.CreateApplicationBuilder();
+        
+        // Configure logging
+        builder.Services.AddLogging(configure => configure
+            .AddConsole()
+            .SetMinimumLevel(LogLevel.Information));
+
+        // Register services
+        builder.Services.AddSingleton<IZipArchiveService, ZipArchiveService>();
+        builder.Services.AddSingleton<IFoundryWorldGenerator, FoundryWorldGenerator>();
+        builder.Services.AddSingleton<IAssetProcessor, AssetProcessor>();
+        builder.Services.AddSingleton<ICampaignConverter, CampaignConverter>();
+
+        var host = builder.Build();
+        var logger = host.Services.GetRequiredService<ILogger<ConvertWorldCommandRunner>>();
+
+        // Parse command line arguments
+        if (args.Length < 2)
+        {
+            ShowUsage();
+            return 1;
+        }
+
+        var inputZip = args[0];
+        var outputPath = args[1];
+        var targetSystem = args.Length > 2 ? args[2] : "dnd5e";
+
+        logger.LogInformation("Starting world conversion");
+        logger.LogInformation("Input ZIP: {InputZip}", inputZip);
+        logger.LogInformation("Output path: {OutputPath}", outputPath);
+        logger.LogInformation("Target system: {TargetSystem}", targetSystem);
+
+        // Validate input file
+        if (!File.Exists(inputZip))
+        {
+            logger.LogError("Input ZIP file not found: {InputZip}", inputZip);
+            return 1;
+        }
+
+        // Validate output directory
+        try
+        {
+            Directory.CreateDirectory(outputPath);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to create output directory: {OutputPath}", outputPath);
+            return 1;
+        }
+
+        // Perform conversion
+        try
+        {
+            var converter = host.Services.GetRequiredService<ICampaignConverter>();
+            var worldPath = await converter.ConvertCampaignAsync(inputZip, outputPath, targetSystem);
+            
+            logger.LogInformation("Conversion completed successfully!");
+            logger.LogInformation("Foundry world created at: {WorldPath}", worldPath);
+            logger.LogInformation("You can now import this world into Foundry VTT");
+            
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "World conversion failed");
+            return 1;
+        }
+    }
+
+    private static void ShowUsage()
+    {
+        Console.WriteLine("Usage: TTRPGConverter convert-world <roll20-zip> <output-directory> [target-system]");
+        Console.WriteLine();
+        Console.WriteLine("Arguments:");
+        Console.WriteLine("  roll20-zip        Path to Roll20 campaign export ZIP file");
+        Console.WriteLine("  output-directory  Directory where Foundry world will be created");
+        Console.WriteLine("  target-system     Target Foundry system (dnd5e, pf2e) [default: dnd5e]");
+        Console.WriteLine();
+        Console.WriteLine("Examples:");
+        Console.WriteLine("  TTRPGConverter convert-world campaign.zip ./foundry-worlds");
+        Console.WriteLine("  TTRPGConverter convert-world campaign.zip ./foundry-worlds dnd5e");
+        Console.WriteLine("  TTRPGConverter convert-world campaign.zip ./foundry-worlds pf2e");
+        Console.WriteLine();
+        Console.WriteLine("The command will:");
+        Console.WriteLine("  1. Extract campaign data from the Roll20 ZIP");
+        Console.WriteLine("  2. Process and organize assets (images, audio)");
+        Console.WriteLine("  3. Convert data to Foundry format");
+        Console.WriteLine("  4. Create a complete Foundry world directory");
+    }
+}

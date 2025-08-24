@@ -1,0 +1,429 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "https://ttrpg-converter.com/schemas/roll20/unified.json",
+  "title": "Roll20 Unified Schema",
+  "description": "Unified schema for all Roll20 data structures",
+  "type": "object",
+  "definitions": {
+    "Roll20Id": {
+      "type": "string",
+      "pattern": "^-[A-Za-z0-9_-]{19}$",
+      "description": "Standard Roll20 ID format"
+    },
+    "Character": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Roll20Id" },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Character name"
+        },
+        "avatar": {
+          "type": "string",
+          "format": "uri",
+          "description": "Character avatar image URL"
+        },
+        "bio": {
+          "type": "string",
+          "description": "Character biography/notes"
+        },
+        "gmnotes": {
+          "type": "string",
+          "description": "GM-only notes"
+        },
+        "defaulttoken": {
+          "type": "string",
+          "description": "Default token settings"
+        },
+        "archived": {
+          "type": "boolean",
+          "default": false
+        },
+        "inplayerjournals": {
+          "type": "string",
+          "description": "Player access permissions"
+        },
+        "controlledby": {
+          "type": "string",
+          "description": "Players who can control this character"
+        },
+        "attributes": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Attribute" }
+        },
+        "abilities": {
+          "type": "array", 
+          "items": { "$ref": "#/definitions/Ability" }
+        }
+      }
+    },
+    "Attribute": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Roll20Id" },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Attribute name (e.g., 'strength', 'hp')"
+        },
+        "current": {
+          "type": "string",
+          "description": "Current value as string"
+        },
+        "max": {
+          "type": "string", 
+          "description": "Maximum value as string"
+        }
+      }
+    },
+    "Ability": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Roll20Id" },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Ability name"
+        },
+        "description": {
+          "type": "string",
+          "description": "Ability description"
+        },
+        "action": {
+          "type": "string",
+          "description": "Macro commands/actions"
+        },
+        "istokenaction": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this appears as token action"
+        }
+      }
+    },
+    "Handout": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Roll20Id" },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "string"
+        },
+        "gmnotes": {
+          "type": "string"
+        },
+        "inplayerjournals": {
+          "type": "string"
+        },
+        "archived": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Page": {
+      "type": "object", 
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Roll20Id" },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer", 
+          "minimum": 1
+        },
+        "background_color": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "grid": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "integer",
+              "enum": [0, 1, 2],
+              "default": 1
+            },
+            "size": {
+              "type": "number",
+              "minimum": 0.01
+            },
+            "color": {
+              "type": "string",
+              "pattern": "^#[0-9A-Fa-f]{6}$" 
+            },
+            "opacity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "fog_opacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "archived": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "Player": {
+      "type": "object",
+      "required": ["id", "displayname"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Roll20Id" },
+        "displayname": {
+          "type": "string",
+          "minLength": 1
+        },
+        "d20userid": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string",
+          "format": "uri"
+        },
+        "online": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "Macro": {
+      "type": "object",
+      "required": ["name", "action"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Roll20Id" },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string"
+        },
+        "visibleto": {
+          "type": "string",
+          "description": "Player visibility settings"
+        },
+        "istokenaction": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "Table": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Roll20Id" },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "showplayers": {
+          "type": "boolean",
+          "default": false
+        },
+        "tableitems": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/TableItem" }
+        }
+      }
+    },
+    "TableItem": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "number"
+        },
+        "avatar": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "Card": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Roll20Id" },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Card name"
+        },
+        "avatar": {
+          "type": "string",
+          "format": "uri",
+          "description": "Card face image URL"
+        },
+        "tooltip": {
+          "type": "string",
+          "description": "Card tooltip text"
+        }
+      }
+    },
+    "Deck": {
+      "type": "object", 
+      "required": ["name"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Roll20Id" },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "showplayers": {
+          "type": "boolean",
+          "default": false
+        },
+        "playerseecounts": {
+          "type": "boolean",
+          "default": true
+        },
+        "infinitecards": {
+          "type": "boolean",
+          "default": false
+        },
+        "cards": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Card" }
+        }
+      }
+    },
+    "AudioTrack": {
+      "type": "object",
+      "required": ["title", "track_id"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Roll20Id" },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "track_id": {
+          "type": "string"
+        },
+        "loop": {
+          "type": "boolean",
+          "default": false
+        },
+        "volume": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 50
+        },
+        "audible": {
+          "type": "string",
+          "enum": ["all", "gm"],
+          "default": "all"
+        },
+        "fade": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 2000
+        }
+      }
+    },
+    "TurnEntry": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Roll20Id" },
+        "pr": {
+          "type": "string",
+          "description": "Priority/Initiative"
+        },
+        "custom": {
+          "type": "string"
+        },
+        "pageid": { "$ref": "#/definitions/Roll20Id" }
+      }
+    },
+    "PDF": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "id": { "$ref": "#/definitions/Roll20Id" },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    }
+  },
+  "properties": {
+    "characters": {
+      "type": "array",
+      "description": "Character sheets with attributes and abilities",
+      "items": { "$ref": "#/definitions/Character" }
+    },
+    "pages": {
+      "type": "array", 
+      "description": "Campaign pages/scenes",
+      "items": { "$ref": "#/definitions/Page" }
+    },
+    "handouts": {
+      "type": "array",
+      "description": "Journal entries and handouts", 
+      "items": { "$ref": "#/definitions/Handout" }
+    },
+    "players": {
+      "type": "array",
+      "description": "Campaign players",
+      "items": { "$ref": "#/definitions/Player" }
+    },
+    "macros": {
+      "type": "array",
+      "description": "Campaign macros",
+      "items": { "$ref": "#/definitions/Macro" }
+    },
+    "tables": {
+      "type": "array",
+      "description": "Rollable tables",
+      "items": { "$ref": "#/definitions/Table" }
+    },
+    "decks": {
+      "type": "array",
+      "description": "Card decks",
+      "items": { "$ref": "#/definitions/Deck" }
+    },
+    "audio": {
+      "type": "array",
+      "description": "Audio tracks and playlists",
+      "items": { "$ref": "#/definitions/AudioTrack" }
+    },
+    "turnorder": {
+      "type": "array",
+      "description": "Turn order entries",
+      "items": { "$ref": "#/definitions/TurnEntry" }
+    },
+    "pdfs": {
+      "type": "array",
+      "description": "PDF attachments",
+      "items": { "$ref": "#/definitions/PDF" }
+    }
+  },
+  "required": ["characters", "pages", "handouts"]
+}

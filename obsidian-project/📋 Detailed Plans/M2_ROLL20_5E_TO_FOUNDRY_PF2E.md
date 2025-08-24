@@ -1,32 +1,37 @@
-# M2: Roll20 5e → Foundry PF2e Conversion
+# M2: Stage 1 - Roll20 → Foundry D&D 5e Platform Conversion
 
 **Timeline**: 3 weeks  
-**Status**: 🔴 Blocked (requires M1)  
-**Priority**: Critical Path - First Working Pipeline
+**Status**: 🟡 **IN PROGRESS** (75% complete)  
+**Priority**: Critical Path - Platform Conversion Foundation
 
 ## Overview
 
-Implement the primary conversion pipeline: Roll20 D&D 5e campaigns to Foundry VTT Pathfinder 2e format. This includes complex system conversion rules, documentation-driven mapping, and asset processing.
+Implement Roll20 to Foundry VTT platform conversion, focusing on format translation, coordinate systems, and asset processing. This milestone handles platform differences while preserving the original game system (D&D 5e stays D&D 5e). Forms Stage 1 of the two-stage conversion workflow.
 
 ## Key Deliverables
 
-### Week 1: Roll20 Parsing
-- 🔲 ZIP file extraction and validation
-- 🔲 Campaign.json deserialization to Roll20Campaign model
-- 🔲 Character sheet parsing with attribute mapping
-- 🔲 Handout and journal entry extraction
+### Week 1: Roll20 Parsing & Infrastructure ✅ COMPLETE
+- ✅ ZIP file extraction and validation
+- ✅ Campaign.json deserialization to Roll20Campaign model
+- ✅ Character sheet parsing with D&D 5e attribute mapping
+- ✅ Asset discovery and on-demand extraction
+- ✅ CompendiumManager with NeDB/LevelDB/Plutonium support
+- ✅ ParallelAssetProcessor with HTTP caching and deduplication
 
-### Week 2: System Conversion (5e → PF2e)
-- 🔲 Ability score conversion (6 → 6 + additional PF2e stats)
-- 🔲 Class mapping with documentation override support
-- 🔲 Feat system translation (5e features → PF2e feats)
-- 🔲 Spell system conversion (spell slots → spell points)
-- 🔲 Equipment and inventory translation
+### Week 2: Platform Format Conversion 🟡 IN PROGRESS
+- ✅ FoundryDatabaseWriter with NeDB format support
+- ✅ Roll20ToFoundryMapper for D&D 5e character conversion
+- 🔧 PlutroniumJSONReader for D&D Beyond content
+- 🔲 Scene coordinate system conversion (Roll20 → Foundry grid)
+- 🔲 Token positioning and scaling translation
+- 🔲 Item/equipment conversion with compendium lookup
+- 🔲 Spell conversion with compendium integration
 
-### Week 3: Foundry Output & Assets
-- 🔲 FoundryWorld generation with V13 format
-- 🔲 Asset downloading and optimization (ImageSharp)
-- 🔲 Scene coordinate system conversion
+### Week 3: Complete Entity Pipeline
+- 🔲 Journal entry format migration with rich text
+- 🔲 Audio/playlist conversion
+- 🔲 NPC detection and stat block parsing
+- 🔲 World metadata and folder organization
 - 🔲 Comprehensive integration testing
 
 ## Conversion Architecture

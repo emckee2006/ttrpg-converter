@@ -72,9 +72,19 @@ public class SchemaGenerator
             ClassStyle = CSharpClassStyle.Poco,
             GenerateJsonMethods = false,
             GenerateOptionalPropertiesAsNullable = true,
-            ArrayType = "System.Collections.Generic.List",
-            DictionaryType = "System.Collections.Generic.Dictionary",
-            DateTimeType = "System.DateTimeOffset"
+            ArrayType = "System.Collections.Generic.IList",
+            ArrayInstanceType = "System.Collections.Generic.List",
+            DictionaryType = "System.Collections.Generic.Dictionary", 
+            DateTimeType = "System.DateTimeOffset",
+            // Fix compilation issues - disable default values to avoid Collection<T> mismatch
+            GenerateDefaultValues = false,
+            ExcludedTypeNames = new string[] { "Json", "OwnershipDefault", "JsonType", "TextFormat" },
+            // Proper type mapping and deduplication
+            TypeNameGenerator = new CustomTypeNameGenerator(),
+            // Critical: Enable class deduplication to prevent inline class duplicates
+            InlineNamedDictionaries = false,
+            InlineNamedArrays = false,
+            InlineNamedTuples = false
         };
 
         var generator = new CSharpGenerator(schema, settings);
@@ -88,7 +98,7 @@ public class SchemaGenerator
     /// <param name="className">Name for the root class</param>
     /// <param name="outputNamespace">Target namespace for generated classes</param>
     /// <returns>Generated C# code</returns>
-    public async Task<string> GenerateFromSampleJsonAsync(string sampleJson, string className, string outputNamespace)
+    public Task<string> GenerateFromSampleJsonAsync(string sampleJson, string className, string outputNamespace)
     {
         var schema = JsonSchema.FromSampleJson(sampleJson);
         schema.Title = className;
@@ -100,13 +110,19 @@ public class SchemaGenerator
             JsonLibrary = _settings.JsonLibrary,
             GenerateNullableReferenceTypes = _settings.GenerateNullableReferenceTypes,
             GenerateOptionalPropertiesAsNullable = _settings.GenerateOptionalPropertiesAsNullable,
-            ArrayType = _settings.ArrayType,
+            ArrayType = "System.Collections.Generic.IList",
+            ArrayInstanceType = "System.Collections.Generic.List",
             DictionaryType = _settings.DictionaryType,
-            DateTimeType = _settings.DateTimeType
+            DateTimeType = _settings.DateTimeType,
+            // Prevent inline class duplication
+            InlineNamedDictionaries = false,
+            InlineNamedArrays = false,
+            InlineNamedTuples = false,
+            GenerateDefaultValues = false
         };
         
         var generator = new CSharpGenerator(schema, settings);
-        return generator.GenerateFile();
+        return Task.FromResult(generator.GenerateFile());
     }
 
     /// <summary>

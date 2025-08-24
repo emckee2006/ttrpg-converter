@@ -1,0 +1,144 @@
+using System.IO.Compression;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using TTRPGConverter.Core.Models.Roll20;
+
+namespace TTRPGConverter.Core.Services;
+
+/// <summary>
+/// Service for reading Roll20 campaign data from ZIP archives
+/// </summary>
+public interface IZipArchiveService
+{
+    Task<Campaign> ReadCampaignFromZipAsync(string zipPath);
+    Task<IEnumerable<string>> GetAssetPathsAsync(string zipPath);
+    Task ExtractAssetAsync(string zipPath, string assetPath, string destinationPath);
+}
+
+public class ZipArchiveService : IZipArchiveService
+{
+    private readonly ILogger<ZipArchiveService> _logger;
+    private readonly JsonSerializerOptions _jsonOptions;
+
+    public ZipArchiveService(ILogger<ZipArchiveService> logger)
+    {
+        _logger = logger;
+        _jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            AllowTrailingCommas = true,
+            ReadCommentHandling = JsonCommentHandling.Skip
+        };
+    }
+
+    public async Task<Campaign> ReadCampaignFromZipAsync(string zipPath)
+    {
+        _logger.LogInformation("Reading campaign.json from ZIP: {ZipPath}", zipPath);
+
+        if (!File.Exists(zipPath))
+        {
+            throw new FileNotFoundException($"ZIP file not found: {zipPath}");
+        }
+
+        using var archive = ZipFile.OpenRead(zipPath);
+        
+        // Find campaign.json entry
+        var campaignEntry = archive.Entries.FirstOrDefault(e => 
+            e.Name.Equals("campaign.json", StringComparison.OrdinalIgnoreCase));
+
+        if (campaignEntry == null)
+        {
+            throw new InvalidOperationException("campaign.json not found in ZIP archive");
+        }
+
+        _logger.LogDebug("Found campaign.json entry, size: {Size} bytes", campaignEntry.Length);
+
+        // Read and deserialize campaign.json
+        using var stream = campaignEntry.Open();
+        using var reader = new StreamReader(stream);
+        var jsonContent = await reader.ReadToEndAsync();
+
+        try
+        {
+            var campaign = JsonSerializer.Deserialize<Campaign>(jsonContent, _jsonOptions);
+            if (campaign == null)
+            {
+                throw new InvalidOperationException("Failed to deserialize campaign.json - result was null");
+            }
+
+            _logger.LogInformation("Successfully loaded campaign: {CampaignName}", campaign.Name);
+            _logger.LogDebug("Campaign contains: {CharacterCount} characters, {HandoutCount} handouts, {PageCount} pages", 
+                campaign.Characters?.Count ?? 0, 
+                campaign.Handouts?.Count ?? 0, 
+                campaign.Pages?.Count ?? 0);
+
+            return campaign;
+        }
+        catch (JsonException ex)
+        {
+            _logger.LogError(ex, "Failed to parse campaign.json");
+            throw new InvalidOperationException("Invalid JSON format in campaign.json", ex);
+        }
+    }
+
+    public async Task<IEnumerable<string>> GetAssetPathsAsync(string zipPath)
+    {
+        _logger.LogDebug("Enumerating asset paths in ZIP: {ZipPath}", zipPath);
+
+        if (!File.Exists(zipPath))
+        {
+            throw new FileNotFoundException($"ZIP file not found: {zipPath}");
+        }
+
+        using var archive = ZipFile.OpenRead(zipPath);
+        
+        // Filter for common asset file types
+        var assetExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".mp3", ".ogg", ".wav", ".mp4" };
+        
+        var assetPaths = archive.Entries
+            .Where(entry => !string.IsNullOrEmpty(entry.Name)) // Skip directories
+            .Where(entry => assetExtensions.Any(ext => 
+                entry.Name.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
+            .Select(entry => entry.FullName)
+            .ToList();
+
+        _logger.LogInformation("Found {AssetCount} assets in ZIP archive", assetPaths.Count);
+        return assetPaths;
+    }
+
+    public async Task ExtractAssetAsync(string zipPath, string assetPath, string destinationPath)
+    {
+        _logger.LogDebug("Extracting asset: {AssetPath} -> {DestinationPath}", assetPath, destinationPath);
+
+        if (!File.Exists(zipPath))
+        {
+            throw new FileNotFoundException($"ZIP file not found: {zipPath}");
+        }
+
+        using var archive = ZipFile.OpenRead(zipPath);
+        
+        var entry = archive.Entries.FirstOrDefault(e => 
+            e.FullName.Equals(assetPath, StringComparison.OrdinalIgnoreCase));
+
+        if (entry == null)
+        {
+            throw new FileNotFoundException($"Asset not found in ZIP: {assetPath}");
+        }
+
+        // Ensure destination directory exists
+        var destinationDir = Path.GetDirectoryName(destinationPath);
+        if (!string.IsNullOrEmpty(destinationDir) && !Directory.Exists(destinationDir))
+        {
+            Directory.CreateDirectory(destinationDir);
+            _logger.LogDebug("Created directory: {Directory}", destinationDir);
+        }
+
+        // Extract the asset
+        using var sourceStream = entry.Open();
+        using var destinationStream = File.Create(destinationPath);
+        
+        await sourceStream.CopyToAsync(destinationStream);
+        
+        _logger.LogDebug("Extracted asset: {AssetPath} ({Size} bytes)", assetPath, entry.Length);
+    }
+}

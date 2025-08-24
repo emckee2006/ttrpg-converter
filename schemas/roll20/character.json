@@ -30,20 +30,26 @@
       "description": "GM-only notes"
     },
     "defaulttoken": {
-      "type": "string",
-      "description": "Default token settings JSON"
+      "type": "object",
+      "description": "Default token settings object"
     },
     "tags": {
       "type": "string",
       "description": "Character tags"
     },
     "controlledby": {
-      "type": "string",
-      "description": "Comma-separated player IDs who can control this character"
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Player IDs who can control this character"
     },
     "inplayerjournals": {
-      "type": "string",
-      "description": "Comma-separated player IDs who can see this character"
+      "type": "array", 
+      "items": {
+        "type": "string"
+      },
+      "description": "Player IDs who can see this character"
     },
     "archived": {
       "type": "boolean",

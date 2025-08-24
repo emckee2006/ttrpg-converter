@@ -19,11 +19,26 @@
                                        "type":  "string"
                                    },
                        "inplayerjournals":  {
-                                                "type":  "string"
+                                                "type":  "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
                                             },
                        "archived":  {
                                         "type":  "boolean"
-                                    }
+                                    },
+                       "controlledby":  {
+                                           "type":  "array",
+                                           "items": {
+                                               "type": "string"
+                                           }
+                                       },
+                       "tags":  {
+                                   "type":  "string"
+                               },
+                       "avatar":  {
+                                     "type":  "string"
+                                 }
                    },
     "title":  "Handout",
     "required":  [

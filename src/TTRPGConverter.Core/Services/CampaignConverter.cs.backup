@@ -1,0 +1,267 @@
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using TTRPGConverter.Core.Models.Roll20;
+using TTRPGConverter.Core.Models.Foundry.Dnd5e;
+using TTRPGConverter.Core.Interfaces;
+
+namespace TTRPGConverter.Core.Services;
+
+/// <summary>
+/// Service for converting Roll20 campaigns to Foundry worlds
+/// </summary>
+public interface ICampaignConverter
+{
+    Task<string> ConvertCampaignAsync(string zipPath, string outputPath, string targetSystem = "dnd5e");
+}
+
+public class CampaignConverter : ICampaignConverter
+{
+    private readonly ILogger<CampaignConverter> _logger;
+    private readonly IZipArchiveService _zipService;
+    private readonly IFoundryWorldGenerator _worldGenerator;
+    private readonly IAssetProcessor _assetProcessor;
+    private readonly JsonSerializerOptions _jsonOptions;
+
+    public CampaignConverter(
+        ILogger<CampaignConverter> logger,
+        IZipArchiveService zipService,
+        IFoundryWorldGenerator worldGenerator,
+        IAssetProcessor assetProcessor)
+    {
+        _logger = logger;
+        _zipService = zipService;
+        _worldGenerator = worldGenerator;
+        _assetProcessor = assetProcessor;
+        _jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true,
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+        };
+    }
+
+    public async Task<string> ConvertCampaignAsync(string zipPath, string outputPath, string targetSystem = "dnd5e")
+    {
+        _logger.LogInformation("Starting campaign conversion: {ZipPath} -> {OutputPath}", zipPath, outputPath);
+        _logger.LogInformation("Target system: {TargetSystem}", targetSystem);
+
+        try
+        {
+            // 1. Read Roll20 campaign data from ZIP
+            var campaign = await _zipService.ReadCampaignFromZipAsync(zipPath);
+            _logger.LogInformation("Loaded Roll20 campaign: {CampaignName}", campaign.Name);
+
+            // 2. Create Foundry world structure
+            var worldPath = await _worldGenerator.CreateWorldDirectoryAsync(outputPath, campaign.Name, targetSystem);
+            _logger.LogInformation("Created Foundry world at: {WorldPath}", worldPath);
+
+            // 3. Process assets
+            var assetPaths = await _zipService.GetAssetPathsAsync(zipPath);
+            var assetMapping = await _assetProcessor.ProcessAllAssetsAsync(zipPath, worldPath, assetPaths);
+            _logger.LogInformation("Processed {AssetCount} assets", assetMapping.Count);
+
+            // 4. Convert campaign data based on target system
+            switch (targetSystem.ToLowerInvariant())
+            {
+                case "dnd5e":
+                    await ConvertToDnd5eAsync(campaign, worldPath, assetMapping);
+                    break;
+                case "pf2e":
+                    await ConvertToPf2eAsync(campaign, worldPath, assetMapping);
+                    break;
+                default:
+                    throw new ArgumentException($"Unsupported target system: {targetSystem}");
+            }
+
+            _logger.LogInformation("Campaign conversion completed successfully");
+            return worldPath;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Campaign conversion failed");
+            throw;
+        }
+    }
+
+    private async Task ConvertToDnd5eAsync(Campaign campaign, string worldPath, Dictionary<string, string> assetMapping)
+    {
+        _logger.LogInformation("Converting to D&D 5e format");
+
+        // Convert actors (characters)
+        var actors = new List<TTRPGConverter.Core.Models.Foundry.Dnd5e.Actor>();
+        foreach (var (id, character) in campaign.Characters ?? new())
+        {
+            try
+            {
+                var actor = ConvertCharacterToFoundryActor(id, character, assetMapping);
+                actors.Add(actor);
+                _logger.LogDebug("Converted character: {CharacterName}", character.Name);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to convert character: {CharacterName}", character.Name);
+            }
+        }
+
+        // Convert scenes (pages)
+        var scenes = new List<TTRPGConverter.Core.Models.Foundry.Dnd5e.Scene>();
+        foreach (var (id, page) in campaign.Pages ?? new())
+        {
+            try
+            {
+                var scene = ConvertPageToFoundryScene(id, page, assetMapping);
+                scenes.Add(scene);
+                _logger.LogDebug("Converted scene: {SceneName}", page.Name);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to convert page: {PageName}", page.Name);
+            }
+        }
+
+        // Convert journal entries (handouts)
+        var journals = new List<TTRPGConverter.Core.Models.Foundry.Dnd5e.Journal>();
+        foreach (var (id, handout) in campaign.Handouts ?? new())
+        {
+            try
+            {
+                var journal = ConvertHandoutToFoundryJournal(id, handout, assetMapping);
+                journals.Add(journal);
+                _logger.LogDebug("Converted journal: {JournalName}", handout.Name);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to convert handout: {HandoutName}", handout.Name);
+            }
+        }
+
+        // Write data files
+        await WriteFoundryDataAsync(worldPath, "actors", actors);
+        await WriteFoundryDataAsync(worldPath, "scenes", scenes);
+        await WriteFoundryDataAsync(worldPath, "journal", journals);
+
+        _logger.LogInformation("D&D 5e conversion completed: {ActorCount} actors, {SceneCount} scenes, {JournalCount} journals",
+            actors.Count, scenes.Count, journals.Count);
+    }
+
+    private async Task ConvertToPf2eAsync(Campaign campaign, string worldPath, Dictionary<string, string> assetMapping)
+    {
+        // For now, convert to D&D 5e first, then apply system conversion
+        // This would be extended with PF2e-specific conversion logic
+        _logger.LogInformation("Converting to PF2e format (via D&D 5e intermediate)");
+        await ConvertToDnd5eAsync(campaign, worldPath, assetMapping);
+        
+        // TODO: Add system conversion from D&D 5e to PF2e
+        _logger.LogWarning("PF2e system conversion not yet implemented - using D&D 5e format");
+    }
+
+    private Actor ConvertCharacterToFoundryActor(string id, Models.Roll20.Character character, Dictionary<string, string> assetMapping)
+    {
+        // Update avatar path if it exists in asset mapping
+        var avatarPath = string.Empty;
+        if (!string.IsNullOrEmpty(character.Avatar) && assetMapping.TryGetValue(character.Avatar, out var foundryAvatar))
+        {
+            avatarPath = foundryAvatar;
+        }
+
+        return new Actor
+        {
+            Id = id,
+            Name = character.Name,
+            Type = "character",
+            Img = avatarPath,
+            System = new object(), // This would be populated with D&D 5e specific data
+            Items = new List<object>(), // Convert character items
+            Effects = new List<object>(),
+            Flags = new Dictionary<string, object>
+            {
+                ["roll20-converter"] = new { originalId = id }
+            }
+        };
+    }
+
+    private Scene ConvertPageToFoundryScene(string id, Page page, Dictionary<string, string> assetMapping)
+    {
+        // Parse Roll20 dimensions and convert to Foundry format
+        var width = int.TryParse(page.Width, out var w) ? w : 25;
+        var height = int.TryParse(page.Height, out var h) ? h : 25;
+        var gridSize = int.TryParse(page.SnappingIncrement?.Replace("px", ""), out var gs) ? gs : 100;
+
+        return new Scene
+        {
+            Id = id,
+            Name = page.Name,
+            Width = width * gridSize,
+            Height = height * gridSize,
+            Grid = new
+            {
+                size = gridSize,
+                type = 1, // Square grid
+                color = page.Gridcolor ?? "#000000",
+                alpha = decimal.TryParse(page.GridOpacity, out var opacity) ? opacity : 0.2m
+            },
+            Background = new
+            {
+                src = string.Empty, // TODO: Handle background images
+                offsetX = 0,
+                offsetY = 0
+            },
+            Tokens = new List<object>(), // Convert graphics to tokens
+            Walls = new List<object>(),  // Convert paths to walls
+            Lights = new List<object>(),
+            Flags = new Dictionary<string, object>
+            {
+                ["roll20-converter"] = new { originalId = id }
+            }
+        };
+    }
+
+    private Journal ConvertHandoutToFoundryJournal(string id, Handout handout, Dictionary<string, string> assetMapping)
+    {
+        // Update avatar path if it exists in asset mapping
+        var avatarPath = string.Empty;
+        if (!string.IsNullOrEmpty(handout.Avatar) && assetMapping.TryGetValue(handout.Avatar, out var foundryAvatar))
+        {
+            avatarPath = foundryAvatar;
+        }
+
+        return new Journal
+        {
+            Id = id,
+            Name = handout.Name,
+            Img = avatarPath,
+            Pages = new List<object>
+            {
+                new
+                {
+                    name = handout.Name,
+                    type = "text",
+                    text = new
+                    {
+                        content = handout.Notes,
+                        format = 1 // HTML
+                    }
+                }
+            },
+            Flags = new Dictionary<string, object>
+            {
+                ["roll20-converter"] = new { originalId = id }
+            }
+        };
+    }
+
+    private async Task WriteFoundryDataAsync<T>(string worldPath, string dataType, List<T> data)
+    {
+        if (!data.Any()) return;
+
+        var dataPath = Path.Combine(worldPath, "data");
+        var fileName = $"{dataType}.db";
+        var filePath = Path.Combine(dataPath, fileName);
+
+        // Foundry uses NEDB format, but for now write as JSON array
+        var jsonData = JsonSerializer.Serialize(data, _jsonOptions);
+        await File.WriteAllTextAsync(filePath, jsonData);
+
+        _logger.LogDebug("Written {DataType}: {FilePath} ({Count} entries)", dataType, filePath, data.Count);
+    }
+}

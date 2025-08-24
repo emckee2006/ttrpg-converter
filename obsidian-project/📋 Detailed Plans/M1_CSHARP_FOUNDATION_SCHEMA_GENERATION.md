@@ -1,7 +1,7 @@
 # M1: C# Foundation & Schema Generation
 
 **Timeline**: 2 weeks  
-**Status**: 🟡 Ready to Start  
+**Status**: ✅ **COMPLETED**  
 **Priority**: Critical Path
 
 ## Overview
@@ -17,11 +17,11 @@ Establish C# project structure with type-safe models generated from JSON schemas
 - ✅ Code quality tooling (analyzers, formatting)
 
 ### Week 2: Schema Generation & Models
-- 🔲 Generate Roll20 models from JSON schemas
-- 🔲 Generate Foundry V13 models from JSON schemas
-- 🔲 Generate Pathbuilder models from JSON schemas
-- 🔲 Validation attributes and custom converters
-- 🔲 Unit tests for all generated models
+- ✅ Generate Roll20 models from JSON schemas
+- ✅ Generate Foundry V13 models from JSON schemas
+- ✅ Generate Pathbuilder models from JSON schemas
+- ✅ Validation attributes and custom converters
+- ✅ Unit tests for all generated models
 
 ## Project Structure
 

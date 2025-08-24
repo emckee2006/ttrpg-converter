@@ -1,8 +1,9 @@
-# M5: Platform Conversion (Same-System)
+# M5: Platform Conversion (Eliminated - Absorbed into M2)
 
 **Timeline**: 1.5 weeks  
-**Status**: 🔴 Blocked (requires M2-M4)  
+**Status**: ✅ Completed via M2 Platform Conversion Architecture  
 **Priority**: Medium - Platform Migration
+**Rationale**: Two-stage architecture makes separate platform milestone redundant
 
 ## Overview
 
@@ -21,6 +22,33 @@ Convert Roll20 campaigns to Foundry VTT while preserving the original game syste
 - 🔲 System-specific Foundry world template selection
 - 🔲 Asset path translation and validation
 - 🔲 Lighting and wall data conversion
+
+## Architecture Decision
+
+The two-stage conversion approach eliminates the need for a separate platform conversion milestone:
+
+### Stage 1: Platform Conversion (M2)
+- Roll20 → Foundry format translation
+- Coordinate system conversion
+- Asset processing pipeline
+- **Preserves original game system** (5e stays 5e)
+
+### Stage 2: System Conversion (M2.5)
+- Foundry 5e → Foundry PF2e conversion
+- Interface-based cross-system translation
+- System-specific rule mappings
+
+## Integration Benefits
+
+1. **Simplified Workflow**: Single pipeline handles both platform and system conversion
+2. **Reduced Redundancy**: No duplicate coordinate/asset processing logic
+3. **Better Error Handling**: Unified error reporting across conversion stages
+4. **Improved Testing**: Combined integration testing catches more edge cases
+
+## Migration Path
+- **M5 Tasks → M2**: Coordinate translation, asset processing
+- **M5 Logic → M2.5**: Cross-system conversion engine
+- **Timeline Savings**: 1 week eliminated, redistributed to M2/M2.5
 
 ## Platform Conversion Architecture
 

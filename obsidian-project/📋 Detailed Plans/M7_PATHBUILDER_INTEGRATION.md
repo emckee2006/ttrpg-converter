@@ -1,28 +1,23 @@
-# M7: Pathbuilder Integration (Optional)
+# M7: Pathbuilder Integration
 
 **Timeline**: 1 week  
-**Status**: 🔴 Blocked (requires M2-M6)  
-**Priority**: Low - Optional Enhancement
+**Status**: 🔴 Blocked (requires M2, M6)  
+**Priority**: Medium - External Integration Feature
 
 ## Overview
 
-Integrate Pathbuilder 2e API as an additional input source, allowing direct character import from Pathbuilder URLs and batch campaign import functionality.
+Integrate Pathbuilder 2e character import functionality using simplified platform-only conversion. Since Pathbuilder exports PF2e data and we only need Foundry PF2e output, no system conversion is required - only platform format translation.
 
 ## Key Deliverables
 
-### Days 1-3: API Integration
-- 🔲 Pathbuilder API client implementation
-- 🔲 Character data deserialization from JSON
+### Week 1: Streamlined Integration
+- 🔲 Pathbuilder 2e API client implementation  
+- 🔲 Character export format analysis and parsing
+- 🔲 **Platform-only conversion** (Pathbuilder PF2e → Foundry PF2e)
 - 🔲 Authentication and rate limiting handling
-- 🔲 Error handling for invalid URLs/characters
-
-### Days 4-5: Conversion Pipeline
-- 🔲 Pathbuilder → Foundry PF2e character conversion
-- 🔲 Feat and spell data mapping
-- 🔲 Equipment and inventory translation
-- 🔲 Character portrait and asset handling
-
-### Days 6-7: Batch Processing & UI
+- 🔲 Character data deserialization to PathbuilderCharacter model
+- 🔲 GUI integration for character import workflow
+- 🔲 Batch character import from Pathbuilder URLs/files
 - 🔲 Batch character import from multiple URLs
 - 🔲 Campaign-level organization and metadata
 - 🔲 GUI integration with existing interface

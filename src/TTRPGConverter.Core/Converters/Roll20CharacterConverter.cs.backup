@@ -1,0 +1,104 @@
+using TTRPGConverter.Core.Entities;
+using TTRPGConverter.Core.Interfaces;
+using TTRPGConverter.Core.Models.Roll20;
+using Roll20Character = TTRPGConverter.Core.Models.Roll20.Character;
+
+namespace TTRPGConverter.Core.Converters;
+
+/// <summary>
+/// Converts Roll20 raw data to internal character representation
+/// </summary>
+public interface ICharacterConverter<TRaw>
+{
+    ICharacter ToInternal(TRaw rawCharacter);
+    TRaw FromInternal(ICharacter character);
+}
+
+public class CharacterConverter : ICharacterConverter<Roll20Character>
+{
+    public ICharacter ToInternal(Roll20Character raw)
+    {
+        // Parse Roll20's string-based attributes to integers
+        var abilities = new AbilityScores(
+            Strength: ParseInt(raw.Strength),
+            Dexterity: ParseInt(raw.Dexterity),
+            Constitution: ParseInt(raw.Constitution),
+            Intelligence: ParseInt(raw.Intelligence),
+            Wisdom: ParseInt(raw.Wisdom),
+            Charisma: ParseInt(raw.Charisma)
+        );
+
+        // Convert Roll20 class/level format
+        var classes = new List<CharacterClass>();
+        if (!string.IsNullOrWhiteSpace(raw.CharacterClass))
+        {
+            classes.Add(new CharacterClass(raw.CharacterClass, ParseInt(raw.Level)));
+        }
+
+        // Convert items
+        var items = raw.Items.Values.Select(ConvertItem).ToList();
+
+        // Convert spells from multiple level collections
+        var spells = new List<ISpell>();
+        spells.AddRange(raw.Level1Spells.Values.Select(s => ConvertSpell(s, 1)));
+        spells.AddRange(raw.Level2Spells.Values.Select(s => ConvertSpell(s, 2)));
+        spells.AddRange(raw.Level3Spells.Values.Select(s => ConvertSpell(s, 3)));
+
+        return new Character
+        {
+            Name = raw.Name,
+            Level = ParseInt(raw.Level),
+            Classes = classes,
+            Abilities = abilities,
+            Items = items,
+            Spells = spells,
+            ExtensionData = new Dictionary<string, object>
+            {
+                ["Roll20Data"] = raw.ExtensionData,
+                ["Race"] = raw.Race,
+                ["Background"] = raw.Background
+            }
+        };
+    }
+
+    public Roll20Character FromInternal(ICharacter character)
+    {
+        var roll20 = new Roll20Character
+        {
+            Name = character.Name,
+            Level = character.Level.ToString(),
+            Strength = character.Abilities.Strength.ToString(),
+            Dexterity = character.Abilities.Dexterity.ToString(),
+            Constitution = character.Abilities.Constitution.ToString(),
+            Intelligence = character.Abilities.Intelligence.ToString(),
+            Wisdom = character.Abilities.Wisdom.ToString(),
+            Charisma = character.Abilities.Charisma.ToString()
+        };
+
+        // Convert primary class
+        var primaryClass = character.Classes.FirstOrDefault();
+        if (primaryClass != null)
+        {
+            roll20.CharacterClass = primaryClass.Name;
+            roll20.Level = primaryClass.Level.ToString();
+        }
+
+        // TODO: Implement item conversion when Roll20 Item schema is available
+
+        // Restore extension data
+        if (character.ExtensionData.TryGetValue("Race", out var race))
+            roll20.Race = race.ToString() ?? "";
+        if (character.ExtensionData.TryGetValue("Background", out var background))
+            roll20.Background = background.ToString() ?? "";
+
+        return roll20;
+    }
+
+    // TODO: Implement item and spell conversion when Roll20 Item/Spell schemas are available
+
+    private static int ParseInt(string value) => 
+        int.TryParse(value, out var result) ? result : 0;
+
+    private static decimal? ParseDecimal(string value) => 
+        decimal.TryParse(value, out var result) ? result : null;
+}

@@ -1,25 +1,28 @@
-# M6: GUI Application
+# M6: GUI Application Development
 
-**Timeline**: 2 weeks  
-**Status**: 🔴 Blocked (requires M2-M5)  
+**Timeline**: 1.5 weeks  
+**Status**: 🔴 Blocked (requires M2, M2.5, M3)  
 **Priority**: High - User Experience
 
 ## Overview
 
-Create cross-platform desktop GUI application using Avalonia UI, providing intuitive interface for all conversion pipelines with real-time progress monitoring and error visualization.
+Develop a modern, cross-platform GUI application using Avalonia UI for intuitive TTRPG campaign conversion. Leverages two-stage architecture for enhanced progress visualization, error isolation, and conversion pipeline management.
 
 ## Key Deliverables
 
-### Week 1: Core GUI Framework
-- 🔲 Avalonia UI project setup and theming
-- 🔲 Main window with conversion wizard interface
-- 🔲 File selection and drag-drop functionality
-- 🔲 Progress monitoring with cancellation support
+### Week 1: Core GUI Framework & Two-Stage Integration
+- 🔲 Avalonia UI project setup and configuration
+- 🔲 Main window layout with modern design principles
+- 🔲 File selection and drag-and-drop interface
+- 🔲 **Two-stage progress visualization** (Platform → System conversion)
+- 🔲 **Stage isolation controls** (run platform-only or full conversion)
 
-### Week 2: Advanced Features
-- 🔲 Conversion pipeline selection interface
-- 🔲 Real-time log viewing and error display
-- 🔲 Settings management and preferences
+### Week 1.5: Advanced Features & Polish
+- 🔲 Integration with M2, M2.5, M3 conversion engines
+- 🔲 **Error isolation by stage** (platform vs system conversion errors)
+- 🔲 Batch processing queue management
+- 🔲 **Conversion preview** (intermediate Foundry output before system conversion)
+- 🔲 Output file validation and previewrences
 - 🔲 Results visualization and export options
 
 ## GUI Architecture
