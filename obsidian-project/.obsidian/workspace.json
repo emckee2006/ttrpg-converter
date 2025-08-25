@@ -11,16 +11,10 @@
             "id": "9504aafa5a64d976",
             "type": "leaf",
             "state": {
-              "type": "kanban",
-              "state": {
-                "file": "📋 TTRPGConverter Pure Rust Kanban Board.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": []
-                }
-              },
-              "icon": "lucide-trello",
-              "title": "📋 TTRPGConverter Pure Rust Kanban Board"
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
             }
           }
         ]
@@ -96,13 +90,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "📋 TTRPGConverter Pure Rust Kanban Board.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of 📋 TTRPGConverter Pure Rust Kanban Board"
+              "title": "Outline"
             }
           },
           {
@@ -161,6 +154,7 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "bases:Create new base": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
@@ -172,30 +166,40 @@
   },
   "active": "9504aafa5a64d976",
   "lastOpenFiles": [
-    "📋 Detailed Plans/M8_PERFORMANCE_OPTIMIZATION.md",
-    "📋 Detailed Plans/M5_PRODUCTION_READY_TASKS.md",
-    "📋 Detailed Plans/M9_UNIVERSAL_PLATFORM_INTEGRATION.md",
-    "📋 Detailed Plans/M10_ADVANCED_OUTPUT_FORMATS.md",
-    "📋 Detailed Plans/M6_ADVANCED_MEDIA_PROCESSING.md",
-    "📋 Detailed Plans/M7_MULTI_SYSTEM_CONVERSION.md",
-    "📋 Detailed Plans/M7_OUTPUT_PRODUCTION.md",
-    "📋 Detailed Plans/M6_PLATFORM_INTEGRATION.md",
-    "📋 Detailed Plans/M5_ADVANCED_PROCESSING.md",
-    "📋 Detailed Plans/archive/M6_ADVANCED_MEDIA_PROCESSING.md",
-    "📋 Detailed Plans/archive/M10_ADVANCED_OUTPUT_FORMATS.md",
-    "📋 Detailed Plans/archive/M9_UNIVERSAL_PLATFORM_INTEGRATION.md",
-    "📋 Detailed Plans/archive/M8_PERFORMANCE_OPTIMIZATION.md",
-    "📋 Detailed Plans/archive/M7_MULTI_SYSTEM_CONVERSION.md",
-    "📋 Detailed Plans/archive/OLD_MILESTONE_STRUCTURE_README.md",
-    "📋 Detailed Plans/archive/M5_PRODUCTION_READY_TASKS.md",
-    "📋 Detailed Plans/archive",
-    "📊 Dashboards/COMPREHENSIVE_PLANNING_INDEX.md",
-    "📋 TTRPGConverter Pure Rust Kanban Board.md",
-    "📋 Detailed Plans/M1_FOUNDATION_TASKS.md",
-    "📊 Dashboards/Development Dashboard.md",
-    "📊 Dashboards/DETAILED_TASK_BREAKDOWN.md",
-    "📐 Architecture/ARCHITECTURAL_DECISIONS.md",
-    "../M2_CORE_ENGINE_TASKS.md",
-    "../M3_CLI_INTERFACE_TASKS.md"
+    "Detailed Plans/M1.5_DATABASE_DRIVEN_ARCHITECTURE.md",
+    "📋 Detailed Plans/M1.5_DATABASE_DRIVEN_ARCHITECTURE.md",
+    "📋 Detailed Plans",
+    "Tasks",
+    "Templates/Task Template.md",
+    "Templates/Milestone Template.md",
+    "Templates",
+    "📐 Architecture/JUNIOR_DEV_GUIDE_TWO_STAGE_ARCHITECTURE.md",
+    "Architecture/JUNIOR_DEV_GUIDE_TWO_STAGE_ARCHITECTURE.md",
+    "Architecture/validation-system.md",
+    "Architecture/TESTING_FRAMEWORK.md",
+    "Architecture/INTERNAL_TYPE_HIERARCHY.md",
+    "Architecture/DEVELOPMENT_WORKFLOW.md",
+    "Architecture/DEVELOPMENT_ENVIRONMENT_SETUP.md",
+    "Architecture/Compendium Caching Strategy.md",
+    "Architecture/ARCHITECTURAL_DECISIONS.md",
+    "Architecture",
+    "Dashboards/Development Dashboard.md",
+    "Dashboards/COMPREHENSIVE_PLANNING_INDEX.md",
+    "Dashboards",
+    "📋 Detailed Plans/M2_ROLL20_5E_TO_FOUNDRY_PF2E.md",
+    "Detailed Plans/archive/rust-implementation/M8_PERFORMANCE_OPTIMIZATION.md",
+    "Detailed Plans/archive/rust-implementation/M7_OUTPUT_PRODUCTION.md",
+    "Detailed Plans/archive/rust-implementation/M9_UNIVERSAL_PLATFORM_INTEGRATION.md",
+    "Detailed Plans/archive/rust-implementation/📋 TTRPGConverter Pure Rust Kanban Board.md",
+    "Detailed Plans/archive/rust-implementation/M7_MULTI_SYSTEM_CONVERSION.md",
+    "Detailed Plans/archive/rust-implementation/M5_PRODUCTION_READY_TASKS.md",
+    "Detailed Plans/archive/rust-implementation/M6_ADVANCED_MEDIA_PROCESSING.md",
+    "Detailed Plans/archive/rust-implementation/M6_PLATFORM_INTEGRATION.md",
+    "Detailed Plans/archive/rust-implementation/M7_DISTRIBUTION_DEPLOYMENT.md",
+    "Detailed Plans/archive/rust-implementation/M10_ADVANCED_OUTPUT_FORMATS.md",
+    "Detailed Plans/archive/rust-implementation",
+    "Detailed Plans/archive",
+    "Detailed Plans",
+    "📋 Detailed Plans/archive"
   ]
 }

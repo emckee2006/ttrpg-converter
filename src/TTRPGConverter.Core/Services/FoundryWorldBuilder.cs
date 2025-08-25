@@ -2,6 +2,7 @@ using System.Text.Json;
 using TTRPGConverter.Core.Models.Roll20;
 using Microsoft.Extensions.Logging;
 using TTRPGConverter.Core.Models.Foundry.Dnd5e;
+using Roll20Path = TTRPGConverter.Core.Models.Roll20.Path;
 
 namespace TTRPGConverter.Core.Services;
 
@@ -48,7 +49,7 @@ public class FoundryWorldBuilder
         _logger.LogInformation("🏗️ Creating Foundry {System} world: {Name} → {OutputPath}", system, worldName, outputPath);
 
         // Create world directory structure
-        var worldDir = Path.Combine(outputPath, SanitizeFileName(worldName));
+        var worldDir = System.IO.Path.Combine(outputPath, SanitizeFileName(worldName));
         CreateWorldDirectories(worldDir);
 
         // Generate world.json
@@ -64,7 +65,7 @@ public class FoundryWorldBuilder
             LastPlayed = DateTimeOffset.UtcNow
         };
 
-        var worldJsonPath = Path.Combine(worldDir, "world.json");
+        var worldJsonPath = System.IO.Path.Combine(worldDir, "world.json");
         await File.WriteAllTextAsync(worldJsonPath, JsonSerializer.Serialize(worldInfo, _jsonOptions));
         _logger.LogDebug("Created world.json: {Path}", worldJsonPath);
 
@@ -91,18 +92,18 @@ public class FoundryWorldBuilder
         var directories = new[]
         {
             worldDir,
-            Path.Combine(worldDir, "data"),
-            Path.Combine(worldDir, "data", "actors"),
-            Path.Combine(worldDir, "data", "scenes"), 
-            Path.Combine(worldDir, "data", "items"),
-            Path.Combine(worldDir, "data", "journal"),
-            Path.Combine(worldDir, "data", "playlists"),
-            Path.Combine(worldDir, "data", "tables"),
-            Path.Combine(worldDir, "assets"),
-            Path.Combine(worldDir, "assets", "maps"),
-            Path.Combine(worldDir, "assets", "tokens"),
-            Path.Combine(worldDir, "assets", "audio"),
-            Path.Combine(worldDir, "assets", "handouts")
+            System.IO.Path.Combine(worldDir, "data"),
+            System.IO.Path.Combine(worldDir, "data", "actors"),
+            System.IO.Path.Combine(worldDir, "data", "scenes"), 
+            System.IO.Path.Combine(worldDir, "data", "items"),
+            System.IO.Path.Combine(worldDir, "data", "journal"),
+            System.IO.Path.Combine(worldDir, "data", "playlists"),
+            System.IO.Path.Combine(worldDir, "data", "tables"),
+            System.IO.Path.Combine(worldDir, "assets"),
+            System.IO.Path.Combine(worldDir, "assets", "maps"),
+            System.IO.Path.Combine(worldDir, "assets", "tokens"),
+            System.IO.Path.Combine(worldDir, "assets", "audio"),
+            System.IO.Path.Combine(worldDir, "assets", "handouts")
         };
 
         foreach (var dir in directories)
@@ -121,7 +122,7 @@ public class FoundryWorldBuilder
 
         // Create NeDB database for actors
         using var actorsDb = _databaseFactory.CreateWriter(FoundryDatabaseFactory.DatabaseFormat.NeDB);
-        var actorsDbPath = Path.Combine(world.WorldPath, "data", "actors.db");
+        var actorsDbPath = System.IO.Path.Combine(world.WorldPath, "data", "actors.db");
         await actorsDb.InitializeAsync(actorsDbPath);
 
         // Convert characters to Foundry actors
@@ -155,7 +156,7 @@ public class FoundryWorldBuilder
 
         // Create NeDB database for scenes
         using var scenesDb = _databaseFactory.CreateWriter(FoundryDatabaseFactory.DatabaseFormat.NeDB);
-        var scenesDbPath = Path.Combine(world.WorldPath, "data", "scenes.db");
+        var scenesDbPath = System.IO.Path.Combine(world.WorldPath, "data", "scenes.db");
         await scenesDb.InitializeAsync(scenesDbPath);
 
         // Convert pages to Foundry scenes
@@ -189,7 +190,7 @@ public class FoundryWorldBuilder
 
         // Create NeDB database for journal entries
         using var journalDb = _databaseFactory.CreateWriter(FoundryDatabaseFactory.DatabaseFormat.NeDB);
-        var journalDbPath = Path.Combine(world.WorldPath, "data", "journal.db");
+        var journalDbPath = System.IO.Path.Combine(world.WorldPath, "data", "journal.db");
         await journalDb.InitializeAsync(journalDbPath);
 
         // Convert handouts to Foundry journal entries
@@ -258,7 +259,7 @@ public class FoundryWorldBuilder
                     requests.Add(new AssetRequest
                     {
                         Roll20Url = character.Avatar.ToString(),
-                        DestinationPath = Path.Combine(assetsDir, "actors", $"{character.Name}_avatar.png"),
+                        DestinationPath = System.IO.Path.Combine(assetsDir, "actors", $"{character.Name}_avatar.png"),
                         AssetType = "actors",
                         EntityId = character.Id,
                         EntityType = "character"
@@ -270,7 +271,7 @@ public class FoundryWorldBuilder
                 requests.Add(new AssetRequest
                 {
                     Roll20Url = tokenImageUrl,
-                    DestinationPath = Path.Combine(assetsDir, "actors", $"{character.Name}_token.png"),
+                    DestinationPath = System.IO.Path.Combine(assetsDir, "actors", $"{character.Name}_token.png"),
                     AssetType = "actors",
                     EntityId = character.Id,
                     EntityType = "character"
@@ -293,7 +294,7 @@ public class FoundryWorldBuilder
                 requests.Add(new AssetRequest
                 {
                     Roll20Url = "", // TODO: Get actual background image URL
-                    DestinationPath = Path.Combine(assetsDir, "scenes", $"{page.Name}_background.jpg"),
+                    DestinationPath = System.IO.Path.Combine(assetsDir, "scenes", $"{page.Name}_background.jpg"),
                     AssetType = "tiles",
                     EntityId = page.Id,
                     EntityType = "page"
@@ -311,7 +312,7 @@ public class FoundryWorldBuilder
                     requests.Add(new AssetRequest
                     {
                         Roll20Url = handout.Avatar,
-                        DestinationPath = Path.Combine(assetsDir, "journal", $"{handout.Name}_image.png"),
+                        DestinationPath = System.IO.Path.Combine(assetsDir, "journal", $"{handout.Name}_image.png"),
                         AssetType = "cards",
                         EntityId = handout.Id,
                         EntityType = "handout"
@@ -357,7 +358,7 @@ public class FoundryWorldBuilder
 
     private static string SanitizeFileName(string fileName)
     {
-        var invalid = Path.GetInvalidFileNameChars();
+        var invalid = System.IO.Path.GetInvalidFileNameChars();
         return string.Join("_", fileName.Split(invalid, StringSplitOptions.RemoveEmptyEntries));
     }
 

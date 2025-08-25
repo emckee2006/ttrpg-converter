@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Text.Json;
 using TTRPGConverter.Core.Models.Roll20;
 using Microsoft.Extensions.Logging;
+using Roll20Path = TTRPGConverter.Core.Models.Roll20.Path;
 
 namespace TTRPGConverter.Core.Services;
 
@@ -89,7 +90,7 @@ public class Roll20CampaignService
         {
             if (string.IsNullOrEmpty(entry.Name)) continue; // Skip directories
             
-            var extension = Path.GetExtension(entry.Name).ToLowerInvariant();
+            var extension = System.IO.Path.GetExtension(entry.Name).ToLowerInvariant();
             var fileName = entry.Name.ToLowerInvariant();
 
             switch (extension)
@@ -168,7 +169,7 @@ public class Roll20CampaignService
             throw new FileNotFoundException($"Asset not found in ZIP: {assetPath}");
 
         // Ensure destination directory exists
-        var destinationDir = Path.GetDirectoryName(destinationPath);
+        var destinationDir = System.IO.Path.GetDirectoryName(destinationPath);
         if (!string.IsNullOrEmpty(destinationDir) && !Directory.Exists(destinationDir))
         {
             Directory.CreateDirectory(destinationDir);

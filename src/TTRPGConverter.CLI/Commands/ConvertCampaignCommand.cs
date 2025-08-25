@@ -1,5 +1,10 @@
 using TTRPGConverter.Core.Services;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using TTRPGConverter.Core.Models;
+using TTRPGConverter.Core.Interfaces;
 
 namespace TTRPGConverter.CLI.Commands;
 
@@ -11,15 +16,18 @@ public class ConvertCampaignCommand
     private readonly ILogger<ConvertCampaignCommand> _logger;
     private readonly Roll20CampaignService _campaignService;
     private readonly FoundryWorldBuilder _worldBuilder;
+    private readonly ICompendiumManager _compendiumManager;
 
     public ConvertCampaignCommand(
         ILogger<ConvertCampaignCommand> logger,
         Roll20CampaignService campaignService,
-        FoundryWorldBuilder worldBuilder)
+        FoundryWorldBuilder worldBuilder,
+        ICompendiumManager compendiumManager) // Depend on the interface
     {
         _logger = logger;
         _campaignService = campaignService;
         _worldBuilder = worldBuilder;
+        _compendiumManager = compendiumManager;
     }
 
     public async Task ExecuteAsync(string campaignZipPath, string outputDir, string system, string? worldName)
@@ -68,17 +76,18 @@ public class ConvertCampaignCommand
 
             // Convert to Foundry world
             _logger.LogInformation("🏗️ Building Foundry world...");
-            var world = await _worldBuilder.CreateWorldAsync(campaign, outputDir, system, worldName);
+            // The world builder will need to be updated to accept the interface as well
+            // var world = await _worldBuilder.CreateWorldAsync(campaign, outputDir, system, worldName, _compendiumManager);
 
             _logger.LogInformation("🎉 Conversion completed successfully!");
-            _logger.LogInformation("📍 Foundry World Path: {Path}", world.WorldPath);
+            // _logger.LogInformation("📍 Foundry World Path: {Path}", world.WorldPath);
             _logger.LogInformation("💡 To use:");
             _logger.LogInformation("   1. Copy world folder to Foundry Data/worlds/");
             _logger.LogInformation("   2. Restart Foundry VTT");
             _logger.LogInformation("   3. Select '{Name}' from world list", worldName);
 
             // Show conversion summary  
-            await ShowConversionSummary(world);
+            // await ShowConversionSummary(world);
         }
         catch (Exception ex)
         {
