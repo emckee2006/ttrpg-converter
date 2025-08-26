@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TTRPGConverter.Core\TTRPGConverter.Core.csproj" />
     <ProjectReference Include="..\TTRPGConverter.Processing\TTRPGConverter.Processing.csproj" />
+    <ProjectReference Include="..\TTRPGConverter.Infrastructure\TTRPGConverter.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,7 +31,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.EventSource" Version="10.0.0-preview.7.25380.108" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0-preview.7.25380.108" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta7.25380.108" />
-    <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta5.25306.1" />
   </ItemGroup>
 
   <PropertyGroup>

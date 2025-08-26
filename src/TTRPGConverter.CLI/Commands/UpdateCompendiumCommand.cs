@@ -6,20 +6,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Raven.Client.Documents;
 using Raven.Embedded;
-using TTRPGConverter.Core.Entities;
-using TTRPGConverter.Core.Services;
+using TTRPGConverter.Infrastructure.Services.Compendium;
 
 namespace TTRPGConverter.CLI.Commands;
 
 public class UpdateCompendiumCommand
 {
     private readonly ILogger<UpdateCompendiumCommand> _logger;
-    private readonly CompendiumManager _compendiumManager;
+    private readonly CompendiumCacheBuilder _compendiumBuilder;
 
-    public UpdateCompendiumCommand(ILogger<UpdateCompendiumCommand> logger, CompendiumManager compendiumManager)
+    public UpdateCompendiumCommand(ILogger<UpdateCompendiumCommand> logger, CompendiumCacheBuilder compendiumBuilder)
     {
         _logger = logger;
-        _compendiumManager = compendiumManager;
+        _compendiumBuilder = compendiumBuilder;
     }
 
     public async Task<int> ExecuteAsync(string? outputPath, string? foundryDataPath)
@@ -35,8 +34,8 @@ public class UpdateCompendiumCommand
         var compendiumPaths = DiscoverCompendiumPaths(foundryDataPath);
         _logger.LogInformation("Discovered {Count} potential compendium sources.", compendiumPaths.Count());
 
-        await _compendiumManager.LoadUnifiedCacheAsync(compendiumPaths);
-        var allItems = _compendiumManager.GetAllEntities().Values;
+        await _compendiumBuilder.LoadUnifiedCacheAsync(compendiumPaths);
+        var allItems = _compendiumBuilder.GetAllEntities().Values;
 
         if (!allItems.Any())
         {

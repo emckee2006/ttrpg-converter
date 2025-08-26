@@ -2,16 +2,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TTRPGConverter.Core\TTRPGConverter.Core.csproj" />
+    <ProjectReference Include="..\TTRPGConverter.Infrastructure\TTRPGConverter.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0-preview.7.25380.108" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0-preview.7.25380.108" />
-    <PackageReference Include="Microsoft.NETCore.Platforms" Version="8.0.0-preview.7.23375.6" />
-    <PackageReference Include="Microsoft.NETCore.Targets" Version="6.0.0-preview.4.21253.7" />
-    <PackageReference Include="runtime.native.System" Version="4.3.1" />
-    <PackageReference Include="runtime.native.System.IO.Compression" Version="4.3.2" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0-preview.7.25380.108" />
   </ItemGroup>
 
   <PropertyGroup>
