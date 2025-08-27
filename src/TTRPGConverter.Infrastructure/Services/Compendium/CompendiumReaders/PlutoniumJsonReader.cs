@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using TTRPGConverter.Core.Compendium;
 
 namespace TTRPGConverter.Infrastructure.Services.Compendium.CompendiumReaders;
 

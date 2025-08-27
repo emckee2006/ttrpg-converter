@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace TTRPGConverter.Infrastructure.Services.Compendium;
+namespace TTRPGConverter.Core.Compendium;
 
 /// <summary>
 /// Represents a compendium item from any database format
@@ -17,6 +17,6 @@ public record CompendiumItem
     public string? Source { get; init; }
     public string? Rarity { get; init; }
     public DateTime LoadedAt { get; init; } = DateTime.UtcNow;
-    public bool IsPrimary { get; set; } = false;
+    public bool IsPrimary { get; set; } = false; // Flag to indicate the winning item in a conflict
     public string? System { get; set; }
 }

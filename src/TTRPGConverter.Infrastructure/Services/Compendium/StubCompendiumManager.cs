@@ -1,26 +1,24 @@
-﻿namespace TTRPGConverter.Infrastructure.Services.Compendium;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TTRPGConverter.Core.Compendium;
 
-/// <summary>
-/// A temporary, stub implementation of the ICompendiumManager for development purposes.
-/// It returns no data, allowing other components to be built without a live database connection.
-/// </summary>
+namespace TTRPGConverter.Infrastructure.Services.Compendium;
+
 public class StubCompendiumManager : ICompendiumManager
 {
-    public CompendiumItem? FindEntity(string entityType, string entityName)
+    public Task<CompendiumItem?> FindEntityAsync(string entityType, string entityName, string? system = null)
     {
-        // Always return null to simulate a cache miss.
-        return null;
+        return Task.FromResult<CompendiumItem?>(null);
     }
 
-    public IEnumerable<CompendiumItem> FindAllCandidates(string entityType, string entityName)
+    public Task<IEnumerable<CompendiumItem>> FindAllCandidatesAsync(string entityType, string entityName, string? system = null)
     {
-        // Always return an empty list.
-        return [];
+        return Task.FromResult(Enumerable.Empty<CompendiumItem>());
     }
 
-    public IEnumerable<CompendiumItem> GetEntitiesByType(string entityType)
+    public Task<IEnumerable<CompendiumItem>> GetEntitiesByTypeAsync(string entityType)
     {
-        // Always return an empty list.
-        return [];
+        return Task.FromResult(Enumerable.Empty<CompendiumItem>());
     }
 }

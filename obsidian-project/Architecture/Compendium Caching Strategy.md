@@ -1,53 +1,56 @@
 ﻿# Compendium Caching Strategy
 
-**Author:** Gemini
-**Date:** 2024-07-25
-**Status:** Design Finalized
+**Author:** Gemini & Alithanna
+**Date:** 2024-07-26
+**Status:** Finalized & Aligned with Codebase
 
 ## 1. Overview
 
-To address a significant performance bottleneck and to create a robust foundation for parallel processing, a new caching and state management strategy has been implemented. The previous approach re-processed all source compendia on every run and lacked a mechanism to safely coordinate parallel tasks.
+To address a significant performance bottleneck and to create a robust foundation for parallel processing, a new caching architecture has been implemented. The previous approach re-processed all source compendia on every run. The new architecture uses a persistent, pre-built cache to provide high-speed access to compendium data during conversions.
 
-The new architecture uses a single, powerful embedded database to manage both the persistent compendium cache and the transient state of a conversion run, ensuring high performance, data integrity, and safe concurrency.
+## 2. Architectural Placement
 
-## 2. The Caching and State Management Architecture
+As per the final solution architecture (`M2.3_PROJECT_ARCHITECTURE.md`), all components of the compendium system are placed in the `TTRPGConverter.Infrastructure` project to ensure a clean separation of concerns:
 
-The new architecture is centered around **RavenDB Embedded**, a full-featured NoSQL document database that runs in-process with the application.
+-   **Interfaces (`ICompendiumManager`, `ICompendiumReader`):** The core interfaces are defined in `TTRPGConverter.Infrastructure/Services/Compendium/`.
+-   **Implementations:** The concrete implementations reside in the same directory:
+    -   **`CompendiumCacheBuilder`**: The offline tool for building the cache.
+    -   **`RavenDbCompendiumManager`**: The runtime service for querying the cache.
+    -   **Reader Implementations**: All `ICompendiumReader` implementations (e.g., `NeDbCompendiumReader`, `FoundryCliBridge`) are located in the `CompendiumReaders` subdirectory.
 
-### 2.1. The Database (RavenDB Embedded)
+## 3. The Caching Technology (RavenDB Embedded)
 
-The choice of RavenDB Embedded was made specifically to handle the demands of a highly concurrent conversion process:
+The new architecture is centered around **RavenDB Embedded**, a full-featured NoSQL document database that runs in-process with the application. This provides several key advantages:
 
--   **ACID Transactions:** Guarantees that the database state is always consistent, even if the application crashes mid-operation. This is critical for both cache generation and managing the state of a conversion.
--   **Session-Based Unit of Work:** Provides excellent concurrency management. Each parallel task operates in its own session, allowing for safe, isolated reads and writes without manual locking. Optimistic concurrency prevents race conditions when multiple threads try to create the same custom entity or asset.
--   **Powerful Indexing:** Allows for fast, indexed queries on any field, including nested document properties. This is used for high-speed lookups of compendium items and assets without loading the entire dataset into memory.
--   **Native .NET Client:** Offers a clean, modern API with full LINQ support, making database interactions intuitive and maintainable.
+-   **ACID Transactions:** Guarantees that the database state is always consistent.
+-   **Powerful Indexing:** Allows for fast, indexed queries on any field (e.g., by `Type` and `Name`) without loading the entire dataset into memory.
+-   **Native .NET Client:** Offers a clean, modern API with full LINQ support.
 
-### 2.2. The `update-compendium` Command
+## 4. The Two-Phase Process
 
-A new CLI command is introduced to manage the persistent cache.
+The new architecture is built on a clear separation of two distinct processes: **Building the Cache** and **Using the Cache**.
+
+### Phase 1: Building the Cache (`update-compendium` command)
+
+This is an offline, one-time process managed by the `CompendiumCacheBuilder` service.
 
 **Workflow:**
 
-1.  **Discovery & Processing:** It uses the `CompendiumManager` to load all source compendia and resolve all entity conflicts.
-2.  **Writing to Cache:**
-    -   It connects to the `compendium.db` RavenDB file.
-    -   It completely clears any old data in the `CompendiumItems` collection.
-    -   It stores all the unified compendium items in the collection.
-    -   It ensures that appropriate indexes (e.g., on `Type` and `Name`) are created.
+1.  **Discovery:** The `CompendiumCacheBuilder` scans the user's Foundry VTT data directory to discover all available compendium packs from systems and modules.
+2.  **Processing:** It uses a strategy pattern, invoking the correct `ICompendiumReader` implementation (`NeDbCompendiumReader`, `FoundryCliBridge`, etc.) for each discovered pack format.
+3.  **Conflict Resolution:** All loaded items are processed to resolve name collisions and select the "best" version of each entity based on a predefined source priority.
+4.  **Writing to Cache:** The final, de-duplicated list of compendium items is saved into a local RavenDB database file (`compendium.ravendb`). This process completely overwrites any existing cache.
 
-This command should be run by the user whenever they update their FoundryVTT content to refresh the cache.
+This command should be run by the user whenever they update their Foundry VTT content to refresh the cache.
 
-## 3. The Conversion Process Workflow
+### Phase 2: Using the Cache (Runtime Conversion)
 
-1.  **Initialization:** The `ConversionStateManager` connects to the `compendium.db` file.
-2.  **State Management:** For each conversion run, it creates **temporary collections** (e.g., `CustomItems_Run_XYZ`, `AssetMappings_Run_XYZ`). This isolates the state of each run.
-3.  **Parallel Processing:**
-    -   Dozens or hundreds of `IAssetProcessor` and entity processing tasks can run in parallel.
-    -   Each task uses its own RavenDB session to interact with the database.
-    -   **Compendium Lookups:** Tasks perform fast, indexed, concurrent reads against the permanent `CompendiumItems` collection.
-    -   **Custom Item/Asset Creation:** When a new item must be created, the task attempts to write it to the temporary collection. RavenDB's concurrency control ensures that only one thread can create a given item, preventing duplicates and race conditions.
-4.  **Finalization:** Once all parallel tasks are complete, the finalization process reads the temporary collections to generate the output JSON files.
-5.  **Cleanup:** After the output is successfully written, the temporary collections for the completed run are deleted from the database, ensuring the cache file does not grow with transient data.
+During a normal conversion process (e.g., the `convert-campaign` command), the application uses the `ICompendiumManager` interface to look up entities.
 
-This architecture provides a scalable, reliable, and high-performance foundation for the entire conversion process.
+**Workflow:**
+
+1.  **Dependency Injection:** The `ICompendiumManager` interface is injected into any service that needs compendium data.
+2.  **Implementation:** The DI container provides the `RavenDbCompendiumManager` as the concrete implementation.
+3.  **Querying:** The `RavenDbCompendiumManager` connects to the pre-built `compendium.ravendb` file and performs fast, indexed, read-only queries to find the required items.
+
+This architecture ensures that the main conversion process is extremely fast, as it no longer needs to re-process the source compendia. It simply performs quick lookups against a clean, optimized, and pre-built local database.

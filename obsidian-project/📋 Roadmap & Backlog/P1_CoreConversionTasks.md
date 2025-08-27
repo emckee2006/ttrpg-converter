@@ -1,13 +1,15 @@
-﻿# M3.1: Remaining Mapping and Integration Tasks
+﻿# M3.1: Stage 1 - Platform Conversion Tasks
 
-**Author:** Gemini
-**Date:** 2024-07-25
-**Status:** Proposed
-**Depends On:** `M1.8_FINAL_ASSET_PIPELINE.md`
+**Author:** Gemini & Alithanna
+**Date:** 2024-07-26
+**Status:** Ready for Development
+**Depends On:** `M2_ROLL20_5E_TO_FOUNDRY_PF2E.md`, `M2.1_AUTOMAPPER_INTEGRATION_STRATEGY.md`
 
 ## 1. Overview
 
-This document outlines the remaining implementation tasks required to complete the core functionality of the TTRPG Converter. With the foundational AutoMapper profiles now in place for most entities, the work is divided into two main categories: completing the detailed mapping for complex entities and building the high-level services to orchestrate the conversion process.
+This document outlines the remaining implementation tasks required to complete **Stage 1 (Platform Conversion)** of the M2 Milestone. The goal of this stage is to perform a high-fidelity, 1:1 conversion of a Roll20 D&D 5e campaign into the Foundry VTT format.
+
+The work is divided into two main categories: completing the detailed mapping for complex entities and building the high-level services to orchestrate the conversion process.
 
 ## 2. Detailed Mapping Tasks (Completing the Profiles)
 
@@ -47,7 +49,7 @@ These tasks involve enhancing our existing AutoMapper profiles with more granula
 
 This is the final phase of the core logic development, where we tie all the individual mappings together.
 
-### 3.1. `ConversionService`
+### 3.1. `ConversionService` (in `TTRPGConverter.Processing`)
 
 -   **Task:** Create the main `ConversionService.cs`.
 -   **Implementation:**
@@ -55,7 +57,7 @@ This is the final phase of the core logic development, where we tie all the indi
     -   It will contain the main `ConvertCampaignAsync` method.
     -   This method will load the source campaign, iterate through each entity type (characters, handouts, pages, etc.), and use `_mapper.Map<TDestination>(source)` to convert them into lists of Foundry documents.
 
-### 3.2. `FoundryWorldBuilder`
+### 3.2. `FoundryWorldBuilder` (in `TTRPGConverter.Infrastructure`)
 
 -   **Task:** Implement the `FoundryWorldBuilder.cs`.
 -   **Implementation:**

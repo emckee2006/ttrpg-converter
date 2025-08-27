@@ -1,20 +1,83 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:TTRPGConverter.GUI.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:vm="using:TTRPGConverter.GUI.ViewModels"
+        xmlns:core="using:TTRPGConverter.Core"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         x:Class="TTRPGConverter.GUI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="TTRPGConverter.GUI">
+        Title="TTRPG Converter">
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
+    <Window.Styles>
+        <Style Selector="TreeViewItem">
+            <Setter Property="IsExpanded" Value="True"/>
+        </Style>
+    </Window.Styles>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <DockPanel Margin="10">
+        <!-- Top section for controls -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
+            <Button Name="UpdateCompendiumButton" Content="Update Compendium" Click="UpdateCompendiumButton_Click"/>
+            <ComboBox ItemsSource="{Binding AvailableModules}" 
+                      SelectedItem="{Binding SelectedModule}"
+                      Width="200"/>
+            <Button Content="Test Selected Module" Command="{Binding TestCompendiumCommand}"/>
+        </StackPanel>
+
+        <!-- Bottom section for progress bar -->
+        <ProgressBar DockPanel.Dock="Bottom" 
+                     Minimum="0" 
+                     Maximum="100" 
+                     Value="{Binding ProgressValue}" 
+                     IsIndeterminate="{Binding IsProgressBarIndeterminate}"
+                     Margin="0,10,0,0"/>
+
+        <!-- Main content area -->
+        <Grid RowDefinitions="*,Auto,*" >
+            <!-- Results TreeView -->
+            <TreeView Grid.Row="0" x:Name="ResultsTreeView" ItemsSource="{Binding BuildResults}">
+                <TreeView.DataTemplates>
+                    <TreeDataTemplate DataType="vm:ModuleSummaryViewModel" ItemsSource="{Binding ProcessedPacks}">
+                        <TextBlock FontWeight="Bold">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} (✓ {1} Success, ✗ {2} Failed)">
+                                    <Binding Path="ModuleName"/>
+                                    <Binding Path="SuccessCount"/>
+                                    <Binding Path="FailCount"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </TreeDataTemplate>
+
+                    <DataTemplate DataType="core:PackProcessingResult">
+                        <Grid ColumnDefinitions="*,Auto,Auto" Width="500" Margin="0,2">
+                            <!-- Pack Name (Selectable) -->
+                            <TextBox Grid.Column="0" Text="{Binding PackName}" IsReadOnly="True" BorderThickness="0" Background="Transparent" VerticalAlignment="Center"/>
+                            
+                            <!-- Status (Not selectable, but clear) -->
+                            <TextBlock Grid.Column="1" Text="Success" Foreground="Green" IsVisible="{Binding IsSuccess}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="Failed" Foreground="Red" IsVisible="{Binding !IsSuccess}" VerticalAlignment="Center"/>
+                            
+                            <!-- Error Message (Selectable, only visible on failure) -->
+                            <TextBox Grid.Column="2" Text="{Binding ErrorMessage}" IsVisible="{Binding !IsSuccess}" IsReadOnly="True" BorderThickness="0" Background="Transparent" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        </Grid>
+                    </DataTemplate>
+                </TreeView.DataTemplates>
+            </TreeView>
+
+            <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Background="LightGray"/>
+
+            <!-- Log TextBox -->
+            <TextBox Grid.Row="2" x:Name="LogTextBox" 
+                     Text="{Binding LogText}"
+                     AcceptsReturn="True"
+                     IsReadOnly="True"
+                     TextWrapping="Wrap"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
+        </Grid>
+    </DockPanel>
 
 </Window>

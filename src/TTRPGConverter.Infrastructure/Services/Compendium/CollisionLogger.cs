@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using TTRPGConverter.Core.Compendium;
 
 namespace TTRPGConverter.Infrastructure.Services.Compendium;
 

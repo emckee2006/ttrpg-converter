@@ -1,8 +1,10 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using TTRPGConverter.Core.Compendium; // Corrected namespace for the interface
 using TTRPGConverter.Core.Mappers;
 using TTRPGConverter.Infrastructure.Services.Foundry;
 using TTRPGConverter.Infrastructure.Services.Roll20;
-using TTRPGConverter.Infrastructure.Services.Compendium;
 
 namespace TTRPGConverter.CLI.Commands;
 

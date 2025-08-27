@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using TTRPGConverter.Core;
 using TTRPGConverter.Core.Models.Foundry.Dnd5e;
 using TTRPGConverter.Infrastructure.Services.Assets;
 using TTRPGConverter.Infrastructure.Services.Roll20;
@@ -50,8 +51,8 @@ public class FoundryWorldBuilder
             System = system,
             CoreVersion = "12",
             SystemVersion = GetSystemVersion(system),
-            CreatedAt = DateTimeOffset.UtcNow,
-            LastPlayed = DateTimeOffset.UtcNow
+            CreatedAt = System.DateTimeOffset.UtcNow,
+            LastPlayed = System.DateTimeOffset.UtcNow
         };
 
         var worldJsonPath = Path.Combine(worldDir, "world.json");
@@ -113,7 +114,7 @@ public class FoundryWorldBuilder
         foreach (var item in items)
         {
             var json = JsonSerializer.Serialize(item, _jsonOptions);
-            await File.AppendAllTextAsync(dbPath, json + Environment.NewLine);
+            await File.AppendAllTextAsync(dbPath, json + System.Environment.NewLine);
         }
         _logger.LogInformation("✅ Created {Count} {DbName} in NeDB format: {Path}", items.Count(), dbName, dbPath);
     }
@@ -125,6 +126,7 @@ public class FoundryWorldBuilder
 
         var result = await _assetProcessor.ProcessAssetsAsync(assetRequests, world.Campaign.SourceZipPath);
         _logger.LogInformation("✅ Asset processing complete: {Processed} processed, {Errors} errors in {Time:F2}s", result.ProcessedAssets.Count, result.Errors.Count, result.ProcessingTime.TotalSeconds);
+        // Correctly access the Exception object's Message property
         foreach (var error in result.Errors) { _logger.LogWarning("Asset error for {Url}: {Error}", error.Request.Roll20Url, error.Error.Message); }
     }
     
@@ -154,8 +156,8 @@ public class FoundryWorldInfo
     public required string System { get; init; }
     public required string CoreVersion { get; init; }
     public required string SystemVersion { get; init; }
-    public required DateTimeOffset CreatedAt { get; init; }
-    public required DateTimeOffset LastPlayed { get; init; }
+    public required System.DateTimeOffset CreatedAt { get; init; }
+    public required System.DateTimeOffset LastPlayed { get; init; }
 }
 
 public class FoundryWorld
@@ -173,7 +175,7 @@ public class FoundryDatabaseFactory
     public IDatabaseWriter CreateWriter(DatabaseFormat format) => new NeDbWriter();
 }
 
-public interface IDatabaseWriter : IDisposable
+public interface IDatabaseWriter : System.IDisposable
 {
     Task InitializeAsync(string path);
 }

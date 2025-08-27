@@ -1,4 +1,6 @@
-﻿namespace TTRPGConverter.Infrastructure.Services.Compendium;
+﻿using TTRPGConverter.Core.Compendium;
+
+namespace TTRPGConverter.Infrastructure.Services.Compendium;
 
 /// <summary>
 /// Abstract interface for reading compendium databases
